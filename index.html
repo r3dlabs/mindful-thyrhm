@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mindful Rhythm | Personal Operating System</title>
+    <title>Mindful Rhythm | Intentional Living</title>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* --- Core Theme Variables --- */
         [data-theme="dark"] {
@@ -60,8 +61,36 @@
         .toggle-track { width: 42px; height: 23px; background: var(--toggle-bg); border-radius: 12px; border: 1px solid var(--border); position: relative; transition: background 0.2s; }
         .toggle-knob { width: 17px; height: 17px; background: var(--muted); border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform 0.2s; }
         [data-theme="light"] .toggle-knob { transform: translateX(19px); }
+        
+        .btn-text-logout {
+            font-family: 'Barlow Condensed', sans-serif; font-weight: 600;
+            font-size: 0.8rem; letter-spacing: 0.05em; text-transform: uppercase;
+            color: var(--muted); cursor: pointer; border: none; background: none;
+            padding: 0.4rem 0.8rem; transition: color 0.2s;
+        }
+        .btn-text-logout:hover { color: var(--lose); }
 
         .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+        /* --- Auth & Loading Screens --- */
+        .auth-card, .loading-card {
+            max-width: 450px; margin: 4rem auto;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 14px; padding: 4rem 2rem; text-align: center;
+            box-shadow: var(--card-shadow);
+        }
+        .auth-card h2 {
+            font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+            font-size: 2rem; text-transform: uppercase; margin-bottom: 0.5rem; color: var(--text);
+        }
+        .auth-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem;
+            width: 100%; padding: 0.8rem 1rem; margin-top: 2rem;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text); font-family: 'Barlow', sans-serif;
+            font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s;
+        }
+        .auth-btn:hover { border-color: #4285F4; } 
 
         /* --- Hero Fasting Tracker --- */
         .hero-card {
@@ -78,7 +107,6 @@
             margin-bottom: 1.5rem; position: relative;
         }
         
-        /* The Pulsating Animations */
         @keyframes pulseFasting {
             0% { box-shadow: 0 0 20px var(--fasting-glow); }
             50% { box-shadow: 0 0 65px var(--fasting-glow), 0 0 15px var(--fasting); }
@@ -91,36 +119,26 @@
             100% { box-shadow: 0 0 15px var(--feasting-glow); }
         }
 
-        /* 2.5s for an active "heartbeat" during fasting, 4s for a slow "digestion" breath */
         .fasting-mode .fast-ring { animation: pulseFasting 2.5s infinite ease-in-out; }
         .feasting-mode .fast-ring { animation: pulseFeasting 4s infinite ease-in-out; }
 
         .fast-hole {
             width: 100%; height: 100%; border-radius: 50%;
             background: transparent; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; line-height: 1.1;
-            z-index: 2;
+            align-items: center; justify-content: center; line-height: 1.1; z-index: 2;
         }
         
         .fast-time { 
-            font-family: 'Barlow Condensed', sans-serif; 
-            font-size: 4.2rem; 
-            font-weight: 900; 
-            color: var(--text); 
-            font-variant-numeric: tabular-nums; 
-            letter-spacing: 0.02em; 
+            font-family: 'Barlow Condensed', sans-serif; font-size: 4.2rem; 
+            font-weight: 900; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; 
         }
-        
         .fast-label { font-size: 1rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.1em; transition: color 0.3s; margin-top: 0.5rem;}
-        
         .fasting-mode .fast-label { color: var(--fasting); }
         .feasting-mode .fast-label { color: var(--feasting); }
 
-        /* Stage Text */
         .stage-container { max-width: 600px; margin: 1.5rem auto 2.5rem; min-height: 80px; }
         .stage-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; text-transform: uppercase; transition: color 0.3s;}
         .stage-desc { font-size: 0.95rem; color: var(--muted); line-height: 1.5; }
-        
         .fasting-mode .stage-title { color: var(--fasting); }
         .feasting-mode .stage-title { color: var(--feasting); }
 
@@ -130,11 +148,8 @@
             font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.3rem;
             text-transform: uppercase; cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em;
         }
-        
-        /* The button takes the color of the NEXT action */
         .feasting-mode .action-btn { border-color: var(--fasting); color: var(--fasting); }
         .feasting-mode .action-btn:hover { background: var(--fasting); color: #fff; box-shadow: 0 0 20px var(--fasting-glow);}
-        
         .fasting-mode .action-btn { border-color: var(--feasting); color: var(--feasting); }
         .fasting-mode .action-btn:hover { background: var(--feasting); color: #111; box-shadow: 0 0 20px var(--feasting-glow); }
 
@@ -144,11 +159,7 @@
             border-radius: 12px; padding: 1.5rem; box-shadow: var(--card-shadow);
             margin-bottom: 2rem; width: 100%; height: 320px; display: flex; flex-direction: column;
         }
-        .chart-card h3 {
-            font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
-            font-size: 1.1rem; text-transform: uppercase; color: var(--muted);
-            margin-bottom: 1rem;
-        }
+        .chart-card h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.1rem; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
         .chart-wrapper { flex: 1; position: relative; min-height: 0; }
 
         /* --- Dashboard Grid --- */
@@ -156,14 +167,12 @@
         .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: var(--card-shadow); }
         .dash-card h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.1rem; text-transform: uppercase; color: var(--muted); margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; }
 
-        /* Lists & Bars */
         .dash-list { display: flex; flex-direction: column; gap: 1rem; }
         .dash-item { display: flex; flex-direction: column; gap: 0.4rem; }
         .dash-item-header { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; }
         .dash-bar-bg { width: 100%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
         .dash-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
 
-        /* Habit Checkboxes */
         .habit-row { display: flex; align-items: center; gap: 1rem; padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
         .habit-row:last-child { border-bottom: none; }
         .habit-check { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; background: var(--input-bg); transition: all 0.2s; }
@@ -178,8 +187,9 @@
 
 <header>
     <h1>Mindful Rhythm</h1>
-    <p>Intentional Operating System</p>
+    <p>Intentional Living</p>
     <div class="header-controls">
+        <button id="logoutBtn" class="btn-text-logout" style="display: none;" onclick="signOut()">Log Out</button>
         <div class="theme-toggle" onclick="toggleTheme()" title="Toggle mode">
             <span class="toggle-icon" id="theme-icon">🌙</span>
             <span class="theme-toggle-label" id="theme-label">Dark</span>
@@ -189,260 +199,101 @@
 </header>
 
 <div class="container">
-    
-    <div id="fastingHero" class="hero-card feasting-mode">
-        <div class="fast-ring" id="fastRing">
-            <div class="fast-hole">
-                <span class="fast-time" id="fastTimeDisplay">00:00:00</span>
-                <span class="fast-label" id="fastStatusLabel">Feasting</span>
-            </div>
-        </div>
+
+    <div id="loadingView" class="loading-card">
+        <h2 style="color: var(--muted); font-size: 1.2rem;">Syncing Systems...</h2>
+    </div>
+
+    <div id="loginView" class="auth-card" style="display: none;">
+        <h2>Connect Account</h2>
+        <p style="color: var(--muted); font-size: 0.95rem;">Sign in to sync your fasting and habit records.</p>
         
-        <div class="stage-container">
-            <div class="stage-title" id="stageTitle">Loading...</div>
-            <div class="stage-desc" id="stageDesc">Calculating current biological phase...</div>
-        </div>
-
-        <button id="toggleFastBtn" class="action-btn" onclick="toggleFasting()">Done Eating</button>
+        <button class="auth-btn" onclick="signInWithGoogle()">
+            <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg" style="margin-right: 8px;">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            Continue with Google
+        </button>
     </div>
 
-    <div class="chart-card">
-        <h3>7-Day Fasting Trend</h3>
-        <div class="chart-wrapper">
-            <canvas id="fastingChart"></canvas>
-        </div>
-    </div>
+    <div id="mainContent" style="display: none;">
+        
+        <div id="fastingHero" class="hero-card feasting-mode">
+            <div class="fast-ring" id="fastRing">
+                <div class="fast-hole">
+                    <span class="fast-time" id="fastTimeDisplay">00:00:00</span>
+                    <span class="fast-label" id="fastStatusLabel">Feasting</span>
+                </div>
+            </div>
+            
+            <div class="stage-container">
+                <div class="stage-title" id="stageTitle">Loading...</div>
+                <div class="stage-desc" id="stageDesc">Calculating current biological phase...</div>
+            </div>
 
-    <div class="dashboard-grid">
-        <div class="dash-card">
-            <h3>Strict Keto Macros <span>1,420 Kcal</span></h3>
-            <div class="dash-list">
-                <div class="dash-item">
-                    <div class="dash-item-header"><span>Fat (Target: 70%)</span><span>110g / 130g</span></div>
-                    <div class="dash-bar-bg"><div class="dash-bar-fill" style="width: 85%; background: #fbbf24;"></div></div>
+            <button id="toggleFastBtn" class="action-btn" onclick="toggleFasting()">Done Eating</button>
+        </div>
+
+        <div class="chart-card">
+            <h3>7-Day Fasting Trend</h3>
+            <div class="chart-wrapper">
+                <canvas id="fastingChart"></canvas>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="dash-card">
+                <h3>Strict Keto Macros <span>1,420 Kcal</span></h3>
+                <div class="dash-list">
+                    <div class="dash-item">
+                        <div class="dash-item-header"><span>Fat (Target: 70%)</span><span>110g / 130g</span></div>
+                        <div class="dash-bar-bg"><div class="dash-bar-fill" style="width: 85%; background: #fbbf24;"></div></div>
+                    </div>
+                    <div class="dash-item">
+                        <div class="dash-item-header"><span>Protein (Target: 25%)</span><span>85g / 110g</span></div>
+                        <div class="dash-bar-bg"><div class="dash-bar-fill" style="width: 77%; background: #60a5fa;"></div></div>
+                    </div>
+                    <div class="dash-item">
+                        <div class="dash-item-header"><span>Net Carbs (Target: < 20g)</span><span style="color: var(--win);">12g / 20g</span></div>
+                        <div class="dash-bar-bg"><div class="dash-bar-fill" style="width: 60%; background: var(--win);"></div></div>
+                    </div>
                 </div>
-                <div class="dash-item">
-                    <div class="dash-item-header"><span>Protein (Target: 25%)</span><span>85g / 110g</span></div>
-                    <div class="dash-bar-bg"><div class="dash-bar-fill" style="width: 77%; background: #60a5fa;"></div></div>
-                </div>
-                <div class="dash-item">
-                    <div class="dash-item-header"><span>Net Carbs (Target: < 20g)</span><span style="color: var(--win);">12g / 20g</span></div>
-                    <div class="dash-bar-bg"><div class="dash-bar-fill" style="width: 60%; background: var(--win);"></div></div>
+            </div>
+
+            <div class="dash-card">
+                <h3>Daily Non-Negotiables <span>Score: 75%</span></h3>
+                <div class="dash-list">
+                    <div class="habit-row">
+                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
+                        <span class="habit-label">Sugar-Free Compliant</span>
+                        <span class="habit-streak">🔥 14 Day Streak</span>
+                    </div>
+                    <div class="habit-row">
+                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
+                        <span class="habit-label">Electrolytes & Hydration</span>
+                        <span class="habit-streak">🔥 5 Day Streak</span>
+                    </div>
+                    <div class="habit-row">
+                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
+                        <span class="habit-label">Deep Work Block (2h)</span>
+                        <span class="habit-streak">🔥 2 Day Streak</span>
+                    </div>
+                    <div class="habit-row">
+                        <div class="habit-check" onclick="this.classList.toggle('done')"></div>
+                        <span class="habit-label">Evening Mobility / Stretch</span>
+                        <span class="habit-streak" style="color: var(--border);">0 Day</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="dash-card">
-            <h3>Daily Non-Negotiables <span>Score: 75%</span></h3>
-            <div class="dash-list">
-                <div class="habit-row">
-                    <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
-                    <span class="habit-label">Sugar-Free Compliant</span>
-                    <span class="habit-streak">🔥 14 Day Streak</span>
-                </div>
-                <div class="habit-row">
-                    <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
-                    <span class="habit-label">Electrolytes & Hydration</span>
-                    <span class="habit-streak">🔥 5 Day Streak</span>
-                </div>
-                <div class="habit-row">
-                    <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
-                    <span class="habit-label">Deep Work Block (2h)</span>
-                    <span class="habit-streak">🔥 2 Day Streak</span>
-                </div>
-                <div class="habit-row">
-                    <div class="habit-check" onclick="this.classList.toggle('done')"></div>
-                    <span class="habit-label">Evening Mobility / Stretch</span>
-                    <span class="habit-streak" style="color: var(--border);">0 Day</span>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
 <script>
     // ==========================================
-    // ENGINE: FASTING & FEASTING LOOP
-    // ==========================================
-    let isFasting = false;
-    let startTime = null;
-
-    const fastingStages = [
-        { maxHour: 4, title: "Stage 1: Fed/Digestive State (0–4 Hours)", desc: "Process: Digestion and nutrient absorption.<br>Action: Glucose is used for energy, excess stored as glycogen." },
-        { maxHour: 12, title: "Stage 2: Early Fasting/Postabsorptive Phase (4–12 Hours)", desc: "Process: Blood sugar and insulin levels decline.<br>Action: The body breaks down glycogen to release glucose for energy." },
-        { maxHour: 16, title: "Stage 3: Ketosis and Fat Burning (12–16 Hours)", desc: "Process: Glycogen stores depleted, switching to burning fat.<br>Action: Production of ketones begins for brain fuel, increasing mental clarity." },
-        { maxHour: 24, title: "Stage 4: Autophagy (16–24 Hours)", desc: "Process: The body begins 'cellular cleanup'.<br>Action: Repairs and recycles damaged components. Hunger heavily subsides." },
-        { maxHour: 72, title: "Stage 5: Deep Fasting/Growth Hormone Phase (24–72 Hours)", desc: "Process: Peak autophagy and rise in Human Growth Hormone (HGH).<br>Action: Accelerated fat loss and significantly improved cognitive function." },
-        { maxHour: 999, title: "Stage 6: Immune Regeneration (72+ Hours)", desc: "Process: Immune system stem cells are activated.<br>Action: Deep, long-term fat burning and cellular repair." }
-    ];
-
-    function initFastingTracker() {
-        const savedState = localStorage.getItem('isFasting');
-        const savedTime = localStorage.getItem('fastStartTime');
-        
-        if (savedState !== null && savedTime !== null) {
-            isFasting = (savedState === 'true');
-            startTime = parseInt(savedTime);
-        } else {
-            // First time ever opening the app: Default to Feasting, starting now
-            isFasting = false;
-            startTime = Date.now();
-            localStorage.setItem('isFasting', 'false');
-            localStorage.setItem('fastStartTime', startTime.toString());
-        }
-
-        updateUITheme(); 
-        updateTimer(); 
-        setInterval(updateTimer, 1000); // Continuous loop forever
-    }
-
-    function toggleFasting() {
-        isFasting = !isFasting;
-        startTime = Date.now(); // Reset the clock
-        
-        localStorage.setItem('isFasting', isFasting.toString());
-        localStorage.setItem('fastStartTime', startTime.toString());
-        
-        updateUITheme();
-        updateTimer();
-    }
-
-    function updateUITheme() {
-        const hero = document.getElementById('fastingHero');
-        const btn = document.getElementById('toggleFastBtn');
-        const statusLabel = document.getElementById('fastStatusLabel');
-
-        if (isFasting) {
-            hero.classList.remove('feasting-mode');
-            hero.classList.add('fasting-mode');
-            statusLabel.innerText = "Fasting (Fat Burning)";
-            btn.innerText = "Break Fast";
-        } else {
-            hero.classList.remove('fasting-mode');
-            hero.classList.add('feasting-mode');
-            statusLabel.innerText = "Feasting (Accumulation)";
-            btn.innerText = "Done Eating";
-        }
-    }
-
-    function updateTimer() {
-        if (!startTime) return;
-        
-        const now = Date.now();
-        const diffMs = Math.max(0, now - startTime); // Prevent negative numbers if clocks jump
-        
-        // Math for the digital clock
-        const totalSeconds = Math.floor(diffMs / 1000);
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-        
-        const displayTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        document.getElementById('fastTimeDisplay').innerText = displayTime;
-
-        // Math for the Stages
-        const hoursDecimal = totalSeconds / 3600;
-
-        if (isFasting) {
-            let currentStage = fastingStages[0];
-            for (let stage of fastingStages) {
-                if (hoursDecimal < stage.maxHour) { currentStage = stage; break; }
-            }
-            document.getElementById('stageTitle').innerText = currentStage.title;
-            document.getElementById('stageDesc').innerHTML = currentStage.desc;
-
-        } else {
-            document.getElementById('stageTitle').innerText = "Feasting Window (Nutrient Partitioning)";
-            document.getElementById('stageDesc').innerHTML = "Process: Insulin rises to shuttle nutrients into cells.<br>Action: Replenishing glycogen, repairing muscle tissue, and preparing the body for the next fast.";
-        }
-    }
-
-    // ==========================================
-    // CHART.JS LINE GRAPH
-    // ==========================================
-    let fastingChart = null;
-
-    function initChart() {
-        try {
-            const ctx = document.getElementById('fastingChart').getContext('2d');
-            const html = document.documentElement;
-            
-            const textColor = getComputedStyle(html).getPropertyValue('--muted').trim();
-            const gridColor = getComputedStyle(html).getPropertyValue('--chart-grid').trim();
-            const lineColor = getComputedStyle(html).getPropertyValue('--fasting').trim();
-            const fillColor = getComputedStyle(html).getPropertyValue('--fasting-glow').trim();
-
-            const data = {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                datasets: [{
-                    label: 'Fasting Hours',
-                    data: [14.5, 15.2, 16.0, 18.5, 16.2, 15.5, 12.0], // Dummy Data
-                    borderColor: lineColor,
-                    backgroundColor: fillColor,
-                    borderWidth: 3,
-                    pointBackgroundColor: lineColor,
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: lineColor,
-                    pointRadius: 5,
-                    pointHoverRadius: 7,
-                    fill: true,
-                    tension: 0.4
-                }]
-            };
-
-            const config = {
-                type: 'line',
-                data: data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { callbacks: { label: function(context) { return context.parsed.y + ' Hours'; } } }
-                    },
-                    scales: {
-                        y: {
-                            min: 10, max: 24,
-                            grid: { color: gridColor, drawBorder: false },
-                            ticks: { color: textColor, font: { family: 'Barlow', size: 12 } }
-                        },
-                        x: {
-                            grid: { display: false, drawBorder: false },
-                            ticks: { color: textColor, font: { family: 'Barlow', size: 12 } }
-                        }
-                    }
-                }
-            };
-
-            if(fastingChart) fastingChart.destroy();
-            fastingChart = new Chart(ctx, config);
-        } catch(e) {
-            console.error("Chart failed to load:", e);
-        }
-    }
-
-    // ==========================================
-    // THEME TOGGLE
-    // ==========================================
-    function toggleTheme() {
-        const html = document.documentElement;
-        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-theme', next);
-        document.getElementById('theme-icon').textContent = next === 'light' ? '☀️' : '🌙';
-        document.getElementById('theme-label').textContent = next === 'light' ? 'Light' : 'Dark';
-        
-        updateTimer();
-        initChart();
-    }
-
-    // Boot Up
-    document.addEventListener('DOMContentLoaded', () => {
-        initFastingTracker();
-        initChart();
-    });
-
-</script>
-
-</body>
-</html>
+    // 1. SUPABASE CONFIGURATION (Google Auth)
+    // =
