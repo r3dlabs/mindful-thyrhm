@@ -56,6 +56,13 @@
         header p { color: var(--muted); font-size: 0.9rem; margin-top: 0.3rem; letter-spacing: 0.05em; text-transform: uppercase;}
 
         .header-controls { position: absolute; top: 1.5rem; right: 2rem; display: flex; align-items: center; gap: 1rem; }
+        
+        /* Profile Header Styles */
+        .user-profile { display: flex; align-items: center; gap: 0.6rem; border-right: 1px solid var(--border); padding-right: 1rem; margin-right: 0.5rem; }
+        .user-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--border); }
+        .user-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text); }
+        @media (max-width: 600px) { .user-name { display: none; } .user-profile { padding-right: 0.5rem; margin-right: 0; } }
+
         .theme-toggle { display: flex; align-items: center; gap: 0.45rem; cursor: pointer; user-select: none; }
         .theme-toggle-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
         .toggle-track { width: 42px; height: 23px; background: var(--toggle-bg); border-radius: 12px; border: 1px solid var(--border); position: relative; transition: background 0.2s; }
@@ -79,10 +86,7 @@
             border-radius: 14px; padding: 4rem 2rem; text-align: center;
             box-shadow: var(--card-shadow);
         }
-        .auth-card h2 {
-            font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
-            font-size: 2rem; text-transform: uppercase; margin-bottom: 0.5rem; color: var(--text);
-        }
+        .auth-card h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 2rem; text-transform: uppercase; margin-bottom: 0.5rem; color: var(--text); }
         .auth-btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem;
             width: 100%; padding: 0.8rem 1rem; margin-top: 2rem;
@@ -92,14 +96,43 @@
         }
         .auth-btn:hover { border-color: #4285F4; } 
 
-        /* --- Hero Fasting Tracker --- */
+        /* --- Collapsible Hero Fasting Tracker --- */
         .hero-card {
             background: var(--surface); border: 1px solid var(--border);
-            border-radius: 14px; padding: 4rem 2rem; text-align: center;
+            border-radius: 14px; padding: 1.5rem; 
             box-shadow: var(--card-shadow); margin-bottom: 2rem;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: all 0.4s ease;
         }
+
+        /* Hero Header (The Collapsed Bar) */
+        .hero-header {
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; user-select: none;
+        }
+        .hero-card:not(.collapsed) .hero-header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem; margin-bottom: 2rem;
+        }
+        .hero-header-left { display: flex; align-items: center; gap: 1rem; }
+        .hero-header-right { display: flex; align-items: center; gap: 1rem; }
+
+        /* The Tiny Pulsing Dot */
+        .mini-pulse { width: 14px; height: 14px; border-radius: 50%; }
+        .fasting-mode .mini-pulse { background: var(--fasting); box-shadow: 0 0 10px var(--fasting-glow); animation: pulseFasting 2.5s infinite ease-in-out; }
+        .feasting-mode .mini-pulse { background: var(--feasting); box-shadow: 0 0 10px var(--feasting-glow); animation: pulseFeasting 4s infinite ease-in-out; }
+
+        .hero-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); }
+        .mini-time { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.4rem; tabular-nums; color: var(--muted); letter-spacing: 0.05em;}
+        
+        /* Hide the mini time when the big card is open to avoid seeing double */
+        .hero-card:not(.collapsed) .mini-time { display: none; }
+
+        .chevron-icon { width: 24px; height: 24px; color: var(--muted); transition: transform 0.3s ease; }
+        .hero-card.collapsed .chevron-icon { transform: rotate(-90deg); }
+
+        /* Expanded Content Wrapper */
+        .hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .hero-card.collapsed .hero-content { display: none; }
         
         .fast-ring {
             width: 320px; height: 320px; border-radius: 50%;
@@ -136,7 +169,7 @@
         .fasting-mode .fast-label { color: var(--fasting); }
         .feasting-mode .fast-label { color: var(--feasting); }
 
-        .stage-container { max-width: 600px; margin: 1.5rem auto 2.5rem; min-height: 80px; }
+        .stage-container { max-width: 600px; margin: 0.5rem auto 2.5rem; min-height: 80px; }
         .stage-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; text-transform: uppercase; transition: color 0.3s;}
         .stage-desc { font-size: 0.95rem; color: var(--muted); line-height: 1.5; }
         .fasting-mode .stage-title { color: var(--fasting); }
@@ -189,6 +222,10 @@
     <h1>Mindful Rhythm</h1>
     <p>Intentional Living</p>
     <div class="header-controls">
+        <div id="userProfile" class="user-profile" style="display: none;">
+            <img id="userAvatar" class="user-avatar" src="" alt="Profile">
+            <span id="userName" class="user-name"></span>
+        </div>
         <button id="logoutBtn" class="btn-text-logout" style="display: none;" onclick="signOut()">Log Out</button>
         <div class="theme-toggle" onclick="toggleTheme()" title="Toggle mode">
             <span class="toggle-icon" id="theme-icon">🌙</span>
@@ -222,19 +259,33 @@
     <div id="mainContent" style="display: none;">
         
         <div id="fastingHero" class="hero-card feasting-mode">
-            <div class="fast-ring" id="fastRing">
-                <div class="fast-hole">
-                    <span class="fast-time" id="fastTimeDisplay">00:00:00</span>
-                    <span class="fast-label" id="fastStatusLabel">Feasting</span>
+            
+            <div class="hero-header" onclick="toggleFastingCollapse()">
+                <div class="hero-header-left">
+                    <div class="mini-pulse"></div>
+                    <span class="hero-title" id="miniHeroTitle">Feasting</span>
+                </div>
+                <div class="hero-header-right">
+                    <span class="mini-time" id="miniFastTimeDisplay">00:00:00</span>
+                    <svg class="chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
             </div>
-            
-            <div class="stage-container">
-                <div class="stage-title" id="stageTitle">Loading...</div>
-                <div class="stage-desc" id="stageDesc">Calculating current biological phase...</div>
-            </div>
 
-            <button id="toggleFastBtn" class="action-btn" onclick="toggleFasting()">Done Eating</button>
+            <div class="hero-content">
+                <div class="fast-ring" id="fastRing">
+                    <div class="fast-hole">
+                        <span class="fast-time" id="fastTimeDisplay">00:00:00</span>
+                        <span class="fast-label" id="fastStatusLabel">Feasting</span>
+                    </div>
+                </div>
+                
+                <div class="stage-container">
+                    <div class="stage-title" id="stageTitle">Loading...</div>
+                    <div class="stage-desc" id="stageDesc">Calculating current biological phase...</div>
+                </div>
+
+                <button id="toggleFastBtn" class="action-btn" onclick="toggleFasting(event)">Done Eating</button>
+            </div>
         </div>
 
         <div class="chart-card">
@@ -295,7 +346,7 @@
 
 <script>
     // ==========================================
-    // 1. SUPABASE CONFIGURATION (Google Auth)
+    // 1. SUPABASE CONFIGURATION
     // ==========================================
     const SUPABASE_URL = 'https://ambpjxgidojgmwvvjglg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtYnBqeGdpZG9qZ213dnZqZ2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MzQzNTQsImV4cCI6MjA5MDAxMDM1NH0.8TfCIQhAjPChBZn8op5J9ykyMc3hPDJ_vJuUEm3WcP4';
@@ -321,11 +372,27 @@
 
             if (session) {
                 currentUser = session.user;
+                
+                // Load profile data
+                const meta = currentUser.user_metadata;
+                if (meta) {
+                    if (meta.avatar_url) document.getElementById('userAvatar').src = meta.avatar_url;
+                    if (meta.full_name) document.getElementById('userName').innerText = meta.full_name.split(' ')[0];
+                    document.getElementById('userProfile').style.display = 'flex';
+                }
+                
                 document.getElementById('logoutBtn').style.display = 'block';
                 showView('main');
-                await initFastingTracker(); // Wait for Supabase to tell us the current state
+                
+                // Check if user previously collapsed the card
+                if(localStorage.getItem('fastingCardCollapsed') === 'true') {
+                    document.getElementById('fastingHero').classList.add('collapsed');
+                }
+
+                await initFastingTracker(); 
                 initChart();
             } else {
+                document.getElementById('userProfile').style.display = 'none';
                 document.getElementById('logoutBtn').style.display = 'none';
                 showView('login');
             }
@@ -337,9 +404,7 @@
     }
 
     async function signInWithGoogle() {
-        const { error } = await supabaseClient.auth.signInWithOAuth({
-            provider: 'google',
-        });
+        const { error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google' });
         if (error) alert("Google Login Error: " + error.message);
     }
 
@@ -349,11 +414,11 @@
     }
 
     // ==========================================
-    // 2. ENGINE: SUPABASE FASTING SYNC
+    // 2. ENGINE: FASTING SYNC & COLLAPSE UI
     // ==========================================
     let isFasting = false;
     let startTime = null;
-    let currentFastId = null; // We need to remember which row in the DB to update when we break the fast
+    let currentFastId = null; 
     let timerInterval = null;
 
     const fastingStages = [
@@ -365,8 +430,13 @@
         { maxHour: 999, title: "Stage 6: Immune Regeneration (72+ Hours)", desc: "Process: Immune system stem cells are activated.<br>Action: Deep, long-term fat burning and cellular repair." }
     ];
 
+    function toggleFastingCollapse() {
+        const hero = document.getElementById('fastingHero');
+        hero.classList.toggle('collapsed');
+        localStorage.setItem('fastingCardCollapsed', hero.classList.contains('collapsed'));
+    }
+
     async function initFastingTracker() {
-        // 1. Ask Supabase for the absolute newest fasting record for this user
         const { data, error } = await supabaseClient
             .from('fasting_sessions')
             .select('*')
@@ -374,28 +444,20 @@
             .order('start_time', { ascending: false })
             .limit(1);
 
-        if (error) {
-            console.error("Error fetching fasts:", error);
-            return;
-        }
+        if (error) { console.error("Error fetching fasts:", error); return; }
 
-        // 2. Figure out what state we are in based on that record
         if (data && data.length > 0) {
             const latestFast = data[0];
-            
             if (!latestFast.end_time) {
-                // If there is NO end time, the user is currently FASTING
                 isFasting = true;
                 startTime = new Date(latestFast.start_time).getTime();
                 currentFastId = latestFast.id;
             } else {
-                // If there IS an end time, the user is currently FEASTING
                 isFasting = false;
-                startTime = new Date(latestFast.end_time).getTime(); // Timer counts from when the fast ended
+                startTime = new Date(latestFast.end_time).getTime(); 
                 currentFastId = null;
             }
         } else {
-            // First time ever opening the app
             isFasting = false;
             startTime = Date.now();
         }
@@ -406,47 +468,37 @@
         timerInterval = setInterval(updateTimer, 1000); 
     }
 
-    async function toggleFasting() {
+    async function toggleFasting(event) {
+        event.stopPropagation(); // Stop the card from collapsing when the button is clicked
+        
         const now = new Date();
         const btn = document.getElementById('toggleFastBtn');
-        btn.disabled = true; // Prevent double-clicking while it saves to DB
+        btn.disabled = true; 
 
         if (!isFasting) {
-            // Action: START FAST
             isFasting = true;
             startTime = now.getTime();
-            updateUITheme(); // Change UI instantly for a snappy feel
+            updateUITheme(); 
             
-            // Tell Supabase to create a new row
             const { data, error } = await supabaseClient
                 .from('fasting_sessions')
-                .insert([{ 
-                    user_id: currentUser.id, 
-                    start_time: now.toISOString() // Universal Timezone Format
-                }])
+                .insert([{ user_id: currentUser.id, start_time: now.toISOString() }])
                 .select();
                 
             if (data) currentFastId = data[0].id;
             
         } else {
-            // Action: END FAST
             isFasting = false;
             const endTimeMs = now.getTime();
-            
-            // Calculate total hours for the database
             const durationHours = ((endTimeMs - startTime) / (1000 * 60 * 60)).toFixed(2);
             
-            startTime = endTimeMs; // The feasting timer starts exactly right now
+            startTime = endTimeMs; 
             updateUITheme();
             
-            // Tell Supabase to close the current row
             if (currentFastId) {
                 await supabaseClient
                     .from('fasting_sessions')
-                    .update({ 
-                        end_time: now.toISOString(),
-                        duration_hours: durationHours
-                    })
+                    .update({ end_time: now.toISOString(), duration_hours: durationHours })
                     .eq('id', currentFastId);
                 currentFastId = null;
             }
@@ -460,16 +512,19 @@
         const hero = document.getElementById('fastingHero');
         const btn = document.getElementById('toggleFastBtn');
         const statusLabel = document.getElementById('fastStatusLabel');
+        const miniTitleLabel = document.getElementById('miniHeroTitle');
 
         if (isFasting) {
             hero.classList.remove('feasting-mode');
             hero.classList.add('fasting-mode');
             statusLabel.innerText = "Fasting (Fat Burning)";
+            miniTitleLabel.innerText = "Fasting Active";
             btn.innerText = "Break Fast";
         } else {
             hero.classList.remove('fasting-mode');
             hero.classList.add('feasting-mode');
             statusLabel.innerText = "Feasting (Accumulation)";
+            miniTitleLabel.innerText = "Feasting Window";
             btn.innerText = "Done Eating";
         }
     }
@@ -486,7 +541,10 @@
         const seconds = totalSeconds % 60;
         
         const displayTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        // Update both the giant orb and the tiny header
         document.getElementById('fastTimeDisplay').innerText = displayTime;
+        document.getElementById('miniFastTimeDisplay').innerText = displayTime;
 
         const hoursDecimal = totalSeconds / 3600;
 
@@ -552,9 +610,7 @@
 
             if(fastingChart) fastingChart.destroy();
             fastingChart = new Chart(ctx, config);
-        } catch(e) {
-            console.error("Chart failed to load:", e);
-        }
+        } catch(e) { console.error("Chart failed to load:", e); }
     }
 
     // ==========================================
@@ -573,7 +629,7 @@
         }
     }
 
-    // Boot up app instantly (This fixes the stuck loading screen!)
+    // Boot up app instantly 
     checkUser();
 
 </script>
