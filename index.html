@@ -296,4 +296,227 @@
 <script>
     // ==========================================
     // 1. SUPABASE CONFIGURATION (Google Auth)
-    // =
+    // ==========================================
+    const SUPABASE_URL = 'https://kappyxsapcrldmfpswbx.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthcHB5eHNhcGNybGRtZnBzd2J4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNjI0MzYsImV4cCI6MjA4OTkzODQzNn0.BWBia4jtkXIFtpn2au0X4Wdcvg4faqjc_93wXWlO_w4';
+    
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentUser = null;
+
+    const views = {
+        loading: document.getElementById('loadingView'),
+        login: document.getElementById('loginView'),
+        main: document.getElementById('mainContent')
+    };
+
+    function showView(viewName) {
+        Object.values(views).forEach(el => el.style.display = 'none');
+        if (views[viewName]) views[viewName].style.display = 'block';
+    }
+
+    async function checkUser() {
+        try {
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            if (error) throw error;
+
+            if (session) {
+                currentUser = session.user;
+                document.getElementById('logoutBtn').style.display = 'block';
+                showView('main');
+                initFastingTracker(); // Only boot up the engine if logged in
+                initChart();
+            } else {
+                document.getElementById('logoutBtn').style.display = 'none';
+                showView('login');
+            }
+        } catch (err) {
+            console.error("Auth Error:", err.message);
+            document.getElementById('logoutBtn').style.display = 'none';
+            showView('login');
+        }
+    }
+
+    async function signInWithGoogle() {
+        const { error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+        });
+        if (error) alert("Google Login Error: " + error.message);
+    }
+
+    async function signOut() {
+        await supabaseClient.auth.signOut();
+        window.location.reload();
+    }
+
+    // ==========================================
+    // 2. ENGINE: FASTING & FEASTING LOOP
+    // ==========================================
+    let isFasting = false;
+    let startTime = null;
+    let timerInterval = null;
+
+    const fastingStages = [
+        { maxHour: 4, title: "Stage 1: Fed/Digestive State (0–4 Hours)", desc: "Process: Digestion and nutrient absorption.<br>Action: Glucose is used for energy, excess stored as glycogen." },
+        { maxHour: 12, title: "Stage 2: Early Fasting/Postabsorptive Phase (4–12 Hours)", desc: "Process: Blood sugar and insulin levels decline.<br>Action: The body breaks down glycogen to release glucose for energy." },
+        { maxHour: 16, title: "Stage 3: Ketosis and Fat Burning (12–16 Hours)", desc: "Process: Glycogen stores depleted, switching to burning fat.<br>Action: Production of ketones begins for brain fuel, increasing mental clarity." },
+        { maxHour: 24, title: "Stage 4: Autophagy (16–24 Hours)", desc: "Process: The body begins 'cellular cleanup'.<br>Action: Repairs and recycles damaged components. Hunger heavily subsides." },
+        { maxHour: 72, title: "Stage 5: Deep Fasting/Growth Hormone Phase (24–72 Hours)", desc: "Process: Peak autophagy and rise in Human Growth Hormone (HGH).<br>Action: Accelerated fat loss and significantly improved cognitive function." },
+        { maxHour: 999, title: "Stage 6: Immune Regeneration (72+ Hours)", desc: "Process: Immune system stem cells are activated.<br>Action: Deep, long-term fat burning and cellular repair." }
+    ];
+
+    function initFastingTracker() {
+        // Tie local storage to the specific user's ID so accounts don't cross over
+        const savedState = localStorage.getItem(`isFasting_${currentUser.id}`);
+        const savedTime = localStorage.getItem(`fastStartTime_${currentUser.id}`);
+        
+        if (savedState !== null && savedTime !== null) {
+            isFasting = (savedState === 'true');
+            startTime = parseInt(savedTime);
+        } else {
+            isFasting = false;
+            startTime = Date.now();
+            localStorage.setItem(`isFasting_${currentUser.id}`, 'false');
+            localStorage.setItem(`fastStartTime_${currentUser.id}`, startTime.toString());
+        }
+
+        updateUITheme(); 
+        updateTimer(); 
+        if(timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(updateTimer, 1000); 
+    }
+
+    function toggleFasting() {
+        isFasting = !isFasting;
+        startTime = Date.now(); 
+        
+        localStorage.setItem(`isFasting_${currentUser.id}`, isFasting.toString());
+        localStorage.setItem(`fastStartTime_${currentUser.id}`, startTime.toString());
+        
+        updateUITheme();
+        updateTimer();
+    }
+
+    function updateUITheme() {
+        const hero = document.getElementById('fastingHero');
+        const btn = document.getElementById('toggleFastBtn');
+        const statusLabel = document.getElementById('fastStatusLabel');
+
+        if (isFasting) {
+            hero.classList.remove('feasting-mode');
+            hero.classList.add('fasting-mode');
+            statusLabel.innerText = "Fasting (Fat Burning)";
+            btn.innerText = "Break Fast";
+        } else {
+            hero.classList.remove('fasting-mode');
+            hero.classList.add('feasting-mode');
+            statusLabel.innerText = "Feasting (Accumulation)";
+            btn.innerText = "Done Eating";
+        }
+    }
+
+    function updateTimer() {
+        if (!startTime) return;
+        
+        const now = Date.now();
+        const diffMs = Math.max(0, now - startTime); 
+        
+        const totalSeconds = Math.floor(diffMs / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        
+        const displayTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        document.getElementById('fastTimeDisplay').innerText = displayTime;
+
+        const hoursDecimal = totalSeconds / 3600;
+
+        if (isFasting) {
+            let currentStage = fastingStages[0];
+            for (let stage of fastingStages) {
+                if (hoursDecimal < stage.maxHour) { currentStage = stage; break; }
+            }
+            document.getElementById('stageTitle').innerText = currentStage.title;
+            document.getElementById('stageDesc').innerHTML = currentStage.desc;
+        } else {
+            document.getElementById('stageTitle').innerText = "Feasting Window (Nutrient Partitioning)";
+            document.getElementById('stageDesc').innerHTML = "Process: Insulin rises to shuttle nutrients into cells.<br>Action: Replenishing glycogen, repairing muscle tissue, and preparing the body for the next fast.";
+        }
+    }
+
+    // ==========================================
+    // 3. CHART.JS LINE GRAPH
+    // ==========================================
+    let fastingChart = null;
+
+    function initChart() {
+        try {
+            const ctx = document.getElementById('fastingChart').getContext('2d');
+            const html = document.documentElement;
+            
+            const textColor = getComputedStyle(html).getPropertyValue('--muted').trim();
+            const gridColor = getComputedStyle(html).getPropertyValue('--chart-grid').trim();
+            const lineColor = getComputedStyle(html).getPropertyValue('--fasting').trim();
+            const fillColor = getComputedStyle(html).getPropertyValue('--fasting-glow').trim();
+
+            const data = {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Fasting Hours',
+                    data: [14.5, 15.2, 16.0, 18.5, 16.2, 15.5, 12.0], // Dummy Data
+                    borderColor: lineColor,
+                    backgroundColor: fillColor,
+                    borderWidth: 3,
+                    pointBackgroundColor: lineColor,
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: lineColor,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    fill: true,
+                    tension: 0.4
+                }]
+            };
+
+            const config = {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return context.parsed.y + ' Hours'; } } } },
+                    scales: {
+                        y: { min: 10, max: 24, grid: { color: gridColor, drawBorder: false }, ticks: { color: textColor, font: { family: 'Barlow', size: 12 } } },
+                        x: { grid: { display: false, drawBorder: false }, ticks: { color: textColor, font: { family: 'Barlow', size: 12 } } }
+                    }
+                }
+            };
+
+            if(fastingChart) fastingChart.destroy();
+            fastingChart = new Chart(ctx, config);
+        } catch(e) {
+            console.error("Chart failed to load:", e);
+        }
+    }
+
+    // ==========================================
+    // 4. THEME TOGGLE & BOOT
+    // ==========================================
+    function toggleTheme() {
+        const html = document.documentElement;
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        document.getElementById('theme-icon').textContent = next === 'light' ? '☀️' : '🌙';
+        document.getElementById('theme-label').textContent = next === 'light' ? 'Light' : 'Dark';
+        
+        if (currentUser) {
+            updateTimer();
+            initChart();
+        }
+    }
+
+    // Boot up app
+    checkUser();
+
+</script>
+
+</body>
+</html>
