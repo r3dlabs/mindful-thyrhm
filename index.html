@@ -297,7 +297,6 @@
     // ==========================================
     // 1. SUPABASE CONFIGURATION (Google Auth)
     // ==========================================
-    
     const SUPABASE_URL = 'https://ambpjxgidojgmwvvjglg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtYnBqeGdpZG9qZ213dnZqZ2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MzQzNTQsImV4cCI6MjA5MDAxMDM1NH0.8TfCIQhAjPChBZn8op5J9ykyMc3hPDJ_vJuUEm3WcP4';
     
@@ -324,7 +323,7 @@
                 currentUser = session.user;
                 document.getElementById('logoutBtn').style.display = 'block';
                 showView('main');
-                initFastingTracker(); // Only boot up the engine if logged in
+                await initFastingTracker(); // Wait for Supabase to tell us the current state
                 initChart();
             } else {
                 document.getElementById('logoutBtn').style.display = 'none';
@@ -350,10 +349,11 @@
     }
 
     // ==========================================
-    // 2. ENGINE: FASTING & FEASTING LOOP
+    // 2. ENGINE: SUPABASE FASTING SYNC
     // ==========================================
     let isFasting = false;
     let startTime = null;
+    let currentFastId = null; // We need to remember which row in the DB to update when we break the fast
     let timerInterval = null;
 
     const fastingStages = [
@@ -365,19 +365,39 @@
         { maxHour: 999, title: "Stage 6: Immune Regeneration (72+ Hours)", desc: "Process: Immune system stem cells are activated.<br>Action: Deep, long-term fat burning and cellular repair." }
     ];
 
-    function initFastingTracker() {
-        // Tie local storage to the specific user's ID so accounts don't cross over
-        const savedState = localStorage.getItem(`isFasting_${currentUser.id}`);
-        const savedTime = localStorage.getItem(`fastStartTime_${currentUser.id}`);
-        
-        if (savedState !== null && savedTime !== null) {
-            isFasting = (savedState === 'true');
-            startTime = parseInt(savedTime);
+    async function initFastingTracker() {
+        // 1. Ask Supabase for the absolute newest fasting record for this user
+        const { data, error } = await supabaseClient
+            .from('fasting_sessions')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .order('start_time', { ascending: false })
+            .limit(1);
+
+        if (error) {
+            console.error("Error fetching fasts:", error);
+            return;
+        }
+
+        // 2. Figure out what state we are in based on that record
+        if (data && data.length > 0) {
+            const latestFast = data[0];
+            
+            if (!latestFast.end_time) {
+                // If there is NO end time, the user is currently FASTING
+                isFasting = true;
+                startTime = new Date(latestFast.start_time).getTime();
+                currentFastId = latestFast.id;
+            } else {
+                // If there IS an end time, the user is currently FEASTING
+                isFasting = false;
+                startTime = new Date(latestFast.end_time).getTime(); // Timer counts from when the fast ended
+                currentFastId = null;
+            }
         } else {
+            // First time ever opening the app
             isFasting = false;
             startTime = Date.now();
-            localStorage.setItem(`isFasting_${currentUser.id}`, 'false');
-            localStorage.setItem(`fastStartTime_${currentUser.id}`, startTime.toString());
         }
 
         updateUITheme(); 
@@ -386,14 +406,53 @@
         timerInterval = setInterval(updateTimer, 1000); 
     }
 
-    function toggleFasting() {
-        isFasting = !isFasting;
-        startTime = Date.now(); 
+    async function toggleFasting() {
+        const now = new Date();
+        const btn = document.getElementById('toggleFastBtn');
+        btn.disabled = true; // Prevent double-clicking while it saves to DB
+
+        if (!isFasting) {
+            // Action: START FAST
+            isFasting = true;
+            startTime = now.getTime();
+            updateUITheme(); // Change UI instantly for a snappy feel
+            
+            // Tell Supabase to create a new row
+            const { data, error } = await supabaseClient
+                .from('fasting_sessions')
+                .insert([{ 
+                    user_id: currentUser.id, 
+                    start_time: now.toISOString() // Universal Timezone Format
+                }])
+                .select();
+                
+            if (data) currentFastId = data[0].id;
+            
+        } else {
+            // Action: END FAST
+            isFasting = false;
+            const endTimeMs = now.getTime();
+            
+            // Calculate total hours for the database
+            const durationHours = ((endTimeMs - startTime) / (1000 * 60 * 60)).toFixed(2);
+            
+            startTime = endTimeMs; // The feasting timer starts exactly right now
+            updateUITheme();
+            
+            // Tell Supabase to close the current row
+            if (currentFastId) {
+                await supabaseClient
+                    .from('fasting_sessions')
+                    .update({ 
+                        end_time: now.toISOString(),
+                        duration_hours: durationHours
+                    })
+                    .eq('id', currentFastId);
+                currentFastId = null;
+            }
+        }
         
-        localStorage.setItem(`isFasting_${currentUser.id}`, isFasting.toString());
-        localStorage.setItem(`fastStartTime_${currentUser.id}`, startTime.toString());
-        
-        updateUITheme();
+        btn.disabled = false;
         updateTimer();
     }
 
