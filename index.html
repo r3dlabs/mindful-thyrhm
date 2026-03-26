@@ -19,9 +19,7 @@
             --feasting: #eab308; --feasting-glow: rgba(234, 179, 8, 0.15);
             --chart-grid: #1e1e2e;
             
-            --tab-active-bg: #e8e8f0; --tab-active-text: #0a0a0f;
             --pulse-y: #eab308; --pulse-y-glow: rgba(234, 179, 8, 0.4);
-
             --toggle-track-bg: #1e1e2e; --toggle-knob-bg: #e8e8f0; --toggle-icon-color: #0a0a0f;
 
             /* Vibrant Moment States Colors */
@@ -42,9 +40,7 @@
             --feasting: #d97706; --feasting-glow: rgba(217, 119, 6, 0.15);
             --chart-grid: #e2e8f0;
             
-            --tab-active-bg: #0f0f1a; --tab-active-text: #ffffff;
             --pulse-y: #d97706; --pulse-y-glow: rgba(217, 119, 6, 0.4);
-
             --toggle-track-bg: #dde0ea; --toggle-knob-bg: #0f0f1a; --toggle-icon-color: #ffffff;
 
             /* Vibrant Moment States Colors */
@@ -86,6 +82,53 @@
         .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; box-shadow: var(--card-shadow); margin-bottom: 2rem; transition: all 0.4s ease; }
         .card-title-centered { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); margin-bottom: 1.5rem; }
 
+        /* --- Fasting Hero --- */
+        .hero-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .dash-card:not(.collapsed) .hero-header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+        .hero-header-left { display: flex; align-items: center; gap: 1rem; }
+        .hero-header-right { display: flex; align-items: center; gap: 1rem; }
+
+        .mini-pulse { width: 14px; height: 14px; border-radius: 50%; }
+        .fasting-mode .mini-pulse { background: var(--fasting); box-shadow: 0 0 10px var(--fasting-glow); animation: pulseFasting 2.5s infinite ease-in-out; }
+        .feasting-mode .mini-pulse { background: var(--feasting); box-shadow: 0 0 10px var(--feasting-glow); animation: pulseFeasting 4s infinite ease-in-out; }
+
+        .hero-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); }
+        .mini-time { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.4rem; tabular-nums; color: var(--muted); letter-spacing: 0.05em;}
+        .dash-card:not(.collapsed) .mini-time { display: none; }
+
+        .chevron-icon { width: 24px; height: 24px; color: var(--muted); transition: transform 0.3s ease; }
+        .dash-card.collapsed .chevron-icon { transform: rotate(-90deg); }
+
+        .hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .dash-card.collapsed .hero-content { display: none; }
+        
+        .fast-ring { width: 320px; height: 320px; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; position: relative; }
+        
+        @keyframes pulseFasting { 0% { box-shadow: 0 0 20px var(--fasting-glow); } 50% { box-shadow: 0 0 65px var(--fasting-glow), 0 0 15px var(--fasting); } 100% { box-shadow: 0 0 20px var(--fasting-glow); } }
+        @keyframes pulseFeasting { 0% { box-shadow: 0 0 15px var(--feasting-glow); } 50% { box-shadow: 0 0 45px var(--feasting-glow); } 100% { box-shadow: 0 0 15px var(--feasting-glow); } }
+
+        .fasting-mode .fast-ring { animation: pulseFasting 2.5s infinite ease-in-out; }
+        .feasting-mode .fast-ring { animation: pulseFeasting 4s infinite ease-in-out; }
+
+        .fast-hole { width: 100%; height: 100%; border-radius: 50%; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; z-index: 2; }
+        
+        .fast-time { font-family: 'Barlow Condensed', sans-serif; font-size: 4.2rem; font-weight: 900; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+        .fast-label { font-size: 1rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.1em; transition: color 0.3s; margin-top: 0.5rem;}
+        .fasting-mode .fast-label { color: var(--fasting); }
+        .feasting-mode .fast-label { color: var(--feasting); }
+
+        .stage-container { max-width: 600px; margin: 0.5rem auto 2.5rem; min-height: 80px; }
+        .stage-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; text-transform: uppercase; transition: color 0.3s;}
+        .stage-desc { font-size: 0.95rem; color: var(--muted); line-height: 1.5; }
+        .fasting-mode .stage-title { color: var(--fasting); }
+        .feasting-mode .stage-title { color: var(--feasting); }
+
+        .action-btn { background: var(--input-bg); border: 2px solid var(--border); color: var(--text); padding: 1rem 3rem; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.3rem; text-transform: uppercase; cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em; }
+        .feasting-mode .action-btn { border-color: var(--fasting); color: var(--fasting); }
+        .feasting-mode .action-btn:hover { background: var(--fasting); color: #fff; box-shadow: 0 0 20px var(--fasting-glow);}
+        .feasting-mode .action-btn { border-color: var(--feasting); color: var(--feasting); }
+        .feasting-mode .action-btn:hover { background: var(--feasting); color: #111; box-shadow: 0 0 20px var(--feasting-glow); }
+
         /* --- Moment States Dashboard --- */
         .moment-dashboard-layout { display: flex; gap: 3rem; align-items: center; justify-content: space-between; }
         .moment-timers-col { flex: 1; display: flex; flex-direction: column; gap: 0.75rem; }
@@ -104,7 +147,7 @@
         .moment-btn.active-waste .moment-label, .moment-btn.active-waste .moment-timer-text { color: #ffffff; }
 
         .moment-btn.active-nourish { background: var(--state-nourish); border-color: var(--state-nourish); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .moment-btn.active-nourish .moment-label, .moment-btn.active-nourish .moment-timer-text { color: #0a0a0f; } /* Dark text for bright yellow */
+        .moment-btn.active-nourish .moment-label, .moment-btn.active-nourish .moment-timer-text { color: #0a0a0f; } 
 
         .moment-btn.active-train { background: var(--state-train); border-color: var(--state-train); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .moment-btn.active-train .moment-label, .moment-btn.active-train .moment-timer-text { color: #ffffff; }
@@ -123,68 +166,59 @@
         .btn-text-logout { margin-top: 0.5rem; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); cursor: pointer; border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 0.3rem 0.8rem; transition: all 0.2s; animation: fadeIn 0.2s ease; }
         .btn-text-logout:hover { color: var(--lose); border-color: var(--lose); }
 
-        /* --- Fasting Hero --- */
-        .hero-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
-        .dash-card:not(.collapsed) .hero-header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
-        .hero-header-left { display: flex; align-items: center; gap: 1rem; }
-        .hero-header-right { display: flex; align-items: center; gap: 1rem; }
-        .mini-pulse { width: 14px; height: 14px; border-radius: 50%; }
-        .fasting-mode .mini-pulse { background: var(--fasting); box-shadow: 0 0 10px var(--fasting-glow); animation: pulseFasting 2.5s infinite ease-in-out; }
-        .feasting-mode .mini-pulse { background: var(--feasting); box-shadow: 0 0 10px var(--feasting-glow); animation: pulseFeasting 4s infinite ease-in-out; }
-        .hero-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); }
-        .mini-time { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.4rem; tabular-nums; color: var(--muted); letter-spacing: 0.05em;}
-        .dash-card:not(.collapsed) .mini-time { display: none; }
-        .chevron-icon { width: 24px; height: 24px; color: var(--muted); transition: transform 0.3s ease; }
-        .dash-card.collapsed .chevron-icon { transform: rotate(-90deg); }
-        .hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .dash-card.collapsed .hero-content { display: none; }
-        .fast-ring { width: 320px; height: 320px; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; position: relative; }
-        @keyframes pulseFasting { 0% { box-shadow: 0 0 20px var(--fasting-glow); } 50% { box-shadow: 0 0 65px var(--fasting-glow), 0 0 15px var(--fasting); } 100% { box-shadow: 0 0 20px var(--fasting-glow); } }
-        @keyframes pulseFeasting { 0% { box-shadow: 0 0 15px var(--feasting-glow); } 50% { box-shadow: 0 0 45px var(--feasting-glow); } 100% { box-shadow: 0 0 15px var(--feasting-glow); } }
-        .fasting-mode .fast-ring { animation: pulseFasting 2.5s infinite ease-in-out; }
-        .feasting-mode .fast-ring { animation: pulseFeasting 4s infinite ease-in-out; }
-        .fast-hole { width: 100%; height: 100%; border-radius: 50%; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; z-index: 2; }
-        .fast-time { font-family: 'Barlow Condensed', sans-serif; font-size: 4.2rem; font-weight: 900; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
-        .fast-label { font-size: 1rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.1em; transition: color 0.3s; margin-top: 0.5rem;}
-        .fasting-mode .fast-label { color: var(--fasting); }
-        .feasting-mode .fast-label { color: var(--feasting); }
-        .stage-container { max-width: 600px; margin: 0.5rem auto 2.5rem; min-height: 80px; }
-        .stage-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; text-transform: uppercase; transition: color 0.3s;}
-        .stage-desc { font-size: 0.95rem; color: var(--muted); line-height: 1.5; }
-        .fasting-mode .stage-title { color: var(--fasting); }
-        .feasting-mode .stage-title { color: var(--feasting); }
-        .action-btn { background: var(--input-bg); border: 2px solid var(--border); color: var(--text); padding: 1rem 3rem; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.3rem; text-transform: uppercase; cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em; }
-        .feasting-mode .action-btn { border-color: var(--fasting); color: var(--fasting); }
-        .feasting-mode .action-btn:hover { background: var(--fasting); color: #fff; box-shadow: 0 0 20px var(--fasting-glow);}
-        .feasting-mode .action-btn { border-color: var(--feasting); color: var(--feasting); }
-        .feasting-mode .action-btn:hover { background: var(--feasting); color: #111; box-shadow: 0 0 20px var(--feasting-glow); }
-
         /* --- Dynamic Tabbed Habits Card --- */
         .tabs-scroll-container { display: flex; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem; gap: 0.2rem;}
         .scroll-arrow { background: transparent; border: none; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0.5rem 0.2rem; transition: color 0.2s; flex-shrink: 0; outline: none; }
         .scroll-arrow:hover { color: var(--text); }
         .tabs-header { display: flex; gap: 0.75rem; overflow-x: auto; scrollbar-width: none; align-items: center; justify-content: center; flex-grow: 1; scroll-behavior: smooth; padding: 0 0.5rem; }
         .tabs-header::-webkit-scrollbar { display: none; }
+        
         .tab-btn-group { display: flex; align-items: center; position: relative; }
-        .tab-btn { background: var(--input-bg); border: 1px solid var(--border); color: var(--muted); padding: 0.6rem 1.2rem; border-radius: 12px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.2rem; outline: none; min-width: max-content; border-left: 4px solid transparent;}
-        .tab-btn.active { background: var(--tab-active-bg); color: var(--tab-active-text); box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top-color: transparent; border-right-color: transparent; border-bottom-color: transparent;}
-        .tab-btn.active .cat-name, .tab-btn.active .cat-subtext { color: var(--tab-active-text); }
+        .tab-btn { background: var(--input-bg); border: 1px solid var(--border); color: var(--muted); padding: 0.6rem 1.2rem; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.2rem; outline: none; min-width: max-content; }
+        
+        /* Active Habit Tabs (Full Color, Readable Text, No Glow) */
+        .tab-btn.active-tab-purpose { background: var(--state-purpose); border-color: var(--state-purpose); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .tab-btn.active-tab-purpose .cat-name, .tab-btn.active-tab-purpose .cat-subtext { color: #ffffff; }
+        
+        .tab-btn.active-tab-waste { background: var(--state-waste); border-color: var(--state-waste); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .tab-btn.active-tab-waste .cat-name, .tab-btn.active-tab-waste .cat-subtext { color: #ffffff; }
+
+        .tab-btn.active-tab-nourish { background: var(--state-nourish); border-color: var(--state-nourish); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .tab-btn.active-tab-nourish .cat-name, .tab-btn.active-tab-nourish .cat-subtext { color: #0a0a0f; }
+
+        .tab-btn.active-tab-train { background: var(--state-train); border-color: var(--state-train); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .tab-btn.active-tab-train .cat-name, .tab-btn.active-tab-train .cat-subtext { color: #ffffff; }
+
+        .tab-btn.active-tab-recover { background: var(--state-recover); border-color: var(--state-recover); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .tab-btn.active-tab-recover .cat-name, .tab-btn.active-tab-recover .cat-subtext { color: #ffffff; }
+
         .cat-pulse-wrapper { display: flex; align-items: center; gap: 0.4rem; justify-content: center;}
-        .cat-pulse { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        
+        /* Subtle border around pulse to ensure visibility against filled colored backgrounds */
+        .cat-pulse { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--surface); transition: border-color 0.3s;}
+        .tab-btn.active .cat-pulse { border-color: rgba(255,255,255,0.4); }
+        .tab-btn.active-tab-nourish .cat-pulse { border-color: rgba(0,0,0,0.2); }
+
         .pulse-g { background: var(--win); box-shadow: 0 0 8px var(--win); animation: pulseG 2s infinite ease-in-out; }
         .pulse-y { background: var(--pulse-y); box-shadow: 0 0 8px var(--pulse-y-glow); animation: pulseY 2s infinite ease-in-out; }
         .pulse-r { background: var(--lose); box-shadow: 0 0 8px var(--lose); animation: pulseR 2s infinite ease-in-out; }
+        
         @keyframes pulseG { 0% { box-shadow: 0 0 4px var(--win); } 50% { box-shadow: 0 0 12px var(--win); } 100% { box-shadow: 0 0 4px var(--win); } }
         @keyframes pulseY { 0% { box-shadow: 0 0 4px var(--pulse-y-glow); } 50% { box-shadow: 0 0 12px var(--pulse-y-glow); } 100% { box-shadow: 0 0 4px var(--pulse-y-glow); } }
         @keyframes pulseR { 0% { box-shadow: 0 0 4px var(--lose); } 50% { box-shadow: 0 0 12px var(--lose); } 100% { box-shadow: 0 0 4px var(--lose); } }
+
         .cat-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 1.05rem; }
         .cat-subtext { font-family: 'Barlow', sans-serif; font-size: 0.75rem; font-weight: 400; opacity: 0.7; letter-spacing: 0; text-transform: none;}
         .tab-btn.active .cat-subtext { opacity: 0.9; }
+
         .editable-text { cursor: text; border-bottom: 1px dashed transparent; transition: border-color 0.2s; white-space: nowrap;}
         .editable-text:hover, .editable-text:focus { border-bottom-color: var(--muted); outline: none; }
         .tab-btn.active .editable-text:hover, .tab-btn.active .editable-text:focus { border-bottom-color: rgba(255,255,255,0.7); }
+        .tab-btn.active-tab-nourish .editable-text:hover, .tab-btn.active-tab-nourish .editable-text:focus { border-bottom-color: rgba(0,0,0,0.7); }
+
         .delete-icon { opacity: 0; background: none; border: none; color: var(--lose); cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; padding: 0 0.5rem; }
         .habit-row:hover .delete-icon { opacity: 1; }
+
         .dash-list { display: flex; flex-direction: column; gap: 0.5rem; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .habit-row { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--border); }
@@ -193,6 +227,7 @@
         .habit-check.done { background: var(--fasting); border-color: var(--fasting); }
         .habit-check.done::after { content: '✓'; color: #fff; font-size: 0.8rem; font-weight: bold; }
         .habit-label { font-weight: 500; font-size: 1rem; flex-grow: 1; white-space: normal; word-break: break-word;}
+        
         .alive-dot { width: 8px; height: 8px; background: var(--fasting); border-radius: 50%; box-shadow: 0 0 8px var(--fasting-glow); animation: pulseFasting 2s infinite ease-in-out; display: inline-block; margin-right: 6px; }
         .habit-streak { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; color: var(--text); font-weight: 700; display: flex; align-items: center; white-space: nowrap;}
         .habit-streak.zero { color: var(--muted); }
@@ -270,6 +305,33 @@
 
     <div id="mainContent" style="display: none;">
         
+        <div id="fastingHero" class="dash-card feasting-mode">
+            <div class="hero-header" onclick="toggleFastingCollapse()">
+                <div class="hero-header-left">
+                    <div class="mini-pulse"></div>
+                    <span class="hero-title" id="miniHeroTitle">Feasting</span>
+                </div>
+                <div class="hero-header-right">
+                    <span class="mini-time" id="miniFastTimeDisplay">00:00:00</span>
+                    <svg class="chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+            </div>
+
+            <div class="hero-content">
+                <div class="fast-ring" id="fastRing">
+                    <div class="fast-hole">
+                        <span class="fast-time" id="fastTimeDisplay">00:00:00</span>
+                        <span class="fast-label" id="fastStatusLabel">Feasting</span>
+                    </div>
+                </div>
+                <div class="stage-container">
+                    <div class="stage-title" id="stageTitle">Loading...</div>
+                    <div class="stage-desc" id="stageDesc">Calculating current biological phase...</div>
+                </div>
+                <button id="toggleFastBtn" class="action-btn" onclick="toggleFasting(event)">Done Eating</button>
+            </div>
+        </div>
+
         <div class="dash-card">
             <h3 class="card-title-centered">State of the Moment</h3>
             
@@ -307,33 +369,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div id="fastingHero" class="dash-card feasting-mode">
-            <div class="hero-header" onclick="toggleFastingCollapse()">
-                <div class="hero-header-left">
-                    <div class="mini-pulse"></div>
-                    <span class="hero-title" id="miniHeroTitle">Feasting</span>
-                </div>
-                <div class="hero-header-right">
-                    <span class="mini-time" id="miniFastTimeDisplay">00:00:00</span>
-                    <svg class="chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-            </div>
-
-            <div class="hero-content">
-                <div class="fast-ring" id="fastRing">
-                    <div class="fast-hole">
-                        <span class="fast-time" id="fastTimeDisplay">00:00:00</span>
-                        <span class="fast-label" id="fastStatusLabel">Feasting</span>
-                    </div>
-                </div>
-                <div class="stage-container">
-                    <div class="stage-title" id="stageTitle">Loading...</div>
-                    <div class="stage-desc" id="stageDesc">Calculating current biological phase...</div>
-                </div>
-                <button id="toggleFastBtn" class="action-btn" onclick="toggleFasting(event)">Done Eating</button>
             </div>
         </div>
 
@@ -604,16 +639,15 @@
         const listContainer = document.getElementById('dynamicHabitsContainer');
         tabsContainer.innerHTML = '';
         categories.forEach(cat => {
-            const isActive = cat.id === activeCatId ? 'active' : '';
+            const isActive = cat.id === activeCatId;
+            const activeClass = isActive ? `active active-tab-${catKeyMap[cat.id]}` : '';
             const total = cat.habits.length, done = cat.habits.filter(h => h.done).length;
             let pulseClass = 'pulse-r'; 
             if (total > 0) { if (done === total) pulseClass = 'pulse-g'; else if (done > 0) pulseClass = 'pulse-y'; }
 
-            const ribbonStyle = isActive ? `border-left-color: var(--state-${catKeyMap[cat.id]});` : '';
-
             tabsContainer.innerHTML += `
                 <div class="tab-btn-group">
-                    <button class="tab-btn ${isActive}" onclick="setActiveCategory('${cat.id}')" style="${ribbonStyle}">
+                    <button class="tab-btn ${activeClass}" onclick="setActiveCategory('${cat.id}')">
                         <div class="cat-pulse-wrapper"><div class="cat-pulse ${pulseClass}"></div><span class="cat-name">${cat.name}</span></div>
                         <span class="cat-subtext">${cat.subtext}</span>
                     </button>
