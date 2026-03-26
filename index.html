@@ -23,11 +23,11 @@
             --toggle-track-bg: #1e1e2e; --toggle-knob-bg: #e8e8f0; --toggle-icon-color: #0a0a0f;
 
             /* Vibrant Moment States Colors */
-            --state-purpose: #5c88f2; 
-            --state-waste: #fc7281;   
-            --state-nourish: #f5c43d; 
-            --state-train: #47d18c;   
-            --state-recover: #8d94e5; 
+            --state-purpose: #5c88f2; --glow-purpose: rgba(92, 136, 242, 0.2);
+            --state-waste: #fc7281;   --glow-waste: rgba(252, 114, 129, 0.2);
+            --state-nourish: #f5c43d; --glow-nourish: rgba(245, 196, 61, 0.2);
+            --state-train: #47d18c;   --glow-train: rgba(71, 209, 140, 0.2);
+            --state-recover: #8d94e5; --glow-recover: rgba(141, 148, 229, 0.2);
         }
 
         [data-theme="light"] {
@@ -44,11 +44,11 @@
             --toggle-track-bg: #dde0ea; --toggle-knob-bg: #0f0f1a; --toggle-icon-color: #ffffff;
 
             /* Vibrant Moment States Colors */
-            --state-purpose: #5c88f2; 
-            --state-waste: #fc7281;   
-            --state-nourish: #f5c43d; 
-            --state-train: #47d18c;   
-            --state-recover: #8d94e5; 
+            --state-purpose: #5c88f2; --glow-purpose: rgba(92, 136, 242, 0.2);
+            --state-waste: #fc7281;   --glow-waste: rgba(252, 114, 129, 0.2);
+            --state-nourish: #f5c43d; --glow-nourish: rgba(245, 196, 61, 0.2);
+            --state-train: #47d18c;   --glow-train: rgba(71, 209, 140, 0.2);
+            --state-recover: #8d94e5; --glow-recover: rgba(141, 148, 229, 0.2);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -135,25 +135,25 @@
         .moment-donut-col { width: 300px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;}
         @media (max-width: 768px) { .moment-dashboard-layout { flex-direction: column; gap: 2.5rem; } .moment-donut-col { width: 100%; max-width: 280px; margin: 0 auto; } }
 
-        .moment-btn { background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; position: relative; outline: none; }
+        /* Thick Border Style for Moment Buttons */
+        .moment-btn { background: var(--input-bg); border: 3px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; position: relative; outline: none; }
         .moment-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); transition: color 0.3s;}
         .moment-timer-text { font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 1.15rem; tabular-nums; color: var(--text); transition: color 0.3s;}
         
-        /* Active State Fills (Full Color, Readable Text, No Glow) */
-        .moment-btn.active-purpose { background: var(--state-purpose); border-color: var(--state-purpose); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .moment-btn.active-purpose .moment-label, .moment-btn.active-purpose .moment-timer-text { color: #ffffff; }
+        .moment-btn.active-purpose { border-color: var(--state-purpose); background: var(--surface); box-shadow: 0 4px 15px var(--glow-purpose); }
+        .moment-btn.active-purpose .moment-label { color: var(--state-purpose); }
         
-        .moment-btn.active-waste { background: var(--state-waste); border-color: var(--state-waste); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .moment-btn.active-waste .moment-label, .moment-btn.active-waste .moment-timer-text { color: #ffffff; }
+        .moment-btn.active-waste { border-color: var(--state-waste); background: var(--surface); box-shadow: 0 4px 15px var(--glow-waste); }
+        .moment-btn.active-waste .moment-label { color: var(--state-waste); }
 
-        .moment-btn.active-nourish { background: var(--state-nourish); border-color: var(--state-nourish); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .moment-btn.active-nourish .moment-label, .moment-btn.active-nourish .moment-timer-text { color: #0a0a0f; } 
+        .moment-btn.active-nourish { border-color: var(--state-nourish); background: var(--surface); box-shadow: 0 4px 15px var(--glow-nourish); }
+        .moment-btn.active-nourish .moment-label { color: var(--state-nourish); }
 
-        .moment-btn.active-train { background: var(--state-train); border-color: var(--state-train); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .moment-btn.active-train .moment-label, .moment-btn.active-train .moment-timer-text { color: #ffffff; }
+        .moment-btn.active-train { border-color: var(--state-train); background: var(--surface); box-shadow: 0 4px 15px var(--glow-train); }
+        .moment-btn.active-train .moment-label { color: var(--state-train); }
 
-        .moment-btn.active-recover { background: var(--state-recover); border-color: var(--state-recover); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .moment-btn.active-recover .moment-label, .moment-btn.active-recover .moment-timer-text { color: #ffffff; }
+        .moment-btn.active-recover { border-color: var(--state-recover); background: var(--surface); box-shadow: 0 4px 15px var(--glow-recover); }
+        .moment-btn.active-recover .moment-label { color: var(--state-recover); }
 
         .moment-donut-wrapper { width: 100%; aspect-ratio: 1; position: relative; display: flex; align-items: center; justify-content: center; margin: 0 auto;}
         .moment-donut-wrapper canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;}
@@ -174,31 +174,22 @@
         .tabs-header::-webkit-scrollbar { display: none; }
         
         .tab-btn-group { display: flex; align-items: center; position: relative; }
-        .tab-btn { background: var(--input-bg); border: 1px solid var(--border); color: var(--muted); padding: 0.6rem 1.2rem; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.2rem; outline: none; min-width: max-content; }
         
-        /* Active Habit Tabs (Full Color, Readable Text, No Glow) */
-        .tab-btn.active-tab-purpose { background: var(--state-purpose); border-color: var(--state-purpose); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .tab-btn.active-tab-purpose .cat-name, .tab-btn.active-tab-purpose .cat-subtext { color: #ffffff; }
+        /* Thick Border Style for Habit Tabs */
+        .tab-btn { background: var(--input-bg); border: 3px solid var(--border); color: var(--muted); padding: 0.6rem 1.2rem; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.2rem; outline: none; min-width: max-content; }
         
-        .tab-btn.active-tab-waste { background: var(--state-waste); border-color: var(--state-waste); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .tab-btn.active-tab-waste .cat-name, .tab-btn.active-tab-waste .cat-subtext { color: #ffffff; }
+        .tab-btn.active-tab-purpose { border-color: var(--state-purpose); background: var(--surface); box-shadow: 0 4px 15px var(--glow-purpose); }
+        .tab-btn.active-tab-waste { border-color: var(--state-waste); background: var(--surface); box-shadow: 0 4px 15px var(--glow-waste); }
+        .tab-btn.active-tab-nourish { border-color: var(--state-nourish); background: var(--surface); box-shadow: 0 4px 15px var(--glow-nourish); }
+        .tab-btn.active-tab-train { border-color: var(--state-train); background: var(--surface); box-shadow: 0 4px 15px var(--glow-train); }
+        .tab-btn.active-tab-recover { border-color: var(--state-recover); background: var(--surface); box-shadow: 0 4px 15px var(--glow-recover); }
 
-        .tab-btn.active-tab-nourish { background: var(--state-nourish); border-color: var(--state-nourish); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .tab-btn.active-tab-nourish .cat-name, .tab-btn.active-tab-nourish .cat-subtext { color: #0a0a0f; }
-
-        .tab-btn.active-tab-train { background: var(--state-train); border-color: var(--state-train); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .tab-btn.active-tab-train .cat-name, .tab-btn.active-tab-train .cat-subtext { color: #ffffff; }
-
-        .tab-btn.active-tab-recover { background: var(--state-recover); border-color: var(--state-recover); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .tab-btn.active-tab-recover .cat-name, .tab-btn.active-tab-recover .cat-subtext { color: #ffffff; }
+        .tab-btn.active .cat-name { color: var(--text); }
+        .tab-btn.active .cat-subtext { color: var(--muted); opacity: 0.9; }
 
         .cat-pulse-wrapper { display: flex; align-items: center; gap: 0.4rem; justify-content: center;}
+        .cat-pulse { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; transition: border-color 0.3s;}
         
-        /* Subtle border around pulse to ensure visibility against filled colored backgrounds */
-        .cat-pulse { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--surface); transition: border-color 0.3s;}
-        .tab-btn.active .cat-pulse { border-color: rgba(255,255,255,0.4); }
-        .tab-btn.active-tab-nourish .cat-pulse { border-color: rgba(0,0,0,0.2); }
-
         .pulse-g { background: var(--win); box-shadow: 0 0 8px var(--win); animation: pulseG 2s infinite ease-in-out; }
         .pulse-y { background: var(--pulse-y); box-shadow: 0 0 8px var(--pulse-y-glow); animation: pulseY 2s infinite ease-in-out; }
         .pulse-r { background: var(--lose); box-shadow: 0 0 8px var(--lose); animation: pulseR 2s infinite ease-in-out; }
@@ -206,16 +197,13 @@
         @keyframes pulseG { 0% { box-shadow: 0 0 4px var(--win); } 50% { box-shadow: 0 0 12px var(--win); } 100% { box-shadow: 0 0 4px var(--win); } }
         @keyframes pulseY { 0% { box-shadow: 0 0 4px var(--pulse-y-glow); } 50% { box-shadow: 0 0 12px var(--pulse-y-glow); } 100% { box-shadow: 0 0 4px var(--pulse-y-glow); } }
         @keyframes pulseR { 0% { box-shadow: 0 0 4px var(--lose); } 50% { box-shadow: 0 0 12px var(--lose); } 100% { box-shadow: 0 0 4px var(--lose); } }
-
-        .cat-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 1.05rem; }
-        .cat-subtext { font-family: 'Barlow', sans-serif; font-size: 0.75rem; font-weight: 400; opacity: 0.7; letter-spacing: 0; text-transform: none;}
-        .tab-btn.active .cat-subtext { opacity: 0.9; }
-
+        
+        .cat-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 1.05rem; transition: color 0.3s;}
+        .cat-subtext { font-family: 'Barlow', sans-serif; font-size: 0.75rem; font-weight: 400; opacity: 0.7; letter-spacing: 0; text-transform: none; transition: color 0.3s;}
+        
         .editable-text { cursor: text; border-bottom: 1px dashed transparent; transition: border-color 0.2s; white-space: nowrap;}
         .editable-text:hover, .editable-text:focus { border-bottom-color: var(--muted); outline: none; }
-        .tab-btn.active .editable-text:hover, .tab-btn.active .editable-text:focus { border-bottom-color: rgba(255,255,255,0.7); }
-        .tab-btn.active-tab-nourish .editable-text:hover, .tab-btn.active-tab-nourish .editable-text:focus { border-bottom-color: rgba(0,0,0,0.7); }
-
+        
         .delete-icon { opacity: 0; background: none; border: none; color: var(--lose); cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; padding: 0 0.5rem; }
         .habit-row:hover .delete-icon { opacity: 1; }
 
@@ -227,7 +215,6 @@
         .habit-check.done { background: var(--fasting); border-color: var(--fasting); }
         .habit-check.done::after { content: '✓'; color: #fff; font-size: 0.8rem; font-weight: bold; }
         .habit-label { font-weight: 500; font-size: 1rem; flex-grow: 1; white-space: normal; word-break: break-word;}
-        
         .alive-dot { width: 8px; height: 8px; background: var(--fasting); border-radius: 50%; box-shadow: 0 0 8px var(--fasting-glow); animation: pulseFasting 2s infinite ease-in-out; display: inline-block; margin-right: 6px; }
         .habit-streak { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; color: var(--text); font-weight: 700; display: flex; align-items: center; white-space: nowrap;}
         .habit-streak.zero { color: var(--muted); }
@@ -408,7 +395,7 @@
 
     function updateClock() {
         const now = new Date();
-        const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
         const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
         const dateEl = document.getElementById('currentDate');
         const timeEl = document.getElementById('currentTime');
