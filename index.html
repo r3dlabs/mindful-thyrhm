@@ -54,34 +54,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; padding: 0 0 4rem 0; transition: background 0.25s, color 0.25s; }
 
-        /* --- Header & Top Controls --- */
-        /* Increased top padding so the absolute controls never overlap the title */
-        header { text-align: center; position: relative; z-index: 900; background: var(--bg); padding: 3rem 1.5rem 2.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); }
-        header h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(2.2rem, 5vw, 3rem); letter-spacing: 0.05em; text-transform: uppercase; color: var(--text); line-height: 1; margin-bottom: 0.4rem; }
-        header p { color: var(--muted); font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.5rem; }
-
-        .date-time-display { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
-        #currentDate { font-size: 0.9rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
-        #currentTime { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--text); letter-spacing: 0.02em; }
-
-        /* Top Right Control Cluster */
-        .controls-cluster { position: absolute; top: 1.5rem; right: 1.5rem; display: flex; align-items: center; gap: 1rem; }
-        .icon-btn { background: transparent; border: none; color: var(--muted); cursor: pointer; transition: color 0.2s; display: flex; align-items: center; justify-content: center; padding: 0.2rem; }
-        .icon-btn:hover { color: var(--text); }
-        
-        .theme-toggle-container { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; cursor: pointer; user-select: none; margin-left: 0.5rem;}
-        .sleek-toggle-track { width: 50px; height: 28px; border-radius: 16px; background: var(--toggle-track-bg); position: relative; transition: background 0.3s ease; }
-        .sleek-toggle-knob { width: 20px; height: 20px; border-radius: 50%; background: var(--toggle-knob-bg); position: absolute; top: 4px; left: 4px; transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1), background 0.3s ease; display: flex; align-items: center; justify-content: center; color: var(--toggle-icon-color); }
-        [data-theme="dark"] .sleek-toggle-knob { transform: translateX(22px); }
-        
-        /* Mobile overlap fix */
-        @media (max-width: 600px) { 
-            .controls-cluster { top: 1rem; right: 1rem; gap: 0.5rem; } 
-            header { padding: 4.5rem 1rem 2rem; } /* Pushes title down below controls */
-        }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
-
         /* --- Friction Modal --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); animation: fadeIn 0.2s ease; }
         .modal-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 2.5rem 2rem; max-width: 400px; width: 90%; text-align: center; box-shadow: var(--card-shadow); }
@@ -94,9 +66,54 @@
         .btn-confirm { background: var(--lose); color: #fff; border: 2px solid var(--lose); }
         .btn-confirm:hover { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
 
+        /* --- Header & Top Controls --- */
+        header { text-align: center; position: relative; z-index: 900; background: var(--bg); padding: 2rem 1.5rem 2.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); }
+        header h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(2.2rem, 5vw, 3rem); letter-spacing: 0.05em; text-transform: uppercase; color: var(--text); line-height: 1; margin-bottom: 0.4rem; }
+        header p { color: var(--muted); font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.5rem; }
+
+        .date-time-display { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
+        #currentDate { font-size: 0.9rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+        #currentTime { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--text); letter-spacing: 0.02em; }
+
+        /* Controls Cluster and Dynamic Name in Header */
+        .controls-cluster { position: absolute; top: 1.5rem; right: 1.5rem; display: flex; align-items: center; gap: 1rem; }
+        .icon-btn { background: transparent; border: none; color: var(--muted); cursor: pointer; transition: color 0.2s; display: flex; align-items: center; justify-content: center; padding: 0.2rem; }
+        .icon-btn:hover { color: var(--text); }
+        
+        .theme-toggle-container { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; cursor: pointer; user-select: none;}
+        .sleek-toggle-track { width: 50px; height: 28px; border-radius: 16px; background: var(--toggle-track-bg); position: relative; transition: background 0.3s ease; }
+        .sleek-toggle-knob { width: 20px; height: 20px; border-radius: 50%; background: var(--toggle-knob-bg); position: absolute; top: 4px; left: 4px; transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1), background 0.3s ease; display: flex; align-items: center; justify-content: center; color: var(--toggle-icon-color); }
+        [data-theme="dark"] .sleek-toggle-knob { transform: translateX(22px); }
+        
+        /* New Header Profile Menu Style */
+        .header-profile-menu { display: flex; align-items: center; gap: 0.6rem; cursor: pointer; border: 1px solid var(--border); background: var(--surface); border-radius: 20px; padding: 0.3rem 0.8rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;}
+        .header-profile-menu:hover { border-color: var(--accent); }
+        
+        .user-avatar-header { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid var(--bg); flex-shrink: 0; }
+        .user-name-header { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 1rem; color: var(--text); text-transform: none; letter-spacing: 0;}
+        .header-profile-menu svg { width: 14px; height: 14px; color: var(--muted); transition: transform 0.2s; }
+        .header-profile-menu.menu-active svg { transform: rotate(180deg); }
+        
+        /* Logout in Header */
+        .btn-text-logout-header { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--lose); cursor: pointer; border: 1px solid var(--lose); background: transparent; border-radius: 12px; padding: 0.3rem 0.8rem; transition: all 0.2s; white-space: nowrap; outline: none;}
+        .btn-text-logout-header:hover { background: var(--lose); color: #fff; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+
+        @media (max-width: 768px) { 
+            .controls-cluster { top: 1rem; right: 1rem; gap: 0.6rem; } 
+            header { padding: 1.5rem 1rem 2rem; } 
+            .user-name-header { font-size: 0.9rem; }
+            .user-avatar-header { width: 26px; height: 26px; }
+            .header-profile-menu { gap: 0.4rem; padding: 0.2rem 0.6rem; }
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
         /* --- Generic Dash Card --- */
-        .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; box-shadow: var(--card-shadow); margin-bottom: 2rem; transition: all 0.4s ease; }
-        .card-title-centered { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); margin-bottom: 1.5rem; }
+        .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; box-shadow: var(--card-shadow); margin-bottom: 2rem; transition: all 0.4s ease; position: relative;}
+        .card-title-centered { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); margin-bottom: 1.5rem; transition: color 0.3s;}
+        
+        /* Style for the user name in card titles */
+        .dynamic-name { text-transform: none; letter-spacing: 0; color: var(--accent); }
 
         /* --- Fasting Hero --- */
         .hero-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
@@ -206,17 +223,12 @@
         .moment-btn.active-recover { border-color: var(--state-recover); background: var(--surface); box-shadow: 0 4px 15px var(--glow-recover); }
         .moment-btn.active-recover .moment-label, .moment-btn.active-recover .moment-subtext, .moment-btn.active-recover .moment-audio-btn { color: var(--state-recover); }
 
-        .moment-donut-wrapper { width: 100%; aspect-ratio: 1; position: relative; display: flex; align-items: center; justify-content: center; margin: 0 auto;}
+        /* User Picture Inside Donut - Enlarged */
+        .moment-donut-wrapper { width: 100%; aspect-ratio: 1; position: relative; display: flex; align-items: center; justify-content: center; margin: 0 auto; overflow: hidden; border-radius: 50%;}
         .moment-donut-wrapper canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;}
-        .donut-center-content { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; pointer-events: none; }
-        .donut-center-content > * { pointer-events: auto; } 
+        .donut-center-content { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; z-index: 10; pointer-events: none; }
+        .user-avatar-donut { width: 160px; height: 160px; border-radius: 50%; object-fit: cover; border: 4px solid var(--surface); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         
-        .user-avatar { width: 68px; height: 68px; border-radius: 50%; object-fit: cover; border: 3px solid var(--surface); box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin-bottom: 0.5rem; }
-        .user-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.2rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text); cursor: pointer; transition: color 0.2s; }
-        .user-name:hover { color: var(--fasting); }
-        .btn-text-logout { margin-top: 0.5rem; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); cursor: pointer; border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 0.3rem 0.8rem; transition: all 0.2s; animation: fadeIn 0.2s ease; }
-        .btn-text-logout:hover { color: var(--lose); border-color: var(--lose); }
-
         /* --- Dynamic Tabbed Habits Card --- */
         .tabs-scroll-container { display: flex; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem; gap: 0.2rem;}
         .scroll-arrow { background: transparent; border: none; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0.5rem 0.2rem; transition: color 0.2s; flex-shrink: 0; outline: none; }
@@ -304,6 +316,14 @@
 
 <header>
     <div class="controls-cluster">
+        <div id="headerProfileMenu" class="header-profile-menu" onclick="toggleHeaderLogout()" style="display: none;" title="Account Settings">
+            <img id="userAvatarHeader" class="user-avatar-header" src="" alt="Profile">
+            <span id="userNameHeader" class="user-name-header">User</span>
+            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
+        
+        <button id="logoutBtnHeader" class="btn-text-logout-header" style="display: none;" onclick="signOut()">Log Out</button>
+
         <button id="fullscreenBtn" class="icon-btn" onclick="toggleFullscreen()" title="Fullscreen Mode">
             <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
@@ -397,7 +417,7 @@
         </div>
 
         <div class="dash-card">
-            <h3 class="card-title-centered">State of the Moment</h3>
+            <h3 class="card-title-centered" id="momentCardHeader"><span id="momentUserName" class="dynamic-name">User</span>'S MOMENT</h3>
             
             <div class="moment-dashboard-layout">
                 <div class="moment-timers-col">
@@ -471,10 +491,8 @@
                 <div class="moment-donut-col">
                     <div class="moment-donut-wrapper">
                         <canvas id="momentDonutChart"></canvas>
-                        <div class="donut-center-content" id="userProfileCenter" style="display: none;">
-                            <img id="userAvatar" class="user-avatar" src="" alt="Profile">
-                            <span id="userName" class="user-name" onclick="toggleLogout()"></span>
-                            <button id="logoutBtn" class="btn-text-logout" style="display: none;" onclick="signOut()">Log Out</button>
+                        <div class="donut-center-content">
+                            <img id="userAvatarDonut" class="user-avatar-donut" src="" alt="Profile">
                         </div>
                     </div>
                 </div>
@@ -482,6 +500,8 @@
         </div>
 
         <div class="dash-card">
+            <h3 class="card-title-centered" id="habitCardHeader"><span id="habitUserName" class="dynamic-name">User</span>'s HABIT</h3>
+
             <div class="tabs-scroll-container">
                 <button class="scroll-arrow" onclick="scrollTabs(-1)"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
                 <div class="tabs-header" id="dynamicTabsHeader"></div>
@@ -560,6 +580,16 @@
         }
     }
 
+    // Account Management moved to Header
+    function toggleHeaderLogout() {
+        const menu = document.getElementById('headerProfileMenu');
+        const btn = document.getElementById('logoutBtnHeader');
+        if(menu && btn) {
+            const isActive = menu.classList.toggle('menu-active');
+            btn.style.display = isActive ? 'block' : 'none';
+        }
+    }
+
     async function checkUser() {
         // Safety Timeout against silent hangs
         const bootTimeout = setTimeout(() => {
@@ -582,16 +612,32 @@
             if (session) {
                 currentUser = session.user;
                 const meta = currentUser.user_metadata;
-                const profileCenter = document.getElementById('userProfileCenter');
-                if (meta && profileCenter) {
-                    const avatar = document.getElementById('userAvatar');
-                    const userName = document.getElementById('userName');
-                    if(avatar) avatar.src = meta.avatar_url;
-                    if(userName) userName.innerText = meta.full_name ? meta.full_name.split(' ')[0] : 'User'; 
-                    profileCenter.style.display = 'flex';
-                } else if(profileCenter) {
-                    profileCenter.style.display = 'flex';
+                
+                // Capitalize first name for proper formatting
+                const rawName = meta.full_name ? meta.full_name.split(' ')[0] : 'User';
+                const firstName = rawName.toUpperCase();
+
+                // Update Header Account Hub
+                const avatarHeader = document.getElementById('userAvatarHeader');
+                const nameHeader = document.getElementById('userNameHeader');
+                const profileMenu = document.getElementById('headerProfileMenu');
+                if(avatarHeader && nameHeader && profileMenu) {
+                    avatarHeader.src = meta.avatar_url;
+                    nameHeader.innerText = meta.full_name ? meta.full_name.split(' ')[0] : 'User'; // Keep header name natural
+                    profileMenu.style.display = 'flex';
                 }
+
+                // Update Donut Center (ONLY PICTURE, ENLARGED)
+                const avatarDonut = document.getElementById('userAvatarDonut');
+                if(avatarDonut) {
+                    avatarDonut.src = meta.avatar_url;
+                }
+
+                // Update Dynamic Card Titles
+                const momentNameEl = document.getElementById('momentUserName');
+                const habitNameEl = document.getElementById('habitUserName');
+                if(momentNameEl) momentNameEl.innerText = firstName;
+                if(habitNameEl) habitNameEl.innerText = firstName;
                 
                 clearTimeout(bootTimeout);
                 showView('main');
@@ -606,8 +652,9 @@
                 initMomentStates(); 
             } else {
                 clearTimeout(bootTimeout);
-                const profileCenter = document.getElementById('userProfileCenter');
-                if(profileCenter) profileCenter.style.display = 'none';
+                // Clean up header state
+                const profileMenu = document.getElementById('headerProfileMenu');
+                if(profileMenu) profileMenu.style.display = 'none';
                 showView('login');
             }
         } catch (err) { 
@@ -619,7 +666,6 @@
 
     async function signInWithGoogle() { if(supabaseClient) await supabaseClient.auth.signInWithOAuth({ provider: 'google' }); }
     async function signOut() { if(supabaseClient) await supabaseClient.auth.signOut(); window.location.reload(); }
-    function toggleLogout() { const btn = document.getElementById('logoutBtn'); if(btn) btn.style.display = (btn.style.display === 'none') ? 'block' : 'none'; }
 
     // ==========================================
     // 2. MOMENT STATES & AUDIO ENGINE
@@ -798,8 +844,9 @@
     }
 
     // ==========================================
-    // 3. HABITS ENGINE (Unified Naming)
+    // 3. HABITS ENGINE
     // ==========================================
+    // Subtext updated per request in categories
     let categories = [
         { id: 'cat_1', name: 'Purposeful', subtext: 'What you live for', habits: [{ id: 'hab_1', name: 'PADI Theory / Instructor Study', streak: 4, done: true }, { id: 'hab_2', name: 'Camp & Dive Web App Dev', streak: 0, done: false }] },
         { id: 'cat_2', name: 'Wasteful', subtext: 'What drains you', habits: [{ id: 'hab_3', name: 'No PlayStation Binge Gaming', streak: 8, done: true }, { id: 'hab_4', name: 'No Mindless Doom Scrolling', streak: 3, done: true }] },
