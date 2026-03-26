@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +18,12 @@
             --fasting: #22c55e; --fasting-glow: rgba(34, 197, 94, 0.35);
             --feasting: #eab308; --feasting-glow: rgba(234, 179, 8, 0.15);
             --chart-grid: #1e1e2e;
+            
+            /* Neutral Tab Active Colors */
+            --tab-active-bg: #e8e8f0;
+            --tab-active-text: #0a0a0f;
+            --pulse-y: #eab308;
+            --pulse-y-glow: rgba(234, 179, 8, 0.4);
         }
 
         [data-theme="light"] {
@@ -29,6 +35,12 @@
             --fasting: #16a34a; --fasting-glow: rgba(22, 163, 74, 0.35);
             --feasting: #d97706; --feasting-glow: rgba(217, 119, 6, 0.15);
             --chart-grid: #e2e8f0;
+            
+            /* Neutral Tab Active Colors */
+            --tab-active-bg: #0f0f1a;
+            --tab-active-text: #ffffff;
+            --pulse-y: #d97706;
+            --pulse-y-glow: rgba(217, 119, 6, 0.4);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -173,12 +185,32 @@
         .tab-btn-group { display: flex; align-items: center; position: relative; }
         .tab-btn { 
             background: var(--input-bg); border: 1px solid var(--border); color: var(--muted); 
-            padding: 0.5rem 1rem; border-radius: 12px; cursor: pointer; transition: all 0.2s; 
-            display: flex; flex-direction: column; align-items: flex-start; gap: 0.1rem; outline: none;
+            padding: 0.6rem 1rem; border-radius: 12px; cursor: pointer; transition: all 0.2s; 
+            display: flex; flex-direction: column; align-items: flex-start; gap: 0.2rem; outline: none;
             min-width: max-content;
         }
-        .tab-btn.active { background: var(--fasting); color: #fff; border-color: var(--fasting); box-shadow: 0 0 12px var(--fasting-glow); }
         
+        /* New Neutral Active Tab Colors */
+        .tab-btn.active { 
+            background: var(--tab-active-bg); 
+            color: var(--tab-active-text); 
+            border-color: var(--tab-active-bg); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        }
+        .tab-btn.active .cat-name, .tab-btn.active .cat-subtext { color: var(--tab-active-text); }
+        
+        /* Category Pulsing Dots */
+        .cat-pulse-wrapper { display: flex; align-items: center; gap: 0.4rem; }
+        .cat-pulse { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        
+        .pulse-g { background: var(--win); box-shadow: 0 0 8px var(--win); animation: pulseG 2s infinite ease-in-out; }
+        .pulse-y { background: var(--pulse-y); box-shadow: 0 0 8px var(--pulse-y-glow); animation: pulseY 2s infinite ease-in-out; }
+        .pulse-r { background: var(--lose); box-shadow: 0 0 8px var(--lose); animation: pulseR 2s infinite ease-in-out; }
+        
+        @keyframes pulseG { 0% { box-shadow: 0 0 4px var(--win); } 50% { box-shadow: 0 0 12px var(--win); } 100% { box-shadow: 0 0 4px var(--win); } }
+        @keyframes pulseY { 0% { box-shadow: 0 0 4px var(--pulse-y-glow); } 50% { box-shadow: 0 0 12px var(--pulse-y-glow); } 100% { box-shadow: 0 0 4px var(--pulse-y-glow); } }
+        @keyframes pulseR { 0% { box-shadow: 0 0 4px var(--lose); } 50% { box-shadow: 0 0 12px var(--lose); } 100% { box-shadow: 0 0 4px var(--lose); } }
+
         .cat-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 1rem; }
         .cat-subtext { font-family: 'Barlow', sans-serif; font-size: 0.75rem; font-weight: 400; opacity: 0.7; letter-spacing: 0; text-transform: none;}
         .tab-btn.active .cat-subtext { opacity: 0.9; }
@@ -217,8 +249,8 @@
 <header>
     <div class="theme-toggle-wrapper">
         <div class="theme-toggle" onclick="toggleTheme()" title="Toggle mode">
-            <span class="toggle-icon" id="theme-icon">🌙</span>
-            <span class="theme-toggle-label" id="theme-label">Dark</span>
+            <span class="toggle-icon" id="theme-icon">☀️</span>
+            <span class="theme-toggle-label" id="theme-label">Light</span>
             <div class="toggle-track"><div class="toggle-knob"></div></div>
         </div>
     </div>
@@ -407,11 +439,24 @@
         tabsContainer.innerHTML = '';
         categories.forEach(cat => {
             const isActive = cat.id === activeCatId ? 'active' : '';
-            // Categories are now locked (no contenteditable, no delete button)
+            
+            // Calculate Pulse Color
+            const totalHabits = cat.habits.length;
+            const completedHabits = cat.habits.filter(h => h.done).length;
+            let pulseClass = 'pulse-r'; // Default to red if 0 done
+            
+            if (totalHabits > 0) {
+                if (completedHabits === totalHabits) pulseClass = 'pulse-g';
+                else if (completedHabits > 0) pulseClass = 'pulse-y';
+            }
+
             tabsContainer.innerHTML += `
                 <div class="tab-btn-group">
                     <button class="tab-btn ${isActive}" onclick="setActiveCategory('${cat.id}')">
-                        <span class="cat-name">${cat.name}</span>
+                        <div class="cat-pulse-wrapper">
+                            <div class="cat-pulse ${pulseClass}"></div>
+                            <span class="cat-name">${cat.name}</span>
+                        </div>
                         <span class="cat-subtext">${cat.subtext}</span>
                     </button>
                 </div>
@@ -611,10 +656,14 @@
     // 5. THEME BOOT
     // ==========================================
     function toggleTheme() {
-        const html = document.documentElement; const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        const html = document.documentElement; 
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         html.setAttribute('data-theme', next);
+        
+        // Match the label and icon to the newly selected theme
         document.getElementById('theme-icon').textContent = next === 'light' ? '☀️' : '🌙';
         document.getElementById('theme-label').textContent = next === 'light' ? 'Light' : 'Dark';
+        
         if (currentUser) { updateTimer(); if(fastingChart) renderChart(); }
     }
 
