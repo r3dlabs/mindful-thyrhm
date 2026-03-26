@@ -385,18 +385,32 @@
 <audio id="audio-recover" loop src="recover.mp3"></audio>
 
 <script>
+    // Global Error Safety Net
+    window.addEventListener('error', function(e) {
+        const loadView = document.getElementById('loadingView');
+        if (loadView) loadView.innerHTML = `<h2 style="color:var(--lose)">Engine Error</h2><p style="color:var(--muted)">${e.message}. Please refresh or check your connection.</p>`;
+    });
+
     // ==========================================
     // 1. SUPABASE CONFIGURATION & CLOCK
     // ==========================================
     const SUPABASE_URL = 'https://ambpjxgidojgmwvvjglg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtYnBqeGdpZG9qZ213dnZqZ2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MzQzNTQsImV4cCI6MjA5MDAxMDM1NH0.8TfCIQhAjPChBZn8op5J9ykyMc3hPDJ_vJuUEm3WcP4';
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // Safe Initialization check
+    let supabaseClient = null;
+    if (window.supabase) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } else {
+        console.error("Supabase CDN failed to load.");
+    }
+    
     let currentUser = null;
 
     const views = { loading: document.getElementById('loadingView'), login: document.getElementById('loginView'), main: document.getElementById('mainContent') };
 
     function showView(viewName) {
-        Object.values(views).forEach(el => el.style.display = 'none');
+        Object.values(views).forEach(el => { if(el) el.style.display = 'none'; });
         if (views[viewName]) views[viewName].style.display = 'block';
     }
 
@@ -430,6 +444,11 @@
     }
 
     async function checkUser() {
+        if (!supabaseClient) {
+            document.getElementById('loadingView').innerHTML = '<h2 style="color:var(--lose)">Connection Error</h2><p style="color:var(--muted)">Could not connect to database services. Please check your internet connection or disable ad-blockers.</p>';
+            return;
+        }
+
         try {
             const { data: { session }, error } = await supabaseClient.auth.getSession();
             if (error) throw error;
@@ -437,30 +456,36 @@
             if (session) {
                 currentUser = session.user;
                 const meta = currentUser.user_metadata;
-                if (meta) {
-                    if (meta.avatar_url) document.getElementById('userAvatar').src = meta.avatar_url;
-                    if (meta.full_name) document.getElementById('userName').innerText = meta.full_name.split(' ')[0];
-                    document.getElementById('userProfileCenter').style.display = 'flex';
-                } else {
-                    document.getElementById('userProfileCenter').style.display = 'flex';
+                const profileCenter = document.getElementById('userProfileCenter');
+                if (meta && profileCenter) {
+                    const avatar = document.getElementById('userAvatar');
+                    const userName = document.getElementById('userName');
+                    if(avatar) avatar.src = meta.avatar_url;
+                    if(userName) userName.innerText = meta.full_name.split(' ')[0];
+                    profileCenter.style.display = 'flex';
                 }
                 
                 showView('main');
-                if(localStorage.getItem('fastingCardCollapsed') === 'true') document.getElementById('fastingHero').classList.add('collapsed');
+                const hero = document.getElementById('fastingHero');
+                if(hero && localStorage.getItem('fastingCardCollapsed') === 'true') hero.classList.add('collapsed');
 
                 await initFastingTracker(); 
                 renderHabitsUI(); 
                 initMomentStates(); 
             } else {
-                document.getElementById('userProfileCenter').style.display = 'none';
+                const profileCenter = document.getElementById('userProfileCenter');
+                if(profileCenter) profileCenter.style.display = 'none';
                 showView('login');
             }
-        } catch (err) { showView('login'); }
+        } catch (err) { 
+            console.error(err);
+            showView('login'); 
+        }
     }
 
-    async function signInWithGoogle() { await supabaseClient.auth.signInWithOAuth({ provider: 'google' }); }
-    async function signOut() { await supabaseClient.auth.signOut(); window.location.reload(); }
-    function toggleLogout() { const btn = document.getElementById('logoutBtn'); btn.style.display = (btn.style.display === 'none') ? 'block' : 'none'; }
+    async function signInWithGoogle() { if(supabaseClient) await supabaseClient.auth.signInWithOAuth({ provider: 'google' }); }
+    async function signOut() { if(supabaseClient) await supabaseClient.auth.signOut(); window.location.reload(); }
+    function toggleLogout() { const btn = document.getElementById('logoutBtn'); if(btn) btn.style.display = (btn.style.display === 'none') ? 'block' : 'none'; }
 
     // ==========================================
     // 2. MOMENT STATES & AUDIO ENGINE
@@ -473,21 +498,25 @@
         document.getElementById('icon-sound-off').style.display = isAudioMuted ? 'block' : 'none';
         
         if (isAudioMuted) {
-            ['purpose', 'waste', 'nourish', 'train', 'recover'].forEach(key => document.getElementById(`audio-${key}`).pause());
+            ['purpose', 'waste', 'nourish', 'train', 'recover'].forEach(key => {
+                const audio = document.getElementById(`audio-${key}`);
+                if(audio) audio.pause();
+            });
         } else if (activeMomentKey) {
-            document.getElementById(`audio-${activeMomentKey}`).play().catch(e => console.log("Audio play blocked", e));
+            const activeAudio = document.getElementById(`audio-${activeMomentKey}`);
+            if(activeAudio) activeAudio.play().catch(e => console.log("Audio play blocked", e));
         }
     }
 
     function playStateAudio(stateKey) {
         ['purpose', 'waste', 'nourish', 'train', 'recover'].forEach(key => {
             const audio = document.getElementById(`audio-${key}`);
-            audio.pause();
+            if(audio) audio.pause();
         });
         
         if (stateKey && !isAudioMuted) {
             const activeAudio = document.getElementById(`audio-${stateKey}`);
-            activeAudio.play().catch(e => console.log("Audio play blocked. User must interact first.", e));
+            if(activeAudio) activeAudio.play().catch(e => console.log("Audio play blocked. User must interact first.", e));
         }
     }
 
@@ -505,23 +534,334 @@
     function initMomentStates() {
         const savedData = localStorage.getItem('momentStatesData');
         if (savedData) {
-            const parsed = JSON.parse(savedData);
-            for (let key in parsed) if(momentStatesData[key]) momentStatesData[key].timeAccumulatedMs = parsed[key];
+            try {
+                const parsed = JSON.parse(savedData);
+                for (let key in parsed) if(momentStatesData[key]) momentStatesData[key].timeAccumulatedMs = parsed[key];
+            } catch(e) {
+                console.error('Failed to parse moment states data.');
+            }
         }
         updateMomentChartColors();
         renderMomentChart();
         updateMomentUI();
         
-        document.getElementById('icon-sound-on').style.display = isAudioMuted ? 'none' : 'block';
-        document.getElementById('icon-sound-off').style.display = isAudioMuted ? 'block' : 'none';
+        const soundOn = document.getElementById('icon-sound-on');
+        const soundOff = document.getElementById('icon-sound-off');
+        if(soundOn) soundOn.style.display = isAudioMuted ? 'none' : 'block';
+        if(soundOff) soundOff.style.display = isAudioMuted ? 'block' : 'none';
     }
 
     function toggleMomentState(stateKey) {
         processMomentTick();
+        const activeBtn = document.getElementById(`btn-moment-${activeMomentKey}`);
+        const newBtn = document.getElementById(`btn-moment-${stateKey}`);
+
         if (activeMomentKey === stateKey) {
-            document.getElementById(`btn-moment-${activeMomentKey}`).classList.remove(`active-${activeMomentKey}`);
+            if(activeBtn) activeBtn.classList.remove(`active-${activeMomentKey}`);
             activeMomentKey = null;
             momentLastTickMs = null;
             playStateAudio(null); 
         } else {
-            if(activeMomentKey) document.
+            if(activeBtn) activeBtn.classList.remove(`active-${activeMomentKey}`);
+            activeMomentKey = stateKey;
+            momentLastTickMs = Date.now();
+            if(newBtn) newBtn.classList.add(`active-${stateKey}`);
+            playStateAudio(stateKey); 
+        }
+        updateMomentUI();
+    }
+
+    function processMomentTick() {
+        if (activeMomentKey && momentLastTickMs) {
+            const now = Date.now();
+            const deltaMs = now - momentLastTickMs;
+            momentStatesData[activeMomentKey].timeAccumulatedMs += deltaMs;
+            momentLastTickMs = now;
+            
+            const saveObj = {};
+            for(let key in momentStatesData) saveObj[key] = momentStatesData[key].timeAccumulatedMs;
+            localStorage.setItem('momentStatesData', JSON.stringify(saveObj));
+        }
+    }
+
+    function formatMomentTime(ms) {
+        const totalSeconds = Math.floor(ms / 1000);
+        const h = Math.floor(totalSeconds / 3600);
+        const m = Math.floor((totalSeconds % 3600) / 60);
+        const s = totalSeconds % 60;
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function updateMomentUI() {
+        for (let key in momentStatesData) {
+            const el = document.getElementById(`time-${key}`);
+            if(el) el.innerText = formatMomentTime(momentStatesData[key].timeAccumulatedMs);
+        }
+        if(momentDonutChart) {
+            momentDonutChart.data.datasets[0].data = [
+                Math.floor(momentStatesData.purpose.timeAccumulatedMs / 1000),
+                Math.floor(momentStatesData.waste.timeAccumulatedMs / 1000),
+                Math.floor(momentStatesData.nourish.timeAccumulatedMs / 1000),
+                Math.floor(momentStatesData.train.timeAccumulatedMs / 1000),
+                Math.floor(momentStatesData.recover.timeAccumulatedMs / 1000)
+            ];
+            momentDonutChart.update();
+        }
+    }
+
+    function updateMomentChartColors() {
+        const html = document.documentElement;
+        momentStatesData.purpose.themeColor = getComputedStyle(html).getPropertyValue('--state-purpose').trim();
+        momentStatesData.waste.themeColor = getComputedStyle(html).getPropertyValue('--state-waste').trim();
+        momentStatesData.nourish.themeColor = getComputedStyle(html).getPropertyValue('--state-nourish').trim();
+        momentStatesData.train.themeColor = getComputedStyle(html).getPropertyValue('--state-train').trim();
+        momentStatesData.recover.themeColor = getComputedStyle(html).getPropertyValue('--state-recover').trim();
+    }
+
+    function renderMomentChart() {
+        const canvas = document.getElementById('momentDonutChart');
+        if(!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if(momentDonutChart) momentDonutChart.destroy();
+        
+        momentDonutChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Purposeful', 'Wasteful', 'Nourishing', 'Training', 'Recovering'],
+                datasets: [{
+                    data: [0, 0, 0, 0, 0],
+                    backgroundColor: [
+                        momentStatesData.purpose.themeColor,
+                        momentStatesData.waste.themeColor,
+                        momentStatesData.nourish.themeColor,
+                        momentStatesData.train.themeColor,
+                        momentStatesData.recover.themeColor
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                cutout: '82%', 
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const totalSec = context.raw;
+                                const h = Math.floor(totalSec / 3600);
+                                const m = Math.floor((totalSec % 3600) / 60);
+                                return ` ${h}h ${m}m`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // ==========================================
+    // 3. HABITS ENGINE (Unified Naming)
+    // ==========================================
+    let categories = [
+        { id: 'cat_1', name: 'Purposeful', subtext: 'What you build', habits: [{ id: 'hab_1', name: 'PADI Theory / Instructor Study', streak: 4, done: true }, { id: 'hab_2', name: 'Camp & Dive Web App Dev', streak: 0, done: false }] },
+        { id: 'cat_2', name: 'Wasteful', subtext: 'What drains you', habits: [{ id: 'hab_3', name: 'No PlayStation Binge Gaming', streak: 8, done: true }, { id: 'hab_4', name: 'No Mindless Doom Scrolling', streak: 3, done: true }] },
+        { id: 'cat_3', name: 'Nourishing', subtext: 'What fuels you', habits: [{ id: 'hab_5', name: 'Strict Keto / Sugar-Free Compliant', streak: 14, done: true }, { id: 'hab_6', name: 'Black Coffee / Tea Only (Fasting)', streak: 21, done: true }] },
+        { id: 'cat_4', name: 'Training', subtext: 'What strengthens you', habits: [{ id: 'hab_7', name: 'Evening Mobility / Stretch', streak: 2, done: true }] },
+        { id: 'cat_5', name: 'Recovering', subtext: 'What restores you', habits: [{ id: 'hab_8', name: '7+ Hours Restful Sleep', streak: 2, done: true }, { id: 'hab_9', name: 'Screens off 1hr Before Bed', streak: 0, done: false }] }
+    ];
+    let activeCatId = 'cat_1';
+    const catKeyMap = { cat_1: 'purpose', cat_2: 'waste', cat_3: 'nourish', cat_4: 'train', cat_5: 'recover' };
+
+    function scrollTabs(direction) { 
+        const tabs = document.getElementById('dynamicTabsHeader');
+        if(tabs) tabs.scrollBy({ left: direction * 200, behavior: 'smooth' }); 
+    }
+
+    function renderHabitsUI() {
+        const tabsContainer = document.getElementById('dynamicTabsHeader');
+        const listContainer = document.getElementById('dynamicHabitsContainer');
+        if(!tabsContainer || !listContainer) return;
+
+        tabsContainer.innerHTML = '';
+        categories.forEach(cat => {
+            const isActive = cat.id === activeCatId;
+            const key = catKeyMap[cat.id];
+            const activeClass = isActive ? `active active-tab-${key}` : '';
+            const total = cat.habits.length, done = cat.habits.filter(h => h.done).length;
+            let pulseClass = 'pulse-r'; 
+            if (total > 0) { if (done === total) pulseClass = 'pulse-g'; else if (done > 0) pulseClass = 'pulse-y'; }
+
+            tabsContainer.innerHTML += `
+                <div class="tab-btn-group">
+                    <button class="tab-btn ${activeClass}" onclick="setActiveCategory('${cat.id}')">
+                        <div class="cat-pulse-wrapper"><div class="cat-pulse ${pulseClass}"></div><span class="cat-name">${cat.name}</span></div>
+                        <span class="cat-subtext">${cat.subtext}</span>
+                    </button>
+                </div>
+            `;
+        });
+        
+        const activeCat = categories.find(c => c.id === activeCatId);
+        if (!activeCat) { listContainer.innerHTML = '<p style="color:var(--muted); padding: 1rem;">No category selected.</p>'; return; }
+        
+        let habitsHTML = `<div class="dash-list">`;
+        activeCat.habits.forEach(hab => {
+            const isDone = hab.done ? 'done' : '', streakZeroClass = hab.streak === 0 ? 'zero' : '';
+            habitsHTML += `
+                <div class="habit-row">
+                    <div class="habit-check ${isDone}" onclick="toggleHabit('${hab.id}')"></div>
+                    <span class="habit-label editable-text" contenteditable="true" onblur="saveEdit(event, 'habit', '${hab.id}')" onkeydown="handleEnterKey(event)">${hab.name}</span>
+                    <span class="habit-streak ${streakZeroClass}"><span class="alive-dot"></span> ${hab.streak} Day${hab.streak !== 1 ? 's' : ''}</span>
+                    <button class="delete-icon" onclick="deleteHabit('${hab.id}')" title="Delete Habit"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                </div>
+            `;
+        });
+        habitsHTML += `<button class="btn-add-habit" onclick="addHabit()">+ Add Habit</button></div>`;
+        listContainer.innerHTML = habitsHTML;
+    }
+
+    function setActiveCategory(id) { if (activeCatId === id) return; activeCatId = id; renderHabitsUI(); }
+    function toggleHabit(id) { const hab = categories.find(c => c.id === activeCatId).habits.find(h => h.id === id); hab.done = !hab.done; if(hab.done && hab.streak === 0) hab.streak = 1; else if(!hab.done && hab.streak === 1) hab.streak = 0; renderHabitsUI(); }
+    function addHabit() { categories.find(c => c.id === activeCatId).habits.push({ id: 'hab_' + Date.now(), name: 'New Habit', streak: 0, done: false }); renderHabitsUI(); }
+    function deleteHabit(id) { const cat = categories.find(c => c.id === activeCatId); cat.habits = cat.habits.filter(h => h.id !== id); renderHabitsUI(); }
+    function handleEnterKey(e) { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } }
+    function saveEdit(e, type, id) { const newText = e.target.innerText.trim() || 'Unnamed'; if (type === 'habit') { const hab = categories.find(c => c.id === activeCatId).habits.find(h => h.id === id); if(hab) hab.name = newText; } }
+
+    // ==========================================
+    // 4. FASTING ENGINE
+    // ==========================================
+    let isFasting = false, startTime = null, currentFastId = null, mainTimerInterval = null;
+    const fastingStages = [
+        { maxHour: 4, title: "Stage 1: Fed/Digestive State (0–4 Hours)", desc: "Process: Digestion and nutrient absorption.<br>Action: Glucose is used for energy, excess stored as glycogen." },
+        { maxHour: 12, title: "Stage 2: Early Fasting/Postabsorptive Phase (4–12 Hours)", desc: "Process: Blood sugar and insulin levels decline.<br>Action: The body breaks down glycogen to release glucose for energy." },
+        { maxHour: 16, title: "Stage 3: Ketosis and Fat Burning (12–16 Hours)", desc: "Process: Glycogen stores depleted, switching to burning fat.<br>Action: Production of ketones begins for brain fuel, increasing mental clarity." },
+        { maxHour: 24, title: "Stage 4: Autophagy (16–24 Hours)", desc: "Process: The body begins 'cellular cleanup'.<br>Action: Repairs and recycles damaged components. Hunger heavily subsides." },
+        { maxHour: 72, title: "Stage 5: Deep Fasting/Growth Hormone Phase (24–72 Hours)", desc: "Process: Peak autophagy and rise in Human Growth Hormone (HGH).<br>Action: Accelerated fat loss and significantly improved cognitive function." },
+        { maxHour: 999, title: "Stage 6: Immune Regeneration (72+ Hours)", desc: "Process: Immune system stem cells are activated.<br>Action: Deep, long-term fat burning and cellular repair." }
+    ];
+
+    function toggleFastingCollapse() { 
+        const hero = document.getElementById('fastingHero'); 
+        if(hero) {
+            hero.classList.toggle('collapsed'); 
+            localStorage.setItem('fastingCardCollapsed', hero.classList.contains('collapsed')); 
+        }
+    }
+
+    async function initFastingTracker() {
+        const { data, error } = await supabaseClient.from('fasting_sessions').select('*').eq('user_id', currentUser.id).order('start_time', { ascending: false }).limit(1);
+        if (!error && data && data.length > 0) {
+            if (!data[0].end_time) { isFasting = true; startTime = new Date(data[0].start_time).getTime(); currentFastId = data[0].id; } 
+            else { isFasting = false; startTime = new Date(data[0].end_time).getTime(); currentFastId = null; }
+        } else { isFasting = false; startTime = Date.now(); }
+        updateUITheme(); 
+        
+        if(mainTimerInterval) clearInterval(mainTimerInterval);
+        mainTimerInterval = setInterval(() => {
+            updateFastingTimer();
+            processMomentTick(); 
+            updateMomentUI();    
+        }, 1000); 
+    }
+
+    async function toggleFasting(event) {
+        event.stopPropagation(); const now = new Date(); 
+        const btn = document.getElementById('toggleFastBtn');
+        if(btn) btn.disabled = true; 
+        if (!isFasting) {
+            isFasting = true; startTime = now.getTime(); updateUITheme(); 
+            const { data } = await supabaseClient.from('fasting_sessions').insert([{ user_id: currentUser.id, start_time: now.toISOString() }]).select();
+            if (data) currentFastId = data[0].id;
+        } else {
+            isFasting = false; const endTimeMs = now.getTime(); startTime = endTimeMs; updateUITheme();
+            if (currentFastId) {
+                await supabaseClient.from('fasting_sessions').update({ end_time: now.toISOString(), duration_hours: ((endTimeMs - startTime) / 3600000).toFixed(2) }).eq('id', currentFastId);
+                currentFastId = null;
+            }
+        }
+        if(btn) btn.disabled = false; 
+        updateFastingTimer();
+    }
+
+    function updateUITheme() {
+        const hero = document.getElementById('fastingHero');
+        const btn = document.getElementById('toggleFastBtn');
+        const lbl = document.getElementById('fastStatusLabel');
+        const title = document.getElementById('miniHeroTitle');
+        
+        if (!hero || !btn || !lbl || !title) return;
+
+        hero.classList.remove('feasting-mode', 'fasting-mode');
+        
+        if (isFasting) {
+            hero.classList.add('fasting-mode');
+            lbl.innerText = "Fasting (Fat Burning)";
+            title.innerText = "Fasting Active";
+            btn.innerText = "Break Fast";
+        } else {
+            hero.classList.add('feasting-mode');
+            lbl.innerText = "Feasting (Accumulation)";
+            title.innerText = "Feasting Window";
+            btn.innerText = "Done Eating";
+        }
+    }
+
+    // Bulletproof Fasting Timer (No Seconds)
+    function updateFastingTimer() {
+        if (!startTime) return;
+        const totalSeconds = Math.floor(Math.max(0, Date.now() - startTime) / 1000);
+        
+        const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+        const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+        const displayTime = `${h}:${m}`;
+        
+        const fd = document.getElementById('fastTimeDisplay');
+        const md = document.getElementById('miniFastTimeDisplay');
+        if(fd) fd.innerText = displayTime; 
+        if(md) md.innerText = displayTime;
+
+        const stageTitle = document.getElementById('stageTitle');
+        const stageDesc = document.getElementById('stageDesc');
+
+        if (isFasting) {
+            let currentStage = fastingStages[0];
+            for (let stage of fastingStages) if ((totalSeconds / 3600) < stage.maxHour) { currentStage = stage; break; }
+            if(stageTitle) stageTitle.innerText = currentStage.title; 
+            if(stageDesc) stageDesc.innerHTML = currentStage.desc;
+        } else {
+            if(stageTitle) stageTitle.innerText = "Feasting Window (Nutrient Partitioning)";
+            if(stageDesc) stageDesc.innerHTML = "Process: Insulin rises to shuttle nutrients into cells.<br>Action: Replenishing glycogen, repairing muscle tissue, and preparing the body for the next fast.";
+        }
+    }
+    
+    // ==========================================
+    // 5. THEME BOOT
+    // ==========================================
+    function toggleTheme() {
+        const html = document.documentElement; 
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        
+        const sun = document.getElementById('icon-sun');
+        const moon = document.getElementById('icon-moon');
+        const lbl = document.getElementById('theme-label');
+        
+        if(sun) sun.style.display = next === 'light' ? 'block' : 'none';
+        if(moon) moon.style.display = next === 'dark' ? 'block' : 'none';
+        if(lbl) lbl.textContent = next === 'light' ? 'Light Mode' : 'Dark Mode';
+        
+        if (currentUser) { 
+            updateFastingTimer(); 
+            updateMomentChartColors();
+            if(momentDonutChart) renderMomentChart(); 
+        }
+    }
+
+    // Initialize application
+    checkUser();
+</script>
+</body>
+</html>
