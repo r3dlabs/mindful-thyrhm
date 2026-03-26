@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mindful Rhythm | Intentional Living</title>
+    <title>Mindful Rhythm | Live the Moment</title>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -80,11 +80,12 @@
             header { padding: 1.5rem 1rem; }
         }
 
-        /* Centered User Profile */
-        .center-profile { display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-top: 1.5rem; animation: fadeIn 0.5s ease; }
-        .user-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--border); }
-        .user-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 1rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text); }
-        .btn-text-logout { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); cursor: pointer; border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 0.3rem 0.8rem; transition: all 0.2s; }
+        /* Centered User Profile - Stacked */
+        .center-profile { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0.4rem; margin-top: 1.5rem; animation: fadeIn 0.5s ease; }
+        .user-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--border); }
+        .user-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 1.1rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text); cursor: pointer; transition: color 0.2s; }
+        .user-name:hover { color: var(--fasting); }
+        .btn-text-logout { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); cursor: pointer; border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 0.3rem 0.8rem; transition: all 0.2s; animation: fadeIn 0.2s ease; }
         .btn-text-logout:hover { color: var(--lose); border-color: var(--lose); }
 
         .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
@@ -179,18 +180,20 @@
         .scroll-arrow { background: transparent; border: none; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0.5rem 0.2rem; transition: color 0.2s; flex-shrink: 0; outline: none; }
         .scroll-arrow:hover { color: var(--text); }
 
-        .tabs-header { display: flex; gap: 0.75rem; overflow-x: auto; scrollbar-width: none; align-items: center; flex-grow: 1; scroll-behavior: smooth; padding: 0 0.5rem; }
+        /* Centered Tabs Container */
+        .tabs-header { display: flex; gap: 0.75rem; overflow-x: auto; scrollbar-width: none; align-items: center; justify-content: center; flex-grow: 1; scroll-behavior: smooth; padding: 0 0.5rem; }
         .tabs-header::-webkit-scrollbar { display: none; }
         
         .tab-btn-group { display: flex; align-items: center; position: relative; }
+        
+        /* Centered Tab Button Text */
         .tab-btn { 
             background: var(--input-bg); border: 1px solid var(--border); color: var(--muted); 
-            padding: 0.6rem 1rem; border-radius: 12px; cursor: pointer; transition: all 0.2s; 
-            display: flex; flex-direction: column; align-items: flex-start; gap: 0.2rem; outline: none;
+            padding: 0.6rem 1.2rem; border-radius: 12px; cursor: pointer; transition: all 0.2s; 
+            display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.2rem; outline: none;
             min-width: max-content;
         }
         
-        /* New Neutral Active Tab Colors */
         .tab-btn.active { 
             background: var(--tab-active-bg); 
             color: var(--tab-active-text); 
@@ -199,8 +202,7 @@
         }
         .tab-btn.active .cat-name, .tab-btn.active .cat-subtext { color: var(--tab-active-text); }
         
-        /* Category Pulsing Dots */
-        .cat-pulse-wrapper { display: flex; align-items: center; gap: 0.4rem; }
+        .cat-pulse-wrapper { display: flex; align-items: center; gap: 0.4rem; justify-content: center;}
         .cat-pulse { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
         
         .pulse-g { background: var(--win); box-shadow: 0 0 8px var(--win); animation: pulseG 2s infinite ease-in-out; }
@@ -211,7 +213,7 @@
         @keyframes pulseY { 0% { box-shadow: 0 0 4px var(--pulse-y-glow); } 50% { box-shadow: 0 0 12px var(--pulse-y-glow); } 100% { box-shadow: 0 0 4px var(--pulse-y-glow); } }
         @keyframes pulseR { 0% { box-shadow: 0 0 4px var(--lose); } 50% { box-shadow: 0 0 12px var(--lose); } 100% { box-shadow: 0 0 4px var(--lose); } }
 
-        .cat-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 1rem; }
+        .cat-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 1.05rem; }
         .cat-subtext { font-family: 'Barlow', sans-serif; font-size: 0.75rem; font-weight: 400; opacity: 0.7; letter-spacing: 0; text-transform: none;}
         .tab-btn.active .cat-subtext { opacity: 0.9; }
 
@@ -256,12 +258,12 @@
     </div>
     
     <h1>Mindful Rhythm</h1>
-    <p>Intentional Living</p>
+    <p>Live the Moment</p>
     
     <div id="userProfileCenter" class="center-profile" style="display: none;">
         <img id="userAvatar" class="user-avatar" src="" alt="Profile">
-        <span id="userName" class="user-name"></span>
-        <button id="logoutBtn" class="btn-text-logout" onclick="signOut()">Log Out</button>
+        <span id="userName" class="user-name" onclick="toggleLogout()"></span>
+        <button id="logoutBtn" class="btn-text-logout" style="display: none;" onclick="signOut()">Log Out</button>
     </div>
 </header>
 
@@ -398,6 +400,11 @@
 
     async function signInWithGoogle() { await supabaseClient.auth.signInWithOAuth({ provider: 'google' }); }
     async function signOut() { await supabaseClient.auth.signOut(); window.location.reload(); }
+    
+    function toggleLogout() {
+        const btn = document.getElementById('logoutBtn');
+        btn.style.display = (btn.style.display === 'none') ? 'block' : 'none';
+    }
 
     // ==========================================
     // 2. HABITS ENGINE (DYNAMIC DATA)
@@ -660,7 +667,6 @@
         const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         html.setAttribute('data-theme', next);
         
-        // Match the label and icon to the newly selected theme
         document.getElementById('theme-icon').textContent = next === 'light' ? '☀️' : '🌙';
         document.getElementById('theme-label').textContent = next === 'light' ? 'Light' : 'Dark';
         
