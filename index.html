@@ -251,4 +251,277 @@
 
         <button id="fullscreenBtn" class="icon-btn" onclick="toggleFullscreen()" title="Fullscreen Mode">
             <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <path d="M8 3H
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+            </svg>
+        </button>
+
+        <div class="theme-toggle-container" onclick="toggleTheme()" title="Toggle mode">
+            <div class="sleek-toggle-track">
+                <div class="sleek-toggle-knob">
+                    <svg id="icon-sun" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+                    </svg>
+                    <svg id="icon-moon" style="display: none;" width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <h1>Mindful Rhythm</h1>
+    <p>Live the Moment</p>
+    
+    <div class="date-time-display">
+        <span id="currentDate"></span>
+        <span id="currentTime"></span>
+    </div>
+</header>
+
+<div class="container">
+    <div id="loadingView" class="loading-card">
+        <h2 style="color: var(--muted); font-size: 1.2rem;">Syncing Systems...</h2>
+    </div>
+
+    <div id="loginView" class="auth-card" style="display: none;">
+        <h2>Connect Account</h2>
+        <p style="color: var(--muted); font-size: 0.95rem;">Sign in to sync your records.</p>
+        <button class="auth-btn" onclick="signInWithGoogle()">
+            <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg" style="margin-right: 8px;">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            Continue with Google
+        </button>
+    </div>
+
+    <div id="mainContent" style="display: none;">
+        
+        <div id="fastingHero" class="dash-card feasting-mode">
+            <div class="hero-header" onclick="toggleFastingCollapse()">
+                <div class="hero-header-left">
+                    <div class="mini-pulse"></div>
+                    <span class="hero-title" id="miniHeroTitle">Feasting</span>
+                </div>
+                <div class="hero-header-right">
+                    <span class="mini-time" id="miniFastTimeDisplay">00:00</span>
+                    <svg class="chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+            </div>
+
+            <div class="hero-content">
+                <div class="fast-ring" id="fastRing">
+                    <div class="fast-hole">
+                        <span class="fast-time" id="fastTimeDisplay">00:00</span>
+                        <span class="fast-label" id="fastStatusLabel">Feasting</span>
+                    </div>
+                </div>
+                <div class="stage-container">
+                    <div class="stage-title" id="stageTitle">Loading...</div>
+                    <div class="stage-desc" id="stageDesc">Calculating current biological phase...</div>
+                </div>
+                <button id="toggleFastBtn" class="action-btn" onclick="toggleFasting(event)">Done Eating</button>
+            </div>
+        </div>
+
+        <div class="dash-card">
+            <h3 class="card-title-centered">State of the Moment</h3>
+            
+            <div class="moment-dashboard-layout">
+                <div class="moment-timers-col">
+                    <button class="moment-btn" id="btn-moment-purpose" onclick="toggleMomentState('purpose')">
+                        <span class="moment-label">Purposeful</span>
+                        <span class="moment-timer-text" id="time-purpose">00:00:00</span>
+                    </button>
+                    <button class="moment-btn" id="btn-moment-waste" onclick="toggleMomentState('waste')">
+                        <span class="moment-label">Wasteful</span>
+                        <span class="moment-timer-text" id="time-waste">00:00:00</span>
+                    </button>
+                    <button class="moment-btn" id="btn-moment-nourish" onclick="toggleMomentState('nourish')">
+                        <span class="moment-label">Nourishing</span>
+                        <span class="moment-timer-text" id="time-nourish">00:00:00</span>
+                    </button>
+                    <button class="moment-btn" id="btn-moment-train" onclick="toggleMomentState('train')">
+                        <span class="moment-label">Training</span>
+                        <span class="moment-timer-text" id="time-train">00:00:00</span>
+                    </button>
+                    <button class="moment-btn" id="btn-moment-recover" onclick="toggleMomentState('recover')">
+                        <span class="moment-label">Recovering</span>
+                        <span class="moment-timer-text" id="time-recover">00:00:00</span>
+                    </button>
+                </div>
+
+                <div class="moment-donut-col">
+                    <div class="moment-donut-wrapper">
+                        <canvas id="momentDonutChart"></canvas>
+                        <div class="donut-center-content" id="userProfileCenter" style="display: none;">
+                            <img id="userAvatar" class="user-avatar" src="" alt="Profile">
+                            <span id="userName" class="user-name" onclick="toggleLogout()"></span>
+                            <button id="logoutBtn" class="btn-text-logout" style="display: none;" onclick="signOut()">Log Out</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-card">
+            <div class="tabs-scroll-container">
+                <button class="scroll-arrow" onclick="scrollTabs(-1)"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
+                <div class="tabs-header" id="dynamicTabsHeader"></div>
+                <button class="scroll-arrow" onclick="scrollTabs(1)"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button>
+            </div>
+            <div id="dynamicHabitsContainer"></div>
+        </div>
+
+    </div>
+</div>
+
+<audio id="audio-purpose" loop src="purpose.mp3"></audio>
+<audio id="audio-waste" loop src="waste.mp3"></audio>
+<audio id="audio-nourish" loop src="nourish.mp3"></audio>
+<audio id="audio-train" loop src="train.mp3"></audio>
+<audio id="audio-recover" loop src="recover.mp3"></audio>
+
+<script>
+    // ==========================================
+    // 1. SUPABASE CONFIGURATION & CLOCK
+    // ==========================================
+    const SUPABASE_URL = 'https://ambpjxgidojgmwvvjglg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtYnBqeGdpZG9qZ213dnZqZ2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MzQzNTQsImV4cCI6MjA5MDAxMDM1NH0.8TfCIQhAjPChBZn8op5J9ykyMc3hPDJ_vJuUEm3WcP4';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentUser = null;
+
+    const views = { loading: document.getElementById('loadingView'), login: document.getElementById('loginView'), main: document.getElementById('mainContent') };
+
+    function showView(viewName) {
+        Object.values(views).forEach(el => el.style.display = 'none');
+        if (views[viewName]) views[viewName].style.display = 'block';
+    }
+
+    // Bulletproof Time Formatter (No Seconds)
+    function updateClock() {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        
+        let h = now.getHours();
+        const m = String(now.getMinutes()).padStart(2, '0');
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12;
+        h = h ? h : 12; 
+        const timeStr = `${h}:${m} ${ampm}`;
+
+        const dateEl = document.getElementById('currentDate');
+        const timeEl = document.getElementById('currentTime');
+        if(dateEl) dateEl.innerText = dateStr;
+        if(timeEl) timeEl.innerText = timeStr;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Fullscreen Controls
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => console.log(err));
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+    async function checkUser() {
+        try {
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            if (error) throw error;
+
+            if (session) {
+                currentUser = session.user;
+                const meta = currentUser.user_metadata;
+                if (meta) {
+                    if (meta.avatar_url) document.getElementById('userAvatar').src = meta.avatar_url;
+                    if (meta.full_name) document.getElementById('userName').innerText = meta.full_name.split(' ')[0];
+                    document.getElementById('userProfileCenter').style.display = 'flex';
+                } else {
+                    document.getElementById('userProfileCenter').style.display = 'flex';
+                }
+                
+                showView('main');
+                if(localStorage.getItem('fastingCardCollapsed') === 'true') document.getElementById('fastingHero').classList.add('collapsed');
+
+                await initFastingTracker(); 
+                renderHabitsUI(); 
+                initMomentStates(); 
+            } else {
+                document.getElementById('userProfileCenter').style.display = 'none';
+                showView('login');
+            }
+        } catch (err) { showView('login'); }
+    }
+
+    async function signInWithGoogle() { await supabaseClient.auth.signInWithOAuth({ provider: 'google' }); }
+    async function signOut() { await supabaseClient.auth.signOut(); window.location.reload(); }
+    function toggleLogout() { const btn = document.getElementById('logoutBtn'); btn.style.display = (btn.style.display === 'none') ? 'block' : 'none'; }
+
+    // ==========================================
+    // 2. MOMENT STATES & AUDIO ENGINE
+    // ==========================================
+    let isAudioMuted = true; 
+
+    function toggleMute() {
+        isAudioMuted = !isAudioMuted;
+        document.getElementById('icon-sound-on').style.display = isAudioMuted ? 'none' : 'block';
+        document.getElementById('icon-sound-off').style.display = isAudioMuted ? 'block' : 'none';
+        
+        if (isAudioMuted) {
+            ['purpose', 'waste', 'nourish', 'train', 'recover'].forEach(key => document.getElementById(`audio-${key}`).pause());
+        } else if (activeMomentKey) {
+            document.getElementById(`audio-${activeMomentKey}`).play().catch(e => console.log("Audio play blocked", e));
+        }
+    }
+
+    function playStateAudio(stateKey) {
+        ['purpose', 'waste', 'nourish', 'train', 'recover'].forEach(key => {
+            const audio = document.getElementById(`audio-${key}`);
+            audio.pause();
+        });
+        
+        if (stateKey && !isAudioMuted) {
+            const activeAudio = document.getElementById(`audio-${stateKey}`);
+            activeAudio.play().catch(e => console.log("Audio play blocked. User must interact first.", e));
+        }
+    }
+
+    const momentStatesData = {
+        purpose: { timeAccumulatedMs: 0, themeColor: '' },
+        waste: { timeAccumulatedMs: 0, themeColor: '' },
+        nourish: { timeAccumulatedMs: 0, themeColor: '' },
+        train: { timeAccumulatedMs: 0, themeColor: '' },
+        recover: { timeAccumulatedMs: 0, themeColor: '' }
+    };
+    let activeMomentKey = null;
+    let momentLastTickMs = null;
+    let momentDonutChart = null;
+
+    function initMomentStates() {
+        const savedData = localStorage.getItem('momentStatesData');
+        if (savedData) {
+            const parsed = JSON.parse(savedData);
+            for (let key in parsed) if(momentStatesData[key]) momentStatesData[key].timeAccumulatedMs = parsed[key];
+        }
+        updateMomentChartColors();
+        renderMomentChart();
+        updateMomentUI();
+        
+        document.getElementById('icon-sound-on').style.display = isAudioMuted ? 'none' : 'block';
+        document.getElementById('icon-sound-off').style.display = isAudioMuted ? 'block' : 'none';
+    }
+
+    function toggleMomentState(stateKey) {
+        processMomentTick();
+        if (activeMomentKey === stateKey) {
+            document.getElementById(`btn-moment-${activeMomentKey}`).classList.remove(`active-${activeMomentKey}`);
+            activeMomentKey = null;
+            momentLastTickMs = null;
+            playStateAudio(null); 
+        } else {
+            if(activeMomentKey) document.
