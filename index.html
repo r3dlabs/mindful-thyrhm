@@ -101,14 +101,14 @@
         .header-profile-menu svg { width: 14px; height: 14px; color: var(--muted); transition: transform 0.2s; }
         .header-profile-menu.menu-active svg { transform: rotate(180deg); }
         
-        /* NEW: Crisp Black & White Logout Button */
+        /* Crisp Black & White Logout Button */
         .btn-text-logout-header { 
             font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; 
             color: #0f0f1a; background: #ffffff; border: 1px solid #dde0ea; 
             border-radius: 20px; padding: 0.4rem 1.2rem; cursor: pointer; 
             transition: all 0.2s; white-space: nowrap; outline: none; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .btn-text-logout-header:hover { background: #f2f2f7; border-color: #8888a0; }
+        .btn-text-logout-header:hover { background: #f2f2f7; color: #000; border-color: #8888a0; }
         
         [data-theme="dark"] .btn-text-logout-header { color: #0f0f1a; background: #e8e8f0; border-color: #e8e8f0; }
         [data-theme="dark"] .btn-text-logout-header:hover { background: #ffffff; color: #000; }
@@ -129,7 +129,7 @@
         
         .dynamic-name { text-transform: none; letter-spacing: 0; color: var(--accent); }
 
-        /* NEW: Shared Action Cluster for Share & Download Integration */
+        /* Shared Action Cluster for Share & Download Integration */
         .action-cluster-header { 
             display: flex; align-items: center; gap: 0.4rem; 
             background: var(--input-bg); border: 1px solid var(--border); 
@@ -150,7 +150,8 @@
         .hero-header-left { display: flex; align-items: center; gap: 1rem; flex-grow: 1;}
         .hero-header-right { display: flex; align-items: center; gap: 1rem; flex-shrink: 0;}
 
-        .mini-pulse { width: 14px; height: 14px; border-radius: 50%; }
+        /* FIX: Ensure the pulsing dot NEVER shrinks on mobile */
+        .mini-pulse { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
         .fasting-mode .mini-pulse { background: var(--fasting); box-shadow: 0 0 10px var(--fasting-glow); animation: pulseFasting 2.5s infinite ease-in-out; }
         .feasting-mode .mini-pulse { background: var(--feasting); box-shadow: 0 0 10px var(--feasting-glow); animation: pulseFeasting 4s infinite ease-in-out; }
 
@@ -351,30 +352,32 @@
 </div>
 
 <header>
-    <div class="controls-cluster">
-        <div id="headerProfileMenu" class="header-profile-menu" onclick="toggleHeaderLogout()" style="display: none;" title="Account Settings">
-            <img id="userAvatarHeader" class="user-avatar-header" src="" alt="Profile" crossorigin="anonymous">
-            <span id="userNameHeader" class="user-name-header">User</span>
-            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-        </div>
-        
-        <button id="logoutBtnHeader" class="btn-text-logout-header" style="display: none;" onclick="signOut()">Log Out</button>
+    <div class="top-controls-bar">
+        <div class="controls-cluster">
+            <div id="headerProfileMenu" class="header-profile-menu" onclick="toggleHeaderLogout()" style="display: none;" title="Account Settings">
+                <img id="userAvatarHeader" class="user-avatar-header" src="" alt="Profile" crossorigin="anonymous">
+                <span id="userNameHeader" class="user-name-header">User</span>
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+            
+            <button id="logoutBtnHeader" class="btn-text-logout-header" style="display: none;" onclick="signOut()">Log Out</button>
 
-        <button id="fullscreenBtn" class="icon-btn" onclick="toggleFullscreen()" title="Fullscreen Mode">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-            </svg>
-        </button>
+            <button id="fullscreenBtn" class="icon-btn" onclick="toggleFullscreen()" title="Fullscreen Mode">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                </svg>
+            </button>
 
-        <div class="theme-toggle-container" onclick="toggleTheme()" title="Toggle mode">
-            <div class="sleek-toggle-track">
-                <div class="sleek-toggle-knob">
-                    <svg id="icon-sun" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
-                    </svg>
-                    <svg id="icon-moon" style="display: none;" width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
-                    </svg>
+            <div class="theme-toggle-container" onclick="toggleTheme()" title="Toggle mode">
+                <div class="sleek-toggle-track">
+                    <div class="sleek-toggle-knob">
+                        <svg id="icon-sun" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+                        </svg>
+                        <svg id="icon-moon" style="display: none;" width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>
@@ -555,7 +558,7 @@
             </div>
         </div>
 
-        <div class="dash-card">
+        <div id="habitCard" class="dash-card">
             <h3 class="card-title-centered" id="habitCardHeader"><span id="habitUserName" class="dynamic-name">User</span>'S HABITS</h3>
 
             <div class="tabs-scroll-container">
@@ -576,6 +579,16 @@
 <audio id="audio-recover" loop src="recover.mp3"></audio>
 
 <script>
+    // Global Error Safety Nets
+    window.addEventListener('error', function(e) {
+        const loadView = document.getElementById('loadingView');
+        if (loadView && loadView.style.display !== 'none') loadView.innerHTML = `<h2 style="color:var(--lose)">Engine Error</h2><p style="color:var(--muted)">${e.message}. Please refresh or check your connection.</p>`;
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+        const loadView = document.getElementById('loadingView');
+        if (loadView && loadView.style.display !== 'none') loadView.innerHTML = `<h2 style="color:var(--lose)">Async Error</h2><p style="color:var(--muted)">${e.reason}. Please refresh.</p>`;
+    });
+
     // ==========================================
     // 1. SUPABASE CONFIGURATION & CLOCK
     // ==========================================
