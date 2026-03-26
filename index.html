@@ -65,7 +65,6 @@
 
         /* Top Right Control Cluster */
         .controls-cluster { position: absolute; top: 1.5rem; right: 1.5rem; display: flex; align-items: center; gap: 1rem; }
-        
         .icon-btn { background: transparent; border: none; color: var(--muted); cursor: pointer; transition: color 0.2s; display: flex; align-items: center; justify-content: center; padding: 0.2rem; }
         .icon-btn:hover { color: var(--text); }
         
@@ -135,24 +134,34 @@
         .moment-donut-col { width: 300px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;}
         @media (max-width: 768px) { .moment-dashboard-layout { flex-direction: column; gap: 2.5rem; } .moment-donut-col { width: 100%; max-width: 280px; margin: 0 auto; } }
 
-        .moment-btn { background: var(--input-bg); border: 3px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; position: relative; outline: none; }
-        .moment-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); transition: color 0.3s;}
-        .moment-timer-text { font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 1.15rem; tabular-nums; color: var(--text); transition: color 0.3s;}
+        .moment-btn { 
+            background: var(--input-bg); border: 3px solid var(--border); border-radius: 12px; 
+            padding: 1rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; 
+            transition: all 0.3s ease; position: relative; outline: none; 
+        }
         
+        .moment-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); transition: color 0.3s;}
+        
+        .moment-right-controls { display: flex; align-items: center; gap: 1rem; }
+        .moment-timer-text { font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 1.15rem; tabular-nums; color: var(--text); transition: color 0.3s;}
+        .moment-audio-btn { color: var(--muted); background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.3s; }
+        .moment-audio-btn:hover { color: var(--text); }
+        
+        /* Active State Fills (Thick Border, Transparent Bg) */
         .moment-btn.active-purpose { border-color: var(--state-purpose); background: var(--surface); box-shadow: 0 4px 15px var(--glow-purpose); }
-        .moment-btn.active-purpose .moment-label { color: var(--state-purpose); }
+        .moment-btn.active-purpose .moment-label, .moment-btn.active-purpose .moment-audio-btn { color: var(--state-purpose); }
         
         .moment-btn.active-waste { border-color: var(--state-waste); background: var(--surface); box-shadow: 0 4px 15px var(--glow-waste); }
-        .moment-btn.active-waste .moment-label { color: var(--state-waste); }
+        .moment-btn.active-waste .moment-label, .moment-btn.active-waste .moment-audio-btn { color: var(--state-waste); }
 
         .moment-btn.active-nourish { border-color: var(--state-nourish); background: var(--surface); box-shadow: 0 4px 15px var(--glow-nourish); }
-        .moment-btn.active-nourish .moment-label { color: var(--state-nourish); }
+        .moment-btn.active-nourish .moment-label, .moment-btn.active-nourish .moment-audio-btn { color: var(--state-nourish); }
 
         .moment-btn.active-train { border-color: var(--state-train); background: var(--surface); box-shadow: 0 4px 15px var(--glow-train); }
-        .moment-btn.active-train .moment-label { color: var(--state-train); }
+        .moment-btn.active-train .moment-label, .moment-btn.active-train .moment-audio-btn { color: var(--state-train); }
 
         .moment-btn.active-recover { border-color: var(--state-recover); background: var(--surface); box-shadow: 0 4px 15px var(--glow-recover); }
-        .moment-btn.active-recover .moment-label { color: var(--state-recover); }
+        .moment-btn.active-recover .moment-label, .moment-btn.active-recover .moment-audio-btn { color: var(--state-recover); }
 
         .moment-donut-wrapper { width: 100%; aspect-ratio: 1; position: relative; display: flex; align-items: center; justify-content: center; margin: 0 auto;}
         .moment-donut-wrapper canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;}
@@ -174,9 +183,13 @@
         
         .tab-btn-group { display: flex; align-items: center; position: relative; }
         
-        .tab-btn { background: var(--input-bg); border: 3px solid var(--border); color: var(--muted); padding: 0.6rem 1.2rem; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.2rem; outline: none; min-width: max-content; }
+        /* Thick Border Style for Habit Tabs */
+        .tab-btn { background: var(--input-bg); border: 3px solid var(--border); padding: 0.6rem 1.2rem; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.2rem; outline: none; min-width: max-content; }
         
-        /* Vibrant Borders & Matching Text for Habit Tabs */
+        .cat-name { color: var(--text); font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 1.05rem; transition: color 0.3s;}
+        .cat-subtext { color: var(--muted); font-family: 'Barlow', sans-serif; font-size: 0.75rem; font-weight: 400; opacity: 0.7; letter-spacing: 0; text-transform: none; transition: color 0.3s;}
+
+        /* Vibrant Borders & Matching Text for Active Habit Tabs */
         .tab-btn.active-tab-purpose { border-color: var(--state-purpose); background: var(--surface); box-shadow: 0 4px 15px var(--glow-purpose); }
         .tab-btn.active-tab-purpose .cat-name { color: var(--state-purpose); }
 
@@ -192,8 +205,6 @@
         .tab-btn.active-tab-recover { border-color: var(--state-recover); background: var(--surface); box-shadow: 0 4px 15px var(--glow-recover); }
         .tab-btn.active-tab-recover .cat-name { color: var(--state-recover); }
 
-        .tab-btn.active .cat-subtext { color: var(--muted); opacity: 0.9; }
-
         .cat-pulse-wrapper { display: flex; align-items: center; gap: 0.4rem; justify-content: center;}
         .cat-pulse { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; transition: border-color 0.3s;}
         
@@ -204,9 +215,6 @@
         @keyframes pulseG { 0% { box-shadow: 0 0 4px var(--win); } 50% { box-shadow: 0 0 12px var(--win); } 100% { box-shadow: 0 0 4px var(--win); } }
         @keyframes pulseY { 0% { box-shadow: 0 0 4px var(--pulse-y-glow); } 50% { box-shadow: 0 0 12px var(--pulse-y-glow); } 100% { box-shadow: 0 0 4px var(--pulse-y-glow); } }
         @keyframes pulseR { 0% { box-shadow: 0 0 4px var(--lose); } 50% { box-shadow: 0 0 12px var(--lose); } 100% { box-shadow: 0 0 4px var(--lose); } }
-        
-        .cat-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 1.05rem; transition: color 0.3s;}
-        .cat-subtext { font-family: 'Barlow', sans-serif; font-size: 0.75rem; font-weight: 400; opacity: 0.7; letter-spacing: 0; text-transform: none; transition: color 0.3s;}
         
         .editable-text { cursor: text; border-bottom: 1px dashed transparent; transition: border-color 0.2s; white-space: nowrap;}
         .editable-text:hover, .editable-text:focus { border-bottom-color: var(--muted); outline: none; }
@@ -240,15 +248,6 @@
 
 <header>
     <div class="controls-cluster">
-        <button id="audioToggleBtn" class="icon-btn" onclick="toggleMute()" title="Toggle Sound">
-            <svg id="icon-sound-on" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-            </svg>
-            <svg id="icon-sound-off" style="display:none;" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>
-            </svg>
-        </button>
-
         <button id="fullscreenBtn" class="icon-btn" onclick="toggleFullscreen()" title="Fullscreen Mode">
             <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
@@ -333,23 +332,53 @@
                 <div class="moment-timers-col">
                     <button class="moment-btn" id="btn-moment-purpose" onclick="toggleMomentState('purpose')">
                         <span class="moment-label">Purposeful</span>
-                        <span class="moment-timer-text" id="time-purpose">00:00:00</span>
+                        <div class="moment-right-controls">
+                            <span class="moment-timer-text" id="time-purpose">00:00:00</span>
+                            <div class="moment-audio-btn" onclick="toggleSpecificMute(event)" title="Toggle Audio">
+                                <svg class="audio-on" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                                <svg class="audio-off" style="display:none;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                            </div>
+                        </div>
                     </button>
                     <button class="moment-btn" id="btn-moment-waste" onclick="toggleMomentState('waste')">
                         <span class="moment-label">Wasteful</span>
-                        <span class="moment-timer-text" id="time-waste">00:00:00</span>
+                        <div class="moment-right-controls">
+                            <span class="moment-timer-text" id="time-waste">00:00:00</span>
+                            <div class="moment-audio-btn" onclick="toggleSpecificMute(event)" title="Toggle Audio">
+                                <svg class="audio-on" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                                <svg class="audio-off" style="display:none;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                            </div>
+                        </div>
                     </button>
                     <button class="moment-btn" id="btn-moment-nourish" onclick="toggleMomentState('nourish')">
                         <span class="moment-label">Nourishing</span>
-                        <span class="moment-timer-text" id="time-nourish">00:00:00</span>
+                        <div class="moment-right-controls">
+                            <span class="moment-timer-text" id="time-nourish">00:00:00</span>
+                            <div class="moment-audio-btn" onclick="toggleSpecificMute(event)" title="Toggle Audio">
+                                <svg class="audio-on" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                                <svg class="audio-off" style="display:none;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                            </div>
+                        </div>
                     </button>
                     <button class="moment-btn" id="btn-moment-train" onclick="toggleMomentState('train')">
                         <span class="moment-label">Training</span>
-                        <span class="moment-timer-text" id="time-train">00:00:00</span>
+                        <div class="moment-right-controls">
+                            <span class="moment-timer-text" id="time-train">00:00:00</span>
+                            <div class="moment-audio-btn" onclick="toggleSpecificMute(event)" title="Toggle Audio">
+                                <svg class="audio-on" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                                <svg class="audio-off" style="display:none;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                            </div>
+                        </div>
                     </button>
                     <button class="moment-btn" id="btn-moment-recover" onclick="toggleMomentState('recover')">
                         <span class="moment-label">Recovering</span>
-                        <span class="moment-timer-text" id="time-recover">00:00:00</span>
+                        <div class="moment-right-controls">
+                            <span class="moment-timer-text" id="time-recover">00:00:00</span>
+                            <div class="moment-audio-btn" onclick="toggleSpecificMute(event)" title="Toggle Audio">
+                                <svg class="audio-on" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                                <svg class="audio-off" style="display:none;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                            </div>
+                        </div>
                     </button>
                 </div>
 
@@ -492,10 +521,13 @@
     // ==========================================
     let isAudioMuted = true; 
 
-    function toggleMute() {
+    function toggleSpecificMute(event) {
+        event.stopPropagation();
         isAudioMuted = !isAudioMuted;
-        document.getElementById('icon-sound-on').style.display = isAudioMuted ? 'none' : 'block';
-        document.getElementById('icon-sound-off').style.display = isAudioMuted ? 'block' : 'none';
+        
+        // Update all specific icons in the Moment buttons
+        document.querySelectorAll('.audio-on').forEach(el => el.style.display = isAudioMuted ? 'none' : 'block');
+        document.querySelectorAll('.audio-off').forEach(el => el.style.display = isAudioMuted ? 'block' : 'none');
         
         if (isAudioMuted) {
             ['purpose', 'waste', 'nourish', 'train', 'recover'].forEach(key => {
@@ -545,10 +577,9 @@
         renderMomentChart();
         updateMomentUI();
         
-        const soundOn = document.getElementById('icon-sound-on');
-        const soundOff = document.getElementById('icon-sound-off');
-        if(soundOn) soundOn.style.display = isAudioMuted ? 'none' : 'block';
-        if(soundOff) soundOff.style.display = isAudioMuted ? 'block' : 'none';
+        // Sync visual mute states
+        document.querySelectorAll('.audio-on').forEach(el => el.style.display = isAudioMuted ? 'none' : 'block');
+        document.querySelectorAll('.audio-off').forEach(el => el.style.display = isAudioMuted ? 'block' : 'none');
     }
 
     function toggleMomentState(stateKey) {
