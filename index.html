@@ -66,17 +66,20 @@
         .btn-confirm { background: var(--lose); color: #fff; border: 2px solid var(--lose); }
         .btn-confirm:hover { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
 
-        /* --- Header & Top Controls --- */
-        header { text-align: center; position: relative; z-index: 900; background: var(--bg); padding: 2rem 1.5rem 2.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); }
-        header h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(2.2rem, 5vw, 3rem); letter-spacing: 0.05em; text-transform: uppercase; color: var(--text); line-height: 1; margin-bottom: 0.4rem; }
-        header p { color: var(--muted); font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.5rem; }
+        /* --- NEW Responsive Header Layout (No Overlap) --- */
+        header { background: var(--bg); margin-bottom: 2rem; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; position: relative; z-index: 900;}
+        .top-controls-bar { display: flex; justify-content: flex-end; padding: 1.5rem 1.5rem 0; width: 100%; }
+        .controls-cluster { display: flex; align-items: center; gap: 1rem; }
+        
+        .header-titles { text-align: center; padding: 1rem 1.5rem 2.5rem; }
+        .header-titles h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(2.2rem, 5vw, 3rem); letter-spacing: 0.05em; text-transform: uppercase; color: var(--text); line-height: 1; margin-bottom: 0.4rem; }
+        .header-titles p { color: var(--muted); font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.5rem; }
 
         .date-time-display { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
         #currentDate { font-size: 0.9rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
         #currentTime { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--text); letter-spacing: 0.02em; }
 
-        /* Controls Cluster and Dynamic Name in Header */
-        .controls-cluster { position: absolute; top: 1.5rem; right: 1.5rem; display: flex; align-items: center; gap: 1rem; }
+        /* Icons & Toggles */
         .icon-btn { background: transparent; border: none; color: var(--muted); cursor: pointer; transition: color 0.2s; display: flex; align-items: center; justify-content: center; padding: 0.2rem; }
         .icon-btn:hover { color: var(--text); }
         
@@ -85,22 +88,31 @@
         .sleek-toggle-knob { width: 20px; height: 20px; border-radius: 50%; background: var(--toggle-knob-bg); position: absolute; top: 4px; left: 4px; transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1), background 0.3s ease; display: flex; align-items: center; justify-content: center; color: var(--toggle-icon-color); }
         [data-theme="dark"] .sleek-toggle-knob { transform: translateX(22px); }
         
-        /* New Header Profile Menu Style */
+        /* Header Profile Menu Style */
         .header-profile-menu { display: flex; align-items: center; gap: 0.6rem; cursor: pointer; border: 1px solid var(--border); background: var(--surface); border-radius: 20px; padding: 0.3rem 0.8rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;}
         .header-profile-menu:hover { border-color: var(--accent); }
-        
         .user-avatar-header { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid var(--bg); flex-shrink: 0; }
         .user-name-header { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 1rem; color: var(--text); text-transform: none; letter-spacing: 0;}
         .header-profile-menu svg { width: 14px; height: 14px; color: var(--muted); transition: transform 0.2s; }
         .header-profile-menu.menu-active svg { transform: rotate(180deg); }
         
-        /* Logout in Header */
-        .btn-text-logout-header { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--lose); cursor: pointer; border: 1px solid var(--lose); background: transparent; border-radius: 12px; padding: 0.3rem 0.8rem; transition: all 0.2s; white-space: nowrap; outline: none;}
-        .btn-text-logout-header:hover { background: var(--lose); color: #fff; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+        /* NEW: Crisp Black & White Logout Button */
+        .btn-text-logout-header { 
+            font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; 
+            color: #0f0f1a; background: #ffffff; border: 1px solid #dde0ea; 
+            border-radius: 20px; padding: 0.35rem 1rem; cursor: pointer; 
+            transition: all 0.2s; white-space: nowrap; outline: none; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .btn-text-logout-header:hover { background: #f2f2f7; border-color: #8888a0; }
+        
+        /* Dark Mode adaption for the crisp black & white intent */
+        [data-theme="dark"] .btn-text-logout-header { color: #ffffff; background: #1a1a24; border-color: #333344; }
+        [data-theme="dark"] .btn-text-logout-header:hover { background: #2a2a35; border-color: #555566; }
 
         @media (max-width: 768px) { 
-            .controls-cluster { top: 1rem; right: 1rem; gap: 0.6rem; } 
-            header { padding: 1.5rem 1rem 2rem; } 
+            .top-controls-bar { padding: 1rem 1rem 0; justify-content: center; flex-wrap: wrap; }
+            .header-titles { padding: 0.5rem 1rem 2rem; }
+            .controls-cluster { gap: 0.6rem; } 
             .user-name-header { font-size: 0.9rem; }
             .user-avatar-header { width: 26px; height: 26px; }
             .header-profile-menu { gap: 0.4rem; padding: 0.2rem 0.6rem; }
@@ -112,8 +124,13 @@
         .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; box-shadow: var(--card-shadow); margin-bottom: 2rem; transition: all 0.4s ease; position: relative;}
         .card-title-centered { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); margin-bottom: 1.5rem; transition: color 0.3s;}
         
-        /* Style for the user name in card titles */
         .dynamic-name { text-transform: none; letter-spacing: 0; color: var(--accent); }
+
+        /* Shared Card Header Container for Share Button Integration */
+        .card-header-flex { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 1.5rem; }
+        .card-header-flex .card-title-centered { margin-bottom: 0; }
+        .share-btn-card { position: absolute; right: 0; color: var(--muted); transition: color 0.2s; }
+        .share-btn-card:hover { color: var(--accent); }
 
         /* --- Fasting Hero --- */
         .hero-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
@@ -315,41 +332,45 @@
 </div>
 
 <header>
-    <div class="controls-cluster">
-        <div id="headerProfileMenu" class="header-profile-menu" onclick="toggleHeaderLogout()" style="display: none;" title="Account Settings">
-            <img id="userAvatarHeader" class="user-avatar-header" src="" alt="Profile">
-            <span id="userNameHeader" class="user-name-header">User</span>
-            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-        </div>
-        
-        <button id="logoutBtnHeader" class="btn-text-logout-header" style="display: none;" onclick="signOut()">Log Out</button>
+    <div class="top-controls-bar">
+        <div class="controls-cluster">
+            <div id="headerProfileMenu" class="header-profile-menu" onclick="toggleHeaderLogout()" style="display: none;" title="Account Settings">
+                <img id="userAvatarHeader" class="user-avatar-header" src="" alt="Profile">
+                <span id="userNameHeader" class="user-name-header">User</span>
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+            
+            <button id="logoutBtnHeader" class="btn-text-logout-header" style="display: none;" onclick="signOut()">Log Out</button>
 
-        <button id="fullscreenBtn" class="icon-btn" onclick="toggleFullscreen()" title="Fullscreen Mode">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-            </svg>
-        </button>
+            <button id="fullscreenBtn" class="icon-btn" onclick="toggleFullscreen()" title="Fullscreen Mode">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                </svg>
+            </button>
 
-        <div class="theme-toggle-container" onclick="toggleTheme()" title="Toggle mode">
-            <div class="sleek-toggle-track">
-                <div class="sleek-toggle-knob">
-                    <svg id="icon-sun" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
-                    </svg>
-                    <svg id="icon-moon" style="display: none;" width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
-                    </svg>
+            <div class="theme-toggle-container" onclick="toggleTheme()" title="Toggle mode">
+                <div class="sleek-toggle-track">
+                    <div class="sleek-toggle-knob">
+                        <svg id="icon-sun" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+                        </svg>
+                        <svg id="icon-moon" style="display: none;" width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     
-    <h1>Mindful Rhythm</h1>
-    <p>Live the Moment</p>
-    
-    <div class="date-time-display">
-        <span id="currentDate"></span>
-        <span id="currentTime"></span>
+    <div class="header-titles">
+        <h1>Mindful Rhythm</h1>
+        <p>Live the Moment</p>
+        
+        <div class="date-time-display">
+            <span id="currentDate"></span>
+            <span id="currentTime"></span>
+        </div>
     </div>
 </header>
 
@@ -381,6 +402,9 @@
                     <span class="hero-title" id="miniHeroTitle">Feasting</span>
                 </div>
                 <div class="hero-header-right">
+                    <button class="icon-btn share-btn-card" style="position: relative; right: 0;" onclick="shareStatus('fasting', event)" title="Share Fasting Status">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                    </button>
                     <span class="mini-time" id="miniFastTimeDisplay">00:00</span>
                     <svg class="chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
@@ -417,7 +441,12 @@
         </div>
 
         <div class="dash-card">
-            <h3 class="card-title-centered" id="momentCardHeader"><span id="momentUserName" class="dynamic-name">User</span>'S MOMENT</h3>
+            <div class="card-header-flex">
+                <h3 class="card-title-centered" id="momentCardHeader"><span id="momentUserName" class="dynamic-name">User</span>'S MOMENT</h3>
+                <button class="icon-btn share-btn-card" onclick="shareStatus('moment')" title="Share Moment Status">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                </button>
+            </div>
             
             <div class="moment-dashboard-layout">
                 <div class="moment-timers-col">
@@ -500,7 +529,7 @@
         </div>
 
         <div class="dash-card">
-            <h3 class="card-title-centered" id="habitCardHeader"><span id="habitUserName" class="dynamic-name">User</span>'s HABIT</h3>
+            <h3 class="card-title-centered" id="habitCardHeader"><span id="habitUserName" class="dynamic-name">User</span>'S HABITS</h3>
 
             <div class="tabs-scroll-container">
                 <button class="scroll-arrow" onclick="scrollTabs(-1)"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
@@ -590,8 +619,54 @@
         }
     }
 
+    // Native Web Share API function
+    async function shareStatus(type, event) {
+        if(event) event.stopPropagation(); 
+        
+        let shareTitle = "Mindful Rhythm Status";
+        let shareText = "I'm tracking my intentions with Mindful Rhythm!";
+        const url = window.location.href; 
+
+        if (type === 'fasting') {
+            const isCurrentlyFasting = document.getElementById('fastingHero').classList.contains('fasting-mode');
+            const time = document.getElementById('fastTimeDisplay').innerText;
+            if (isCurrentlyFasting) {
+                const stage = document.getElementById('stageTitle').innerText;
+                shareText = `I am currently in the ${stage} for ${time}. Build your Mindful Rhythm!`;
+            } else {
+                shareText = `I am currently in my Feasting window. Building my Mindful Rhythm!`;
+            }
+        } else if (type === 'moment') {
+            if (activeMomentKey) {
+                const time = document.getElementById(`time-${activeMomentKey}`).innerText;
+                const stateName = activeMomentKey.charAt(0).toUpperCase() + activeMomentKey.slice(1);
+                shareText = `I've been staying ${stateName} for ${time}! Track your Mindful Rhythm.`;
+            } else {
+                shareText = "I'm tracking my daily intent with Mindful Rhythm!";
+            }
+        }
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: shareTitle,
+                    text: shareText,
+                    url: url
+                });
+            } catch (err) {
+                console.log('Share canceled or failed', err);
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(`${shareText} ${url}`);
+                alert("Status copied to clipboard! You can paste it anywhere.");
+            } catch (err) {
+                alert("Failed to copy status.");
+            }
+        }
+    }
+
     async function checkUser() {
-        // Safety Timeout against silent hangs
         const bootTimeout = setTimeout(() => {
             const loadView = document.getElementById('loadingView');
             if (loadView && loadView.style.display !== 'none') {
@@ -623,7 +698,7 @@
                 const profileMenu = document.getElementById('headerProfileMenu');
                 if(avatarHeader && nameHeader && profileMenu) {
                     avatarHeader.src = meta.avatar_url;
-                    nameHeader.innerText = meta.full_name ? meta.full_name.split(' ')[0] : 'User'; // Keep header name natural
+                    nameHeader.innerText = meta.full_name ? meta.full_name.split(' ')[0] : 'User'; 
                     profileMenu.style.display = 'flex';
                 }
 
@@ -637,7 +712,7 @@
                 const momentNameEl = document.getElementById('momentUserName');
                 const habitNameEl = document.getElementById('habitUserName');
                 if(momentNameEl) momentNameEl.innerText = firstName;
-                if(habitNameEl) habitNameEl.innerText = firstName;
+                if(habitNameEl) habitNameEl.innerText = firstName; // Will render as FREDERICK'S HABITS
                 
                 clearTimeout(bootTimeout);
                 showView('main');
@@ -652,7 +727,6 @@
                 initMomentStates(); 
             } else {
                 clearTimeout(bootTimeout);
-                // Clean up header state
                 const profileMenu = document.getElementById('headerProfileMenu');
                 if(profileMenu) profileMenu.style.display = 'none';
                 showView('login');
@@ -846,7 +920,6 @@
     // ==========================================
     // 3. HABITS ENGINE
     // ==========================================
-    // Subtext updated per request in categories
     let categories = [
         { id: 'cat_1', name: 'Purposeful', subtext: 'What you live for', habits: [{ id: 'hab_1', name: 'PADI Theory / Instructor Study', streak: 4, done: true }, { id: 'hab_2', name: 'Camp & Dive Web App Dev', streak: 0, done: false }] },
         { id: 'cat_2', name: 'Wasteful', subtext: 'What drains you', habits: [{ id: 'hab_3', name: 'No PlayStation Binge Gaming', streak: 8, done: true }, { id: 'hab_4', name: 'No Mindless Doom Scrolling', streak: 3, done: true }] },
@@ -1000,12 +1073,12 @@
         if (isFasting) {
             hero.classList.add('fasting-mode');
             lbl.innerText = "Fasting (Fat Burning)";
-            title.innerText = "Fasting Window Active";
+            title.innerText = "Fasting Active";
             btn.innerText = "Break Fasting"; 
         } else {
             hero.classList.add('feasting-mode');
             lbl.innerText = "Feasting (Accumulation)";
-            title.innerText = "Feasting Window Active";
+            title.innerText = "Feasting Window";
             btn.innerText = "Start Fasting"; 
         }
     }
