@@ -485,7 +485,7 @@
     }
 
     async function toggleFasting(event) {
-        event.stopPropagation(); // Stop the card from collapsing when the button is clicked
+        event.stopPropagation(); 
         
         const now = new Date();
         const btn = document.getElementById('toggleFastBtn');
@@ -558,7 +558,6 @@
         
         const displayTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         
-        // Update both the giant orb and the tiny header
         document.getElementById('fastTimeDisplay').innerText = displayTime;
         document.getElementById('miniFastTimeDisplay').innerText = displayTime;
 
@@ -581,9 +580,8 @@
     // 3. CHART.JS DYNAMIC GRAPH
     // ==========================================
     let fastingChart = null;
-    let currentChartView = 'weekly'; // 'weekly' or 'monthly'
+    let currentChartView = 'weekly'; 
 
-    // Dummy Data for the UI scaffolding (will be replaced by Supabase data later)
     const dummyData = {
         weekly: {
             labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -592,25 +590,19 @@
         },
         monthly: {
             labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-            data: [15.1, 16.2, 15.8, 17.5], // Averages for the month
+            data: [15.1, 16.2, 15.8, 17.5],
             dateDisplay: "March 2026"
         }
     };
 
     function setChartView(view) {
         currentChartView = view;
-        
-        // Update toggle UI
         document.getElementById('btnWeekly').classList.toggle('active', view === 'weekly');
         document.getElementById('btnMonthly').classList.toggle('active', view === 'monthly');
-        
-        // Update Chart
         renderChart();
     }
 
     function shiftChartData(direction) {
-        // This is a placeholder function for the arrows. 
-        // Right now it just shows an alert, but later it will query Supabase for the previous/next dates.
         console.log(`Shifting chart data direction: ${direction}`);
         alert(`Will fetch ${direction === -1 ? 'previous' : 'next'} ${currentChartView} data from database!`);
     }
@@ -679,11 +671,10 @@
         
         if (currentUser) {
             updateTimer();
-            if(fastingChart) renderChart(); // Re-render chart to pick up new theme colors
+            if(fastingChart) renderChart(); 
         }
     }
 
-    // Boot up app instantly 
     checkUser();
 
 </script>
