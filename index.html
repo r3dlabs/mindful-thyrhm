@@ -123,6 +123,7 @@
 
         .fast-hole { width: 100%; height: 100%; border-radius: 50%; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; z-index: 2; }
         
+        /* Fasting time is larger, but no seconds */
         .fast-time { font-family: 'Barlow Condensed', sans-serif; font-size: 4.8rem; font-weight: 900; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
         .fast-label { font-size: 1rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.1em; transition: color 0.3s; margin-top: 0.5rem;}
         .fasting-mode .fast-label { color: var(--fasting); }
@@ -134,7 +135,7 @@
         .fasting-mode .stage-title { color: var(--fasting); }
         .feasting-mode .stage-title { color: var(--feasting); }
 
-        .action-btn { background: transparent; border: 2px solid var(--border); color: var(--text); padding: 1rem 3rem; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.3rem; text-transform: uppercase; cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em; }
+        .action-btn { background: transparent; border: 2px solid var(--border); color: var(--text); padding: 1rem 3rem; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.3rem; text-transform: uppercase; cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em; outline: none;}
         
         /* Updated Hover States for Feasting / Fasting Buttons */
         .feasting-mode .action-btn { border-color: var(--fasting); color: var(--fasting); }
@@ -170,6 +171,7 @@
         .moment-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); transition: color 0.3s;}
         
         .moment-right-controls { display: flex; align-items: center; gap: 1rem; }
+        /* Moment timer keeps seconds! */
         .moment-timer-text { font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 1.15rem; tabular-nums; color: var(--text); transition: color 0.3s;}
         .moment-audio-btn { color: var(--muted); background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.3s; }
         .moment-audio-btn:hover { color: var(--text); }
@@ -476,10 +478,14 @@
 <audio id="audio-recover" loop src="recover.mp3"></audio>
 
 <script>
-    // Global Error Safety Net
+    // Global Error Safety Nets
     window.addEventListener('error', function(e) {
         const loadView = document.getElementById('loadingView');
-        if (loadView) loadView.innerHTML = `<h2 style="color:var(--lose)">Engine Error</h2><p style="color:var(--muted)">${e.message}. Please refresh or check your connection.</p>`;
+        if (loadView && loadView.style.display !== 'none') loadView.innerHTML = `<h2 style="color:var(--lose)">Engine Error</h2><p style="color:var(--muted)">${e.message}. Please refresh or check your connection.</p>`;
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+        const loadView = document.getElementById('loadingView');
+        if (loadView && loadView.style.display !== 'none') loadView.innerHTML = `<h2 style="color:var(--lose)">Async Error</h2><p style="color:var(--muted)">${e.reason}. Please refresh.</p>`;
     });
 
     // ==========================================
@@ -488,7 +494,6 @@
     const SUPABASE_URL = 'https://ambpjxgidojgmwvvjglg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtYnBqeGdpZG9qZ213dnZqZ2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MzQzNTQsImV4cCI6MjA5MDAxMDM1NH0.8TfCIQhAjPChBZn8op5J9ykyMc3hPDJ_vJuUEm3WcP4';
     
-    // Safe Initialization check
     let supabaseClient = null;
     if (window.supabase) {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -505,7 +510,7 @@
         if (views[viewName]) views[viewName].style.display = 'block';
     }
 
-    // Bulletproof Time Formatter (No Seconds)
+    // Bulletproof Time Formatter (No Seconds for Global Clock)
     function updateClock() {
         const now = new Date();
         const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
@@ -525,7 +530,6 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Fullscreen Controls
     function toggleFullscreen() {
         if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen().catch(err => console.log(err));
@@ -535,7 +539,16 @@
     }
 
     async function checkUser() {
+        // Safety Timeout against silent hangs
+        const bootTimeout = setTimeout(() => {
+            const loadView = document.getElementById('loadingView');
+            if (loadView && loadView.style.display !== 'none') {
+                loadView.innerHTML = '<h2 style="color:var(--lose)">Timeout</h2><p style="color:var(--muted)">Syncing took too long. Check your connection or refresh.</p>';
+            }
+        }, 8000);
+
         if (!supabaseClient) {
+            clearTimeout(bootTimeout);
             document.getElementById('loadingView').innerHTML = '<h2 style="color:var(--lose)">Connection Error</h2><p style="color:var(--muted)">Could not connect to database services. Please check your internet connection or disable ad-blockers.</p>';
             return;
         }
@@ -552,23 +565,32 @@
                     const avatar = document.getElementById('userAvatar');
                     const userName = document.getElementById('userName');
                     if(avatar) avatar.src = meta.avatar_url;
-                    if(userName) userName.innerText = meta.full_name.split(' ')[0];
+                    // Fallback to 'User' if full_name is missing to prevent crash
+                    if(userName) userName.innerText = meta.full_name ? meta.full_name.split(' ')[0] : 'User'; 
+                    profileCenter.style.display = 'flex';
+                } else if(profileCenter) {
                     profileCenter.style.display = 'flex';
                 }
                 
+                clearTimeout(bootTimeout);
                 showView('main');
                 const hero = document.getElementById('fastingHero');
-                if(hero && localStorage.getItem('fastingCardCollapsed') === 'true') hero.classList.add('collapsed');
+                
+                try {
+                    if(hero && localStorage.getItem('fastingCardCollapsed') === 'true') hero.classList.add('collapsed');
+                } catch(e) { console.log('Local storage access restricted'); }
 
                 await initFastingTracker(); 
                 renderHabitsUI(); 
                 initMomentStates(); 
             } else {
+                clearTimeout(bootTimeout);
                 const profileCenter = document.getElementById('userProfileCenter');
                 if(profileCenter) profileCenter.style.display = 'none';
                 showView('login');
             }
         } catch (err) { 
+            clearTimeout(bootTimeout);
             console.error(err);
             showView('login'); 
         }
@@ -587,7 +609,6 @@
         event.stopPropagation();
         isAudioMuted = !isAudioMuted;
         
-        // Update all specific icons in the Moment buttons
         document.querySelectorAll('.audio-on').forEach(el => el.style.display = isAudioMuted ? 'none' : 'block');
         document.querySelectorAll('.audio-off').forEach(el => el.style.display = isAudioMuted ? 'block' : 'none');
         
@@ -626,20 +647,18 @@
     let momentDonutChart = null;
 
     function initMomentStates() {
-        const savedData = localStorage.getItem('momentStatesData');
-        if (savedData) {
-            try {
+        try {
+            const savedData = localStorage.getItem('momentStatesData');
+            if (savedData) {
                 const parsed = JSON.parse(savedData);
                 for (let key in parsed) if(momentStatesData[key]) momentStatesData[key].timeAccumulatedMs = parsed[key];
-            } catch(e) {
-                console.error('Failed to parse moment states data.');
             }
-        }
+        } catch(e) { console.error('Failed to parse moment states data.'); }
+        
         updateMomentChartColors();
         renderMomentChart();
         updateMomentUI();
         
-        // Sync visual mute states
         document.querySelectorAll('.audio-on').forEach(el => el.style.display = isAudioMuted ? 'none' : 'block');
         document.querySelectorAll('.audio-off').forEach(el => el.style.display = isAudioMuted ? 'block' : 'none');
     }
@@ -671,12 +690,15 @@
             momentStatesData[activeMomentKey].timeAccumulatedMs += deltaMs;
             momentLastTickMs = now;
             
-            const saveObj = {};
-            for(let key in momentStatesData) saveObj[key] = momentStatesData[key].timeAccumulatedMs;
-            localStorage.setItem('momentStatesData', JSON.stringify(saveObj));
+            try {
+                const saveObj = {};
+                for(let key in momentStatesData) saveObj[key] = momentStatesData[key].timeAccumulatedMs;
+                localStorage.setItem('momentStatesData', JSON.stringify(saveObj));
+            } catch(e) {}
         }
     }
 
+    // Keeps seconds to show active progress
     function formatMomentTime(ms) {
         const totalSeconds = Math.floor(ms / 1000);
         const h = Math.floor(totalSeconds / 3600);
@@ -756,7 +778,7 @@
     }
 
     // ==========================================
-    // 3. HABITS ENGINE (Unified Naming)
+    // 3. HABITS ENGINE 
     // ==========================================
     let categories = [
         { id: 'cat_1', name: 'Purposeful', subtext: 'What you build', habits: [{ id: 'hab_1', name: 'PADI Theory / Instructor Study', streak: 4, done: true }, { id: 'hab_2', name: 'Camp & Dive Web App Dev', streak: 0, done: false }] },
@@ -840,7 +862,7 @@
         const hero = document.getElementById('fastingHero'); 
         if(hero) {
             hero.classList.toggle('collapsed'); 
-            localStorage.setItem('fastingCardCollapsed', hero.classList.contains('collapsed')); 
+            try { localStorage.setItem('fastingCardCollapsed', hero.classList.contains('collapsed')); } catch(e){}
         }
     }
 
@@ -865,16 +887,16 @@
     function attemptToggleFasting(event) {
         event.stopPropagation();
         if (isFasting) {
-            // User wants to break the fast -> Create friction
-            document.getElementById('fastingModal').style.display = 'flex';
+            const modal = document.getElementById('fastingModal');
+            if(modal) modal.style.display = 'flex';
         } else {
-            // User wants to start fasting -> No friction needed
             executeToggleFasting();
         }
     }
 
     function closeFastingModal() {
-        document.getElementById('fastingModal').style.display = 'none';
+        const modal = document.getElementById('fastingModal');
+        if(modal) modal.style.display = 'none';
     }
 
     async function executeToggleFasting() {
@@ -912,12 +934,12 @@
             hero.classList.add('fasting-mode');
             lbl.innerText = "Fasting (Fat Burning)";
             title.innerText = "Fasting Active";
-            btn.innerText = "Break Fasting"; // Explicitly 'Break Fasting' per request
+            btn.innerText = "Break Fasting"; 
         } else {
             hero.classList.add('feasting-mode');
             lbl.innerText = "Feasting (Accumulation)";
             title.innerText = "Feasting Window";
-            btn.innerText = "Start Fasting"; // Explicitly 'Start Fasting' per request
+            btn.innerText = "Start Fasting"; 
         }
     }
 
@@ -967,4 +989,37 @@
         const html = document.documentElement;
         
         const textColor = getComputedStyle(html).getPropertyValue('--muted').trim(), gridColor = getComputedStyle(html).getPropertyValue('--chart-grid').trim();
-        const lineColor = get
+        const lineColor = getComputedStyle(html).getPropertyValue('--fasting').trim(), fillColor = getComputedStyle(html).getPropertyValue('--fasting-glow').trim();
+        document.getElementById('chartDateRange').innerText = "Mar 19 - Mar 25";
+
+        const config = { type: 'line', data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ data: [14.5, 15.2, 16.0, 18.5, 16.2, 15.5, 12.0], borderColor: lineColor, backgroundColor: fillColor, borderWidth: 3, pointBackgroundColor: lineColor, pointBorderColor: '#fff', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 10, max: 24, grid: { color: gridColor, drawBorder: false }, ticks: { color: textColor } }, x: { grid: { display: false, drawBorder: false }, ticks: { color: textColor } } } } };
+        if(fastingChart) fastingChart.destroy(); fastingChart = new Chart(ctx, config);
+    }
+    function initChart() { renderChart(); }
+    
+    function toggleTheme() {
+        const html = document.documentElement; 
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        
+        const sun = document.getElementById('icon-sun');
+        const moon = document.getElementById('icon-moon');
+        const lbl = document.getElementById('theme-label');
+        
+        if(sun) sun.style.display = next === 'light' ? 'block' : 'none';
+        if(moon) moon.style.display = next === 'dark' ? 'block' : 'none';
+        if(lbl) lbl.textContent = next === 'light' ? 'Light Mode' : 'Dark Mode';
+        
+        if (currentUser) { 
+            updateFastingTimer(); 
+            if(fastingChart) renderChart();
+            updateMomentChartColors();
+            if(momentDonutChart) renderMomentChart(); 
+        }
+    }
+
+    // Initialize application
+    checkUser();
+</script>
+</body>
+</html>
