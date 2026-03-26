@@ -15,11 +15,7 @@
             --accent: #22c55e; --win: #3ecf7a; --lose: #ef4444;
             --card-shadow: 0 4px 20px rgba(0,0,0,0.5);
             --toggle-bg: #1e1e2e; --input-bg: #13131a;
-            
-            /* The New Discipline Green */
-            --fasting: #22c55e; 
-            --fasting-glow: rgba(34, 197, 94, 0.35);
-            
+            --fasting: #22c55e; --fasting-glow: rgba(34, 197, 94, 0.35);
             --feasting: #eab308; --feasting-glow: rgba(234, 179, 8, 0.15);
             --chart-grid: #1e1e2e;
         }
@@ -30,11 +26,7 @@
             --accent: #16a34a; --win: #1a8a4a; --lose: #d63030;
             --card-shadow: 0 4px 15px rgba(0,0,0,0.05);
             --toggle-bg: #dde0ea; --input-bg: #ffffff;
-            
-            /* The New Discipline Green */
-            --fasting: #16a34a; 
-            --fasting-glow: rgba(22, 163, 74, 0.35);
-            
+            --fasting: #16a34a; --fasting-glow: rgba(22, 163, 74, 0.35);
             --feasting: #d97706; --feasting-glow: rgba(217, 119, 6, 0.15);
             --chart-grid: #e2e8f0;
         }
@@ -115,10 +107,7 @@
             display: flex; justify-content: space-between; align-items: center;
             cursor: pointer; user-select: none;
         }
-        .hero-card:not(.collapsed) .hero-header {
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 1.5rem; margin-bottom: 2rem;
-        }
+        .hero-card:not(.collapsed) .hero-header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
         .hero-header-left { display: flex; align-items: center; gap: 1rem; }
         .hero-header-right { display: flex; align-items: center; gap: 1rem; }
 
@@ -136,32 +125,15 @@
         .hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; }
         .hero-card.collapsed .hero-content { display: none; }
         
-        .fast-ring {
-            width: 320px; height: 320px; border-radius: 50%;
-            background: var(--surface); display: flex; align-items: center; justify-content: center;
-            margin-bottom: 1.5rem; position: relative;
-        }
+        .fast-ring { width: 320px; height: 320px; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; position: relative; }
         
-        @keyframes pulseFasting {
-            0% { box-shadow: 0 0 20px var(--fasting-glow); }
-            50% { box-shadow: 0 0 65px var(--fasting-glow), 0 0 15px var(--fasting); }
-            100% { box-shadow: 0 0 20px var(--fasting-glow); }
-        }
-
-        @keyframes pulseFeasting {
-            0% { box-shadow: 0 0 15px var(--feasting-glow); }
-            50% { box-shadow: 0 0 45px var(--feasting-glow); }
-            100% { box-shadow: 0 0 15px var(--feasting-glow); }
-        }
+        @keyframes pulseFasting { 0% { box-shadow: 0 0 20px var(--fasting-glow); } 50% { box-shadow: 0 0 65px var(--fasting-glow), 0 0 15px var(--fasting); } 100% { box-shadow: 0 0 20px var(--fasting-glow); } }
+        @keyframes pulseFeasting { 0% { box-shadow: 0 0 15px var(--feasting-glow); } 50% { box-shadow: 0 0 45px var(--feasting-glow); } 100% { box-shadow: 0 0 15px var(--feasting-glow); } }
 
         .fasting-mode .fast-ring { animation: pulseFasting 2.5s infinite ease-in-out; }
         .feasting-mode .fast-ring { animation: pulseFeasting 4s infinite ease-in-out; }
 
-        .fast-hole {
-            width: 100%; height: 100%; border-radius: 50%;
-            background: transparent; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; line-height: 1.1; z-index: 2;
-        }
+        .fast-hole { width: 100%; height: 100%; border-radius: 50%; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; z-index: 2; }
         
         .fast-time { font-family: 'Barlow Condensed', sans-serif; font-size: 4.2rem; font-weight: 900; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
         .fast-label { font-size: 1rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.1em; transition: color 0.3s; margin-top: 0.5rem;}
@@ -174,46 +146,48 @@
         .fasting-mode .stage-title { color: var(--fasting); }
         .feasting-mode .stage-title { color: var(--feasting); }
 
-        .action-btn {
-            background: var(--input-bg); border: 2px solid var(--border);
-            color: var(--text); padding: 1rem 3rem; border-radius: 8px;
-            font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.3rem;
-            text-transform: uppercase; cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em;
-        }
+        .action-btn { background: var(--input-bg); border: 2px solid var(--border); color: var(--text); padding: 1rem 3rem; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.3rem; text-transform: uppercase; cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em; }
         .feasting-mode .action-btn { border-color: var(--fasting); color: var(--fasting); }
         .feasting-mode .action-btn:hover { background: var(--fasting); color: #fff; box-shadow: 0 0 20px var(--fasting-glow);}
         .fasting-mode .action-btn { border-color: var(--feasting); color: var(--feasting); }
         .fasting-mode .action-btn:hover { background: var(--feasting); color: #111; box-shadow: 0 0 20px var(--feasting-glow); }
 
-        /* --- Integrated Chart Section --- */
+        /* --- Chart Section --- */
         .integrated-chart-section { width: 100%; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--border); }
-        
         .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;}
-        
         .date-picker { display: flex; align-items: center; gap: 1rem; background: var(--input-bg); padding: 0.3rem 0.8rem; border-radius: 20px; border: 1px solid var(--border);}
         .date-nav-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: color 0.2s; padding: 0.2rem;}
         .date-nav-btn:hover { color: var(--text); }
         .date-range-display { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); min-width: 140px; text-align: center;}
-
         .view-toggle-group { display: flex; background: var(--toggle-bg); border-radius: 20px; padding: 3px; border: 1px solid var(--border); }
         .view-toggle-btn { background: transparent; border: none; padding: 0.4rem 1.2rem; border-radius: 17px; color: var(--muted); cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.85rem; transition: all 0.2s; }
         .view-toggle-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-
         .chart-wrapper { width: 100%; height: 260px; position: relative; }
 
-        /* --- Tabbed Habits Card --- */
-        .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: var(--card-shadow); }
+        /* --- Dynamic Tabbed Habits Card --- */
+        .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: var(--card-shadow); margin-bottom: 2rem; }
         
-        .tabs-header { display: flex; gap: 0.75rem; overflow-x: auto; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem; scrollbar-width: none; }
+        .tabs-header { display: flex; gap: 0.75rem; overflow-x: auto; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem; scrollbar-width: none; align-items: center; }
         .tabs-header::-webkit-scrollbar { display: none; }
-        .tab-btn { background: var(--input-bg); border: 1px solid var(--border); color: var(--muted); padding: 0.6rem 1.2rem; border-radius: 20px; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; white-space: nowrap; transition: all 0.2s; font-size: 0.9rem;}
+        
+        .tab-btn-group { display: flex; align-items: center; position: relative; }
+        .tab-btn { background: var(--input-bg); border: 1px solid var(--border); color: var(--muted); padding: 0.6rem 1.2rem; border-radius: 20px; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; white-space: nowrap; transition: all 0.2s; font-size: 0.9rem; outline: none;}
         .tab-btn.active { background: var(--fasting); color: #fff; border-color: var(--fasting); box-shadow: 0 0 12px var(--fasting-glow); }
         
-        .tab-content { display: none; animation: fadeIn 0.3s ease; }
-        .tab-content.active { display: block; }
+        .editable-text { cursor: text; border-bottom: 1px dashed transparent; transition: border-color 0.2s; }
+        .editable-text:hover, .editable-text:focus { border-bottom-color: var(--muted); outline: none; }
+        .tab-btn.active .editable-text:hover, .tab-btn.active .editable-text:focus { border-bottom-color: rgba(255,255,255,0.7); }
+
+        .btn-add-tab { background: transparent; border: 1px dashed var(--muted); color: var(--muted); border-radius: 20px; padding: 0.5rem 1rem; cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; transition: all 0.2s; white-space: nowrap; }
+        .btn-add-tab:hover { border-color: var(--text); color: var(--text); }
+
+        .delete-icon { opacity: 0; background: none; border: none; color: var(--lose); cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; padding: 0 0.5rem; }
+        .tab-btn-group:hover .delete-icon { opacity: 1; }
+        .habit-row:hover .delete-icon { opacity: 1; }
+
+        .dash-list { display: flex; flex-direction: column; gap: 0.5rem; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .dash-list { display: flex; flex-direction: column; gap: 0.5rem; }
         .habit-row { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--border); }
         .habit-row:last-child { border-bottom: none; }
         
@@ -223,12 +197,13 @@
         
         .habit-label { font-weight: 500; font-size: 1rem; flex-grow: 1; }
         
-        /* The glowing dot for active streaks */
         .alive-dot { width: 8px; height: 8px; background: var(--fasting); border-radius: 50%; box-shadow: 0 0 8px var(--fasting-glow); animation: pulseFasting 2s infinite ease-in-out; display: inline-block; margin-right: 6px; }
-        
         .habit-streak { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; color: var(--text); font-weight: 700; display: flex; align-items: center; white-space: nowrap;}
         .habit-streak.zero { color: var(--muted); }
         .habit-streak.zero .alive-dot { display: none; }
+
+        .btn-add-habit { background: transparent; border: 1px dashed var(--border); color: var(--muted); width: 100%; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-family: 'Barlow', sans-serif; font-weight: 500; transition: all 0.2s; margin-top: 0.5rem; text-align: left; }
+        .btn-add-habit:hover { border-color: var(--text); color: var(--text); }
 
     </style>
 </head>
@@ -252,7 +227,6 @@
 </header>
 
 <div class="container">
-
     <div id="loadingView" class="loading-card">
         <h2 style="color: var(--muted); font-size: 1.2rem;">Syncing Systems...</h2>
     </div>
@@ -260,7 +234,6 @@
     <div id="loginView" class="auth-card" style="display: none;">
         <h2>Connect Account</h2>
         <p style="color: var(--muted); font-size: 0.95rem;">Sign in to sync your fasting and habit records.</p>
-        
         <button class="auth-btn" onclick="signInWithGoogle()">
             <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg" style="margin-right: 8px;">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -275,7 +248,6 @@
     <div id="mainContent" style="display: none;">
         
         <div id="fastingHero" class="hero-card feasting-mode">
-            
             <div class="hero-header" onclick="toggleFastingCollapse()">
                 <div class="hero-header-left">
                     <div class="mini-pulse"></div>
@@ -294,128 +266,34 @@
                         <span class="fast-label" id="fastStatusLabel">Feasting</span>
                     </div>
                 </div>
-                
                 <div class="stage-container">
                     <div class="stage-title" id="stageTitle">Loading...</div>
                     <div class="stage-desc" id="stageDesc">Calculating current biological phase...</div>
                 </div>
-
                 <button id="toggleFastBtn" class="action-btn" onclick="toggleFasting(event)">Done Eating</button>
 
                 <div class="integrated-chart-section">
                     <div class="chart-header">
                         <div class="date-picker">
-                            <button class="date-nav-btn" onclick="shiftChartData(-1)">
-                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                            </button>
+                            <button class="date-nav-btn" onclick="shiftChartData(-1)"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
                             <span class="date-range-display" id="chartDateRange">Mar 19 - Mar 25</span>
-                            <button class="date-nav-btn" onclick="shiftChartData(1)">
-                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                            </button>
+                            <button class="date-nav-btn" onclick="shiftChartData(1)"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button>
                         </div>
-                        
                         <div class="view-toggle-group">
                             <button id="btnWeekly" class="view-toggle-btn active" onclick="setChartView('weekly')">Weekly</button>
                             <button id="btnMonthly" class="view-toggle-btn" onclick="setChartView('monthly')">Monthly</button>
                         </div>
                     </div>
-
-                    <div class="chart-wrapper">
-                        <canvas id="fastingChart"></canvas>
-                    </div>
+                    <div class="chart-wrapper"><canvas id="fastingChart"></canvas></div>
                 </div>
-
             </div>
         </div>
 
         <div class="dash-card">
-            <div class="tabs-header">
-                <button class="tab-btn active" onclick="switchTab('tab-productive')" id="btn-tab-productive">Productive</button>
-                <button class="tab-btn" onclick="switchTab('tab-sleep')" id="btn-tab-sleep">Sleep</button>
-                <button class="tab-btn" onclick="switchTab('tab-food')" id="btn-tab-food">Food</button>
-                <button class="tab-btn" onclick="switchTab('tab-unproductive')" id="btn-tab-unproductive">Unproductive</button>
-            </div>
-
-            <div id="tab-productive" class="tab-content active">
-                <div class="dash-list">
-                    <div class="habit-row">
-                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
-                        <span class="habit-label">PADI Theory / Instructor Study</span>
-                        <span class="habit-streak"><span class="alive-dot"></span> 4 Days</span>
-                    </div>
-                    <div class="habit-row">
-                        <div class="habit-check" onclick="this.classList.toggle('done')"></div>
-                        <span class="habit-label">Camp & Dive Web App Dev</span>
-                        <span class="habit-streak zero">0 Days</span>
-                    </div>
-                    <div class="habit-row">
-                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
-                        <span class="habit-label">Deep Work Block (2h)</span>
-                        <span class="habit-streak"><span class="alive-dot"></span> 12 Days</span>
-                    </div>
+            <div class="tabs-header" id="dynamicTabsHeader">
                 </div>
-            </div>
-
-            <div id="tab-sleep" class="tab-content">
-                <div class="dash-list">
-                    <div class="habit-row">
-                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
-                        <span class="habit-label">7+ Hours Restful Sleep</span>
-                        <span class="habit-streak"><span class="alive-dot"></span> 2 Days</span>
-                    </div>
-                    <div class="habit-row">
-                        <div class="habit-check" onclick="this.classList.toggle('done')"></div>
-                        <span class="habit-label">Evening Mobility / Stretch</span>
-                        <span class="habit-streak zero">0 Days</span>
-                    </div>
-                    <div class="habit-row">
-                        <div class="habit-check" onclick="this.classList.toggle('done')"></div>
-                        <span class="habit-label">Screens off 1hr Before Bed</span>
-                        <span class="habit-streak zero">0 Days</span>
-                    </div>
+            <div id="dynamicHabitsContainer">
                 </div>
-            </div>
-
-            <div id="tab-food" class="tab-content">
-                <div class="dash-list">
-                    <div class="habit-row">
-                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
-                        <span class="habit-label">Strict Keto / Sugar-Free Compliant</span>
-                        <span class="habit-streak"><span class="alive-dot"></span> 14 Days</span>
-                    </div>
-                    <div class="habit-row">
-                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
-                        <span class="habit-label">Black Coffee / Tea Only (Fasting)</span>
-                        <span class="habit-streak"><span class="alive-dot"></span> 21 Days</span>
-                    </div>
-                    <div class="habit-row">
-                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
-                        <span class="habit-label">Electrolytes & Hydration</span>
-                        <span class="habit-streak"><span class="alive-dot"></span> 5 Days</span>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-unproductive" class="tab-content">
-                <div class="dash-list">
-                    <div class="habit-row">
-                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
-                        <span class="habit-label">No PlayStation Binge Gaming</span>
-                        <span class="habit-streak"><span class="alive-dot"></span> 8 Days</span>
-                    </div>
-                    <div class="habit-row">
-                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
-                        <span class="habit-label">No Mindless Doom Scrolling</span>
-                        <span class="habit-streak"><span class="alive-dot"></span> 3 Days</span>
-                    </div>
-                    <div class="habit-row">
-                        <div class="habit-check" onclick="this.classList.toggle('done')"></div>
-                        <span class="habit-label">No Social Media Before Noon</span>
-                        <span class="habit-streak zero">0 Days</span>
-                    </div>
-                </div>
-            </div>
-            
         </div>
 
     </div>
@@ -427,15 +305,10 @@
     // ==========================================
     const SUPABASE_URL = 'https://ambpjxgidojgmwvvjglg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtYnBqeGdpZG9qZ213dnZqZ2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MzQzNTQsImV4cCI6MjA5MDAxMDM1NH0.8TfCIQhAjPChBZn8op5J9ykyMc3hPDJ_vJuUEm3WcP4';
-    
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     let currentUser = null;
 
-    const views = {
-        loading: document.getElementById('loadingView'),
-        login: document.getElementById('loginView'),
-        main: document.getElementById('mainContent')
-    };
+    const views = { loading: document.getElementById('loadingView'), login: document.getElementById('loginView'), main: document.getElementById('mainContent') };
 
     function showView(viewName) {
         Object.values(views).forEach(el => el.style.display = 'none');
@@ -449,53 +322,173 @@
 
             if (session) {
                 currentUser = session.user;
-                
                 const meta = currentUser.user_metadata;
                 if (meta) {
                     if (meta.avatar_url) document.getElementById('userAvatar').src = meta.avatar_url;
                     if (meta.full_name) document.getElementById('userName').innerText = meta.full_name.split(' ')[0];
                     document.getElementById('userProfile').style.display = 'flex';
                 }
-                
                 document.getElementById('logoutBtn').style.display = 'block';
                 showView('main');
                 
-                if(localStorage.getItem('fastingCardCollapsed') === 'true') {
-                    document.getElementById('fastingHero').classList.add('collapsed');
-                }
+                if(localStorage.getItem('fastingCardCollapsed') === 'true') document.getElementById('fastingHero').classList.add('collapsed');
 
                 await initFastingTracker(); 
                 initChart();
+                renderHabitsUI(); // Boot up the habit engine
             } else {
                 document.getElementById('userProfile').style.display = 'none';
                 document.getElementById('logoutBtn').style.display = 'none';
                 showView('login');
             }
-        } catch (err) {
-            console.error("Auth Error:", err.message);
-            document.getElementById('logoutBtn').style.display = 'none';
-            showView('login');
+        } catch (err) { showView('login'); }
+    }
+
+    async function signInWithGoogle() { await supabaseClient.auth.signInWithOAuth({ provider: 'google' }); }
+    async function signOut() { await supabaseClient.auth.signOut(); window.location.reload(); }
+
+    // ==========================================
+    // 2. HABITS ENGINE (DYNAMIC DATA)
+    // ==========================================
+    
+    // The Master Data Object (Eventually this syncs with Supabase)
+    let categories = [
+        { id: 'cat_1', name: 'Productive', habits: [
+            { id: 'hab_1', name: 'PADI Theory / Instructor Study', streak: 4, done: true },
+            { id: 'hab_2', name: 'Camp & Dive Web App Dev', streak: 0, done: false },
+            { id: 'hab_3', name: 'Deep Work Block (2h)', streak: 12, done: true }
+        ]},
+        { id: 'cat_2', name: 'Sleep', habits: [
+            { id: 'hab_4', name: '7+ Hours Restful Sleep', streak: 2, done: true },
+            { id: 'hab_5', name: 'Evening Mobility / Stretch', streak: 0, done: false }
+        ]},
+        { id: 'cat_3', name: 'Nutrition', habits: [
+            { id: 'hab_6', name: 'Strict Keto / Sugar-Free Compliant', streak: 14, done: true },
+            { id: 'hab_7', name: 'Black Coffee / Tea Only (Fasting)', streak: 21, done: true }
+        ]},
+        { id: 'cat_4', name: 'Unproductive', habits: [
+            { id: 'hab_8', name: 'No PlayStation Binge Gaming', streak: 8, done: true },
+            { id: 'hab_9', name: 'No Mindless Doom Scrolling', streak: 3, done: true }
+        ]}
+    ];
+    let activeCatId = 'cat_1';
+
+    function renderHabitsUI() {
+        const tabsContainer = document.getElementById('dynamicTabsHeader');
+        const listContainer = document.getElementById('dynamicHabitsContainer');
+        
+        // Render Tabs
+        tabsContainer.innerHTML = '';
+        categories.forEach(cat => {
+            const isActive = cat.id === activeCatId ? 'active' : '';
+            tabsContainer.innerHTML += `
+                <div class="tab-btn-group">
+                    <button class="tab-btn ${isActive}" onclick="setActiveCategory('${cat.id}')">
+                        <span class="editable-text" contenteditable="true" 
+                              onblur="saveEdit(event, 'category', '${cat.id}')" 
+                              onkeydown="handleEnterKey(event)">${cat.name}</span>
+                    </button>
+                    <button class="delete-icon" onclick="deleteCategory('${cat.id}')" title="Delete Category">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+            `;
+        });
+        tabsContainer.innerHTML += `<button class="btn-add-tab" onclick="addCategory()">+ Add Category</button>`;
+
+        // Render Active Habit List
+        const activeCat = categories.find(c => c.id === activeCatId);
+        if (!activeCat) { listContainer.innerHTML = '<p style="color:var(--muted); padding: 1rem;">No category selected.</p>'; return; }
+
+        let habitsHTML = `<div class="dash-list">`;
+        activeCat.habits.forEach(hab => {
+            const isDone = hab.done ? 'done' : '';
+            const streakZeroClass = hab.streak === 0 ? 'zero' : '';
+            habitsHTML += `
+                <div class="habit-row">
+                    <div class="habit-check ${isDone}" onclick="toggleHabit('${hab.id}')"></div>
+                    <span class="habit-label editable-text" contenteditable="true" 
+                          onblur="saveEdit(event, 'habit', '${hab.id}')" 
+                          onkeydown="handleEnterKey(event)">${hab.name}</span>
+                    <span class="habit-streak ${streakZeroClass}">
+                        <span class="alive-dot"></span> ${hab.streak} Day${hab.streak !== 1 ? 's' : ''}
+                    </span>
+                    <button class="delete-icon" onclick="deleteHabit('${hab.id}')" title="Delete Habit">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            `;
+        });
+        habitsHTML += `<button class="btn-add-habit" onclick="addHabit()">+ Add Habit</button></div>`;
+        listContainer.innerHTML = habitsHTML;
+    }
+
+    // Interactive Actions
+    function setActiveCategory(id) { activeCatId = id; renderHabitsUI(); }
+    
+    function toggleHabit(id) {
+        const cat = categories.find(c => c.id === activeCatId);
+        const hab = cat.habits.find(h => h.id === id);
+        hab.done = !hab.done;
+        // In reality, checking done would increment streak, unchecking would decrement. Simple toggle for now.
+        if(hab.done && hab.streak === 0) hab.streak = 1;
+        else if(!hab.done && hab.streak === 1) hab.streak = 0;
+        renderHabitsUI();
+    }
+
+    function addCategory() {
+        const newId = 'cat_' + Date.now();
+        categories.push({ id: newId, name: 'New Category', habits: [] });
+        activeCatId = newId; 
+        renderHabitsUI();
+    }
+
+    function addHabit() {
+        const cat = categories.find(c => c.id === activeCatId);
+        cat.habits.push({ id: 'hab_' + Date.now(), name: 'New Habit', streak: 0, done: false });
+        renderHabitsUI();
+    }
+
+    function deleteCategory(id) {
+        if(!confirm('Delete this entire category and its habits?')) return;
+        categories = categories.filter(c => c.id !== id);
+        if(activeCatId === id) activeCatId = categories.length > 0 ? categories[0].id : null;
+        renderHabitsUI();
+    }
+
+    function deleteHabit(id) {
+        const cat = categories.find(c => c.id === activeCatId);
+        cat.habits = cat.habits.filter(h => h.id !== id);
+        renderHabitsUI();
+    }
+
+    // Inline Editing Magic
+    function handleEnterKey(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Stop text from breaking into a new line
+            e.target.blur();    // Force the 'blur' event to trigger a save
         }
     }
 
-    async function signInWithGoogle() {
-        const { error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google' });
-        if (error) alert("Google Login Error: " + error.message);
+    function saveEdit(e, type, id) {
+        const newText = e.target.innerText.trim() || 'Unnamed';
+        if (type === 'category') {
+            const cat = categories.find(c => c.id === id);
+            if(cat) cat.name = newText;
+        } else if (type === 'habit') {
+            const cat = categories.find(c => c.id === activeCatId);
+            const hab = cat.habits.find(h => h.id === id);
+            if(hab) hab.name = newText;
+        }
+        // No need to full re-render here since the text is already updated in the DOM, 
+        // but it is securely saved to our data array ready for Supabase.
     }
 
-    async function signOut() {
-        await supabaseClient.auth.signOut();
-        window.location.reload();
-    }
 
     // ==========================================
-    // 2. ENGINE: FASTING SYNC & COLLAPSE UI
+    // 3. FASTING ENGINE
     // ==========================================
-    let isFasting = false;
-    let startTime = null;
-    let currentFastId = null; 
-    let timerInterval = null;
-
+    let isFasting = false, startTime = null, currentFastId = null, timerInterval = null;
     const fastingStages = [
         { maxHour: 4, title: "Stage 1: Fed/Digestive State (0–4 Hours)", desc: "Process: Digestion and nutrient absorption.<br>Action: Glucose is used for energy, excess stored as glycogen." },
         { maxHour: 12, title: "Stage 2: Early Fasting/Postabsorptive Phase (4–12 Hours)", desc: "Process: Blood sugar and insulin levels decline.<br>Action: The body breaks down glycogen to release glucose for energy." },
@@ -512,121 +505,62 @@
     }
 
     async function initFastingTracker() {
-        const { data, error } = await supabaseClient
-            .from('fasting_sessions')
-            .select('*')
-            .eq('user_id', currentUser.id)
-            .order('start_time', { ascending: false })
-            .limit(1);
-
-        if (error) { console.error("Error fetching fasts:", error); return; }
-
-        if (data && data.length > 0) {
+        const { data, error } = await supabaseClient.from('fasting_sessions').select('*').eq('user_id', currentUser.id).order('start_time', { ascending: false }).limit(1);
+        if (!error && data && data.length > 0) {
             const latestFast = data[0];
-            if (!latestFast.end_time) {
-                isFasting = true;
-                startTime = new Date(latestFast.start_time).getTime();
-                currentFastId = latestFast.id;
-            } else {
-                isFasting = false;
-                startTime = new Date(latestFast.end_time).getTime(); 
-                currentFastId = null;
-            }
-        } else {
-            isFasting = false;
-            startTime = Date.now();
-        }
-
-        updateUITheme(); 
-        updateTimer(); 
+            if (!latestFast.end_time) { isFasting = true; startTime = new Date(latestFast.start_time).getTime(); currentFastId = latestFast.id; } 
+            else { isFasting = false; startTime = new Date(latestFast.end_time).getTime(); currentFastId = null; }
+        } else { isFasting = false; startTime = Date.now(); }
+        updateUITheme(); updateTimer(); 
         if(timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(updateTimer, 1000); 
     }
 
     async function toggleFasting(event) {
         event.stopPropagation(); 
-        
-        const now = new Date();
-        const btn = document.getElementById('toggleFastBtn');
-        btn.disabled = true; 
-
+        const now = new Date(); document.getElementById('toggleFastBtn').disabled = true; 
         if (!isFasting) {
-            isFasting = true;
-            startTime = now.getTime();
-            updateUITheme(); 
-            
-            const { data, error } = await supabaseClient
-                .from('fasting_sessions')
-                .insert([{ user_id: currentUser.id, start_time: now.toISOString() }])
-                .select();
-                
+            isFasting = true; startTime = now.getTime(); updateUITheme(); 
+            const { data } = await supabaseClient.from('fasting_sessions').insert([{ user_id: currentUser.id, start_time: now.toISOString() }]).select();
             if (data) currentFastId = data[0].id;
-            
         } else {
-            isFasting = false;
-            const endTimeMs = now.getTime();
+            isFasting = false; const endTimeMs = now.getTime();
             const durationHours = ((endTimeMs - startTime) / (1000 * 60 * 60)).toFixed(2);
-            
-            startTime = endTimeMs; 
-            updateUITheme();
-            
+            startTime = endTimeMs; updateUITheme();
             if (currentFastId) {
-                await supabaseClient
-                    .from('fasting_sessions')
-                    .update({ end_time: now.toISOString(), duration_hours: durationHours })
-                    .eq('id', currentFastId);
+                await supabaseClient.from('fasting_sessions').update({ end_time: now.toISOString(), duration_hours: durationHours }).eq('id', currentFastId);
                 currentFastId = null;
             }
         }
-        
-        btn.disabled = false;
-        updateTimer();
+        document.getElementById('toggleFastBtn').disabled = false; updateTimer();
     }
 
     function updateUITheme() {
-        const hero = document.getElementById('fastingHero');
-        const btn = document.getElementById('toggleFastBtn');
-        const statusLabel = document.getElementById('fastStatusLabel');
-        const miniTitleLabel = document.getElementById('miniHeroTitle');
-
+        const hero = document.getElementById('fastingHero'), btn = document.getElementById('toggleFastBtn');
         if (isFasting) {
-            hero.classList.remove('feasting-mode');
-            hero.classList.add('fasting-mode');
-            statusLabel.innerText = "Fasting (Fat Burning)";
-            miniTitleLabel.innerText = "Fasting Active";
+            hero.classList.remove('feasting-mode'); hero.classList.add('fasting-mode');
+            document.getElementById('fastStatusLabel').innerText = "Fasting (Fat Burning)";
+            document.getElementById('miniHeroTitle').innerText = "Fasting Active";
             btn.innerText = "Break Fast";
         } else {
-            hero.classList.remove('fasting-mode');
-            hero.classList.add('feasting-mode');
-            statusLabel.innerText = "Feasting (Accumulation)";
-            miniTitleLabel.innerText = "Feasting Window";
+            hero.classList.remove('fasting-mode'); hero.classList.add('feasting-mode');
+            document.getElementById('fastStatusLabel').innerText = "Feasting (Accumulation)";
+            document.getElementById('miniHeroTitle').innerText = "Feasting Window";
             btn.innerText = "Done Eating";
         }
     }
 
     function updateTimer() {
         if (!startTime) return;
-        
-        const now = Date.now();
-        const diffMs = Math.max(0, now - startTime); 
-        
-        const totalSeconds = Math.floor(diffMs / 1000);
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-        
+        const totalSeconds = Math.floor(Math.max(0, Date.now() - startTime) / 1000);
+        const hours = Math.floor(totalSeconds / 3600), minutes = Math.floor((totalSeconds % 3600) / 60), seconds = totalSeconds % 60;
         const displayTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        
         document.getElementById('fastTimeDisplay').innerText = displayTime;
         document.getElementById('miniFastTimeDisplay').innerText = displayTime;
 
-        const hoursDecimal = totalSeconds / 3600;
-
         if (isFasting) {
             let currentStage = fastingStages[0];
-            for (let stage of fastingStages) {
-                if (hoursDecimal < stage.maxHour) { currentStage = stage; break; }
-            }
+            for (let stage of fastingStages) { if ((totalSeconds / 3600) < stage.maxHour) { currentStage = stage; break; } }
             document.getElementById('stageTitle').innerText = currentStage.title;
             document.getElementById('stageDesc').innerHTML = currentStage.desc;
         } else {
@@ -636,22 +570,12 @@
     }
 
     // ==========================================
-    // 3. CHART.JS DYNAMIC GRAPH
+    // 4. CHART ENGINE
     // ==========================================
-    let fastingChart = null;
-    let currentChartView = 'weekly'; 
-
+    let fastingChart = null; let currentChartView = 'weekly'; 
     const dummyData = {
-        weekly: {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-            data: [14.5, 15.2, 16.0, 18.5, 16.2, 15.5, 12.0],
-            dateDisplay: "Mar 19 - Mar 25"
-        },
-        monthly: {
-            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-            data: [15.1, 16.2, 15.8, 17.5],
-            dateDisplay: "March 2026"
-        }
+        weekly: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], data: [14.5, 15.2, 16.0, 18.5, 16.2, 15.5, 12.0], dateDisplay: "Mar 19 - Mar 25" },
+        monthly: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], data: [15.1, 16.2, 15.8, 17.5], dateDisplay: "March 2026" }
     };
 
     function setChartView(view) {
@@ -660,96 +584,39 @@
         document.getElementById('btnMonthly').classList.toggle('active', view === 'monthly');
         renderChart();
     }
-
-    function shiftChartData(direction) {
-        console.log(`Shifting chart data direction: ${direction}`);
-        alert(`Will fetch ${direction === -1 ? 'previous' : 'next'} ${currentChartView} data from database!`);
-    }
+    function shiftChartData(direction) { alert(`Will fetch ${direction === -1 ? 'previous' : 'next'} ${currentChartView} data from database!`); }
 
     function renderChart() {
         const ctx = document.getElementById('fastingChart').getContext('2d');
         const html = document.documentElement;
-        
-        const textColor = getComputedStyle(html).getPropertyValue('--muted').trim();
-        const gridColor = getComputedStyle(html).getPropertyValue('--chart-grid').trim();
-        const lineColor = getComputedStyle(html).getPropertyValue('--fasting').trim();
-        const fillColor = getComputedStyle(html).getPropertyValue('--fasting-glow').trim();
+        const textColor = getComputedStyle(html).getPropertyValue('--muted').trim(), gridColor = getComputedStyle(html).getPropertyValue('--chart-grid').trim();
+        const lineColor = getComputedStyle(html).getPropertyValue('--fasting').trim(), fillColor = getComputedStyle(html).getPropertyValue('--fasting-glow').trim();
 
         const chartData = dummyData[currentChartView];
         document.getElementById('chartDateRange').innerText = chartData.dateDisplay;
 
-        const data = {
-            labels: chartData.labels,
-            datasets: [{
-                label: 'Fasting Hours',
-                data: chartData.data,
-                borderColor: lineColor,
-                backgroundColor: fillColor,
-                borderWidth: 3,
-                pointBackgroundColor: lineColor,
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: lineColor,
-                pointRadius: 5,
-                pointHoverRadius: 7,
-                fill: true,
-                tension: 0.4
-            }]
-        };
-
         const config = {
             type: 'line',
-            data: data,
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return context.parsed.y + ' Hours'; } } } },
-                scales: {
-                    y: { min: 10, max: 24, grid: { color: gridColor, drawBorder: false }, ticks: { color: textColor, font: { family: 'Barlow', size: 12 } } },
-                    x: { grid: { display: false, drawBorder: false }, ticks: { color: textColor, font: { family: 'Barlow', size: 12 } } }
-                }
-            }
+            data: { labels: chartData.labels, datasets: [{ label: 'Fasting Hours', data: chartData.data, borderColor: lineColor, backgroundColor: fillColor, borderWidth: 3, pointBackgroundColor: lineColor, pointBorderColor: '#fff', pointHoverBackgroundColor: '#fff', pointHoverBorderColor: lineColor, pointRadius: 5, pointHoverRadius: 7, fill: true, tension: 0.4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 10, max: 24, grid: { color: gridColor, drawBorder: false }, ticks: { color: textColor } }, x: { grid: { display: false, drawBorder: false }, ticks: { color: textColor } } } }
         };
-
         if(fastingChart) fastingChart.destroy();
         fastingChart = new Chart(ctx, config);
     }
-
-    function initChart() {
-        renderChart();
-    }
+    function initChart() { renderChart(); }
     
     // ==========================================
-    // 4. HABIT TABS LOGIC
-    // ==========================================
-    function switchTab(tabId) {
-        // Hide all contents and remove active class from all buttons
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        
-        // Show selected content and highlight selected button
-        document.getElementById(tabId).classList.add('active');
-        document.getElementById('btn-' + tabId).classList.add('active');
-    }
-
-    // ==========================================
-    // 5. THEME TOGGLE & BOOT
+    // 5. THEME BOOT
     // ==========================================
     function toggleTheme() {
-        const html = document.documentElement;
-        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        const html = document.documentElement; const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         html.setAttribute('data-theme', next);
         document.getElementById('theme-icon').textContent = next === 'light' ? '☀️' : '🌙';
         document.getElementById('theme-label').textContent = next === 'light' ? 'Light' : 'Dark';
-        
-        if (currentUser) {
-            updateTimer();
-            if(fastingChart) renderChart(); 
-        }
+        if (currentUser) { updateTimer(); if(fastingChart) renderChart(); }
     }
 
     checkUser();
-
 </script>
-
 </body>
 </html>
