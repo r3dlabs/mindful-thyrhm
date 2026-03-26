@@ -18,14 +18,18 @@
             --fasting: #22c55e; --fasting-glow: rgba(34, 197, 94, 0.35);
             --feasting: #eab308; --feasting-glow: rgba(234, 179, 8, 0.15);
             --chart-grid: #1e1e2e;
+            
             --tab-active-bg: #e8e8f0; --tab-active-text: #0a0a0f;
             --pulse-y: #eab308; --pulse-y-glow: rgba(234, 179, 8, 0.4);
+
             --toggle-track-bg: #1e1e2e; --toggle-knob-bg: #e8e8f0; --toggle-icon-color: #0a0a0f;
-            --state-purpose: #5c88f2; --glow-purpose: rgba(92, 136, 242, 0.2);
-            --state-waste: #fc7281;   --glow-waste: rgba(252, 114, 129, 0.2);
-            --state-nourish: #f5c43d; --glow-nourish: rgba(245, 196, 61, 0.2);
-            --state-train: #47d18c;   --glow-train: rgba(71, 209, 140, 0.2);
-            --state-recover: #8d94e5; --glow-recover: rgba(141, 148, 229, 0.2);
+
+            /* Vibrant Moment States Colors */
+            --state-purpose: #5c88f2; 
+            --state-waste: #fc7281;   
+            --state-nourish: #f5c43d; 
+            --state-train: #47d18c;   
+            --state-recover: #8d94e5; 
         }
 
         [data-theme="light"] {
@@ -37,14 +41,18 @@
             --fasting: #16a34a; --fasting-glow: rgba(22, 163, 74, 0.35);
             --feasting: #d97706; --feasting-glow: rgba(217, 119, 6, 0.15);
             --chart-grid: #e2e8f0;
+            
             --tab-active-bg: #0f0f1a; --tab-active-text: #ffffff;
             --pulse-y: #d97706; --pulse-y-glow: rgba(217, 119, 6, 0.4);
+
             --toggle-track-bg: #dde0ea; --toggle-knob-bg: #0f0f1a; --toggle-icon-color: #ffffff;
-            --state-purpose: #5c88f2; --glow-purpose: rgba(92, 136, 242, 0.2);
-            --state-waste: #fc7281;   --glow-waste: rgba(252, 114, 129, 0.2);
-            --state-nourish: #f5c43d; --glow-nourish: rgba(245, 196, 61, 0.2);
-            --state-train: #47d18c;   --glow-train: rgba(71, 209, 140, 0.2);
-            --state-recover: #8d94e5; --glow-recover: rgba(141, 148, 229, 0.2);
+
+            /* Vibrant Moment States Colors */
+            --state-purpose: #5c88f2; 
+            --state-waste: #fc7281;   
+            --state-nourish: #f5c43d; 
+            --state-train: #47d18c;   
+            --state-recover: #8d94e5; 
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -84,20 +92,25 @@
         .moment-donut-col { width: 300px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;}
         @media (max-width: 768px) { .moment-dashboard-layout { flex-direction: column; gap: 2.5rem; } .moment-donut-col { width: 100%; max-width: 280px; margin: 0 auto; } }
 
-        .moment-btn { background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; position: relative; outline: none; border-left: 4px solid transparent; }
+        .moment-btn { background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; position: relative; outline: none; }
         .moment-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); transition: color 0.3s;}
-        .moment-timer-text { font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 1.15rem; tabular-nums; color: var(--text); }
+        .moment-timer-text { font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 1.15rem; tabular-nums; color: var(--text); transition: color 0.3s;}
         
-        .moment-btn.active-purpose { border-left-color: var(--state-purpose); background: var(--surface); box-shadow: 0 4px 15px var(--glow-purpose); }
-        .moment-btn.active-purpose .moment-label { color: var(--state-purpose); }
-        .moment-btn.active-waste { border-left-color: var(--state-waste); background: var(--surface); box-shadow: 0 4px 15px var(--glow-waste); }
-        .moment-btn.active-waste .moment-label { color: var(--state-waste); }
-        .moment-btn.active-nourish { border-left-color: var(--state-nourish); background: var(--surface); box-shadow: 0 4px 15px var(--glow-nourish); }
-        .moment-btn.active-nourish .moment-label { color: var(--state-nourish); }
-        .moment-btn.active-train { border-left-color: var(--state-train); background: var(--surface); box-shadow: 0 4px 15px var(--glow-train); }
-        .moment-btn.active-train .moment-label { color: var(--state-train); }
-        .moment-btn.active-recover { border-left-color: var(--state-recover); background: var(--surface); box-shadow: 0 4px 15px var(--glow-recover); }
-        .moment-btn.active-recover .moment-label { color: var(--state-recover); }
+        /* Active State Fills (Full Color, Readable Text, No Glow) */
+        .moment-btn.active-purpose { background: var(--state-purpose); border-color: var(--state-purpose); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .moment-btn.active-purpose .moment-label, .moment-btn.active-purpose .moment-timer-text { color: #ffffff; }
+        
+        .moment-btn.active-waste { background: var(--state-waste); border-color: var(--state-waste); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .moment-btn.active-waste .moment-label, .moment-btn.active-waste .moment-timer-text { color: #ffffff; }
+
+        .moment-btn.active-nourish { background: var(--state-nourish); border-color: var(--state-nourish); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .moment-btn.active-nourish .moment-label, .moment-btn.active-nourish .moment-timer-text { color: #0a0a0f; } /* Dark text for bright yellow */
+
+        .moment-btn.active-train { background: var(--state-train); border-color: var(--state-train); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .moment-btn.active-train .moment-label, .moment-btn.active-train .moment-timer-text { color: #ffffff; }
+
+        .moment-btn.active-recover { background: var(--state-recover); border-color: var(--state-recover); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .moment-btn.active-recover .moment-label, .moment-btn.active-recover .moment-timer-text { color: #ffffff; }
 
         .moment-donut-wrapper { width: 100%; aspect-ratio: 1; position: relative; display: flex; align-items: center; justify-content: center; margin: 0 auto;}
         .moment-donut-wrapper canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;}
@@ -143,7 +156,7 @@
         .action-btn { background: var(--input-bg); border: 2px solid var(--border); color: var(--text); padding: 1rem 3rem; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.3rem; text-transform: uppercase; cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em; }
         .feasting-mode .action-btn { border-color: var(--fasting); color: var(--fasting); }
         .feasting-mode .action-btn:hover { background: var(--fasting); color: #fff; box-shadow: 0 0 20px var(--fasting-glow);}
-        .fasting-mode .action-btn { border-color: var(--feasting); color: var(--feasting); }
+        .feasting-mode .action-btn { border-color: var(--feasting); color: var(--feasting); }
         .feasting-mode .action-btn:hover { background: var(--feasting); color: #111; box-shadow: 0 0 20px var(--feasting-glow); }
 
         /* --- Dynamic Tabbed Habits Card --- */
@@ -415,7 +428,7 @@
     // ==========================================
     // 2. MOMENT STATES & AUDIO ENGINE
     // ==========================================
-    let isAudioMuted = true; // Default to muted to respect browser autoplay policies
+    let isAudioMuted = true; 
 
     function toggleMute() {
         isAudioMuted = !isAudioMuted;
@@ -423,22 +436,18 @@
         document.getElementById('icon-sound-off').style.display = isAudioMuted ? 'block' : 'none';
         
         if (isAudioMuted) {
-            // Stop all audio immediately
             ['purpose', 'waste', 'nourish', 'train', 'recover'].forEach(key => document.getElementById(`audio-${key}`).pause());
         } else if (activeMomentKey) {
-            // Resume the active state's audio
             document.getElementById(`audio-${activeMomentKey}`).play().catch(e => console.log("Audio play blocked", e));
         }
     }
 
     function playStateAudio(stateKey) {
-        // Pause everything first
         ['purpose', 'waste', 'nourish', 'train', 'recover'].forEach(key => {
             const audio = document.getElementById(`audio-${key}`);
             audio.pause();
         });
         
-        // Play selected if not muted
         if (stateKey && !isAudioMuted) {
             const activeAudio = document.getElementById(`audio-${stateKey}`);
             activeAudio.play().catch(e => console.log("Audio play blocked. User must interact first.", e));
@@ -466,7 +475,6 @@
         renderMomentChart();
         updateMomentUI();
         
-        // Set initial mute icon state
         document.getElementById('icon-sound-on').style.display = isAudioMuted ? 'none' : 'block';
         document.getElementById('icon-sound-off').style.display = isAudioMuted ? 'block' : 'none';
     }
@@ -477,13 +485,13 @@
             document.getElementById(`btn-moment-${activeMomentKey}`).classList.remove(`active-${activeMomentKey}`);
             activeMomentKey = null;
             momentLastTickMs = null;
-            playStateAudio(null); // Stop audio
+            playStateAudio(null); 
         } else {
             if(activeMomentKey) document.getElementById(`btn-moment-${activeMomentKey}`).classList.remove(`active-${activeMomentKey}`);
             activeMomentKey = stateKey;
             momentLastTickMs = Date.now();
             document.getElementById(`btn-moment-${stateKey}`).classList.add(`active-${stateKey}`);
-            playStateAudio(stateKey); // Start new audio
+            playStateAudio(stateKey); 
         }
         updateMomentUI();
     }
@@ -723,6 +731,7 @@
         html.setAttribute('data-theme', next);
         document.getElementById('icon-sun').style.display = next === 'light' ? 'block' : 'none';
         document.getElementById('icon-moon').style.display = next === 'dark' ? 'block' : 'none';
+        document.getElementById('theme-label').textContent = next === 'light' ? 'Light Mode' : 'Dark Mode';
         
         if (currentUser) { 
             updateFastingTimer(); 
