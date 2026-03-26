@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- Core Theme Variables --- */
         [data-theme="dark"] {
@@ -66,7 +67,7 @@
         .btn-confirm { background: var(--lose); color: #fff; border: 2px solid var(--lose); }
         .btn-confirm:hover { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
 
-        /* --- Symmetrical Centered Header Layout --- */
+        /* --- Symmetrical Centered Header Layout (Zero Overlap Guaranteed) --- */
         header { 
             background: var(--bg); margin-bottom: 2rem; border-bottom: 1px solid var(--border); 
             display: flex; flex-direction: column; align-items: center; 
@@ -100,14 +101,14 @@
         .header-profile-menu svg { width: 14px; height: 14px; color: var(--muted); transition: transform 0.2s; }
         .header-profile-menu.menu-active svg { transform: rotate(180deg); }
         
-        /* Crisp Black & White Logout Button */
+        /* NEW: Crisp Black & White Logout Button */
         .btn-text-logout-header { 
             font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; 
             color: #0f0f1a; background: #ffffff; border: 1px solid #dde0ea; 
             border-radius: 20px; padding: 0.4rem 1.2rem; cursor: pointer; 
             transition: all 0.2s; white-space: nowrap; outline: none; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .btn-text-logout-header:hover { background: #f2f2f7; color: #000; border-color: #8888a0; }
+        .btn-text-logout-header:hover { background: #f2f2f7; border-color: #8888a0; }
         
         [data-theme="dark"] .btn-text-logout-header { color: #0f0f1a; background: #e8e8f0; border-color: #e8e8f0; }
         [data-theme="dark"] .btn-text-logout-header:hover { background: #ffffff; color: #000; }
@@ -128,17 +129,26 @@
         
         .dynamic-name { text-transform: none; letter-spacing: 0; color: var(--accent); }
 
-        /* Shared Card Header Container for Share Button Integration */
+        /* NEW: Shared Action Cluster for Share & Download Integration */
+        .action-cluster-header { 
+            display: flex; align-items: center; gap: 0.4rem; 
+            background: var(--input-bg); border: 1px solid var(--border); 
+            border-radius: 20px; padding: 0.25rem 0.5rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+            transition: all 0.2s;
+        }
+        .action-cluster-header:hover { border-color: var(--accent); }
+        
         .card-header-flex { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 1.5rem; }
         .card-header-flex .card-title-centered { margin-bottom: 0; }
-        .share-btn-card { position: absolute; right: 0; color: var(--muted); transition: color 0.2s; }
-        .share-btn-card:hover { color: var(--accent); }
+        
+        /* Positioning action cluster in flexible headers */
+        .action-cluster-header.abs-right { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
 
         /* --- Fasting Hero --- */
-        .hero-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .hero-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; gap: 1rem; }
         .dash-card:not(.collapsed) .hero-header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
-        .hero-header-left { display: flex; align-items: center; gap: 1rem; }
-        .hero-header-right { display: flex; align-items: center; gap: 1rem; }
+        .hero-header-left { display: flex; align-items: center; gap: 1rem; flex-grow: 1;}
+        .hero-header-right { display: flex; align-items: center; gap: 1rem; flex-shrink: 0;}
 
         .mini-pulse { width: 14px; height: 14px; border-radius: 50%; }
         .fasting-mode .mini-pulse { background: var(--fasting); box-shadow: 0 0 10px var(--fasting-glow); animation: pulseFasting 2.5s infinite ease-in-out; }
@@ -146,20 +156,20 @@
 
         .hero-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); }
         .mini-time { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.4rem; tabular-nums; color: var(--muted); letter-spacing: 0.05em;}
-        .dash-card:not(.collapsed) .mini-time { display: none; }
+        .dash-card.collapsed .mini-time { display: block; }
 
-        .chevron-icon { width: 24px; height: 24px; color: var(--muted); transition: transform 0.3s ease; }
+        .chevron-icon { width: 24px; height: 24px; color: var(--muted); transition: transform 0.3s ease; flex-shrink: 0; }
         .dash-card.collapsed .chevron-icon { transform: rotate(-90deg); }
 
         .hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; }
         .dash-card.collapsed .hero-content { display: none; }
         
-        /* Responsive Fasting Ring with clamp() */
+        /* Responsive Fasting Ring with clamp() for Perfect Mobile Fit */
         .fast-ring { 
-            width: clamp(220px, 70vw, 320px); 
-            height: clamp(220px, 70vw, 320px); 
+            width: clamp(200px, 70vw, 320px); 
+            height: clamp(200px, 70vw, 320px); 
             border-radius: 50%; background: var(--surface); display: flex; align-items: center; 
-            justify-content: center; margin-bottom: 1.5rem; position: relative; 
+            justify-content: center; margin-bottom: 1.5rem; position: relative; overflow: visible;
         }
         
         @keyframes pulseFasting { 0% { box-shadow: 0 0 20px var(--fasting-glow); } 50% { box-shadow: 0 0 65px var(--fasting-glow), 0 0 15px var(--fasting); } 100% { box-shadow: 0 0 20px var(--fasting-glow); } }
@@ -170,8 +180,9 @@
 
         .fast-hole { width: 100%; height: 100%; border-radius: 50%; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; z-index: 2; }
         
-        .fast-time { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(3.5rem, 12vw, 4.8rem); font-weight: 900; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
-        .fast-label { font-size: clamp(0.85rem, 3vw, 1rem); text-transform: uppercase; font-weight: 700; letter-spacing: 0.1em; transition: color 0.3s; margin-top: 0.5rem;}
+        /* Scaling fonts inside the ring */
+        .fast-time { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(3rem, 12vw, 4.8rem); font-weight: 900; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+        .fast-label { font-size: clamp(0.75rem, 3vw, 1rem); text-transform: uppercase; font-weight: 700; letter-spacing: 0.1em; transition: color 0.3s; margin-top: 0.5rem;}
         .fasting-mode .fast-label { color: var(--fasting); }
         .feasting-mode .fast-label { color: var(--feasting); }
 
@@ -342,7 +353,7 @@
 <header>
     <div class="controls-cluster">
         <div id="headerProfileMenu" class="header-profile-menu" onclick="toggleHeaderLogout()" style="display: none;" title="Account Settings">
-            <img id="userAvatarHeader" class="user-avatar-header" src="" alt="Profile">
+            <img id="userAvatarHeader" class="user-avatar-header" src="" alt="Profile" crossorigin="anonymous">
             <span id="userNameHeader" class="user-name-header">User</span>
             <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
         </div>
@@ -408,9 +419,14 @@
                     <span class="hero-title" id="miniHeroTitle">Feasting</span>
                 </div>
                 <div class="hero-header-right">
-                    <button class="icon-btn share-btn-card" style="position: relative; right: 0;" onclick="shareStatus('fasting', event)" title="Share Fasting Status">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-                    </button>
+                    <div class="action-cluster-header">
+                        <button class="icon-btn" onclick="shareStatus('fasting', event)" title="Share Fasting Status">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                        </button>
+                        <button class="icon-btn" onclick="downloadCardAsImage('fastingHero', event)" title="Download as Image">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        </button>
+                    </div>
                     <span class="mini-time" id="miniFastTimeDisplay">00:00</span>
                     <svg class="chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
@@ -446,12 +462,17 @@
             </div>
         </div>
 
-        <div class="dash-card">
+        <div id="momentCard" class="dash-card">
             <div class="card-header-flex">
                 <h3 class="card-title-centered" id="momentCardHeader"><span id="momentUserName" class="dynamic-name">User</span>'S MOMENT</h3>
-                <button class="icon-btn share-btn-card" onclick="shareStatus('moment')" title="Share Moment Status">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-                </button>
+                <div class="action-cluster-header abs-right">
+                    <button class="icon-btn" onclick="shareStatus('moment', event)" title="Share Moment Status">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                    </button>
+                    <button class="icon-btn" onclick="downloadCardAsImage('momentCard', event)" title="Download as Image">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    </button>
+                </div>
             </div>
             
             <div class="moment-dashboard-layout">
@@ -527,7 +548,7 @@
                     <div class="moment-donut-wrapper">
                         <canvas id="momentDonutChart"></canvas>
                         <div class="donut-center-content">
-                            <img id="userAvatarDonut" class="user-avatar-donut" src="" alt="Profile">
+                            <img id="userAvatarDonut" class="user-avatar-donut" src="" alt="Profile" crossorigin="anonymous">
                         </div>
                     </div>
                 </div>
@@ -555,16 +576,6 @@
 <audio id="audio-recover" loop src="recover.mp3"></audio>
 
 <script>
-    // Global Error Safety Nets
-    window.addEventListener('error', function(e) {
-        const loadView = document.getElementById('loadingView');
-        if (loadView && loadView.style.display !== 'none') loadView.innerHTML = `<h2 style="color:var(--lose)">Engine Error</h2><p style="color:var(--muted)">${e.message}. Please refresh or check your connection.</p>`;
-    });
-    window.addEventListener('unhandledrejection', function(e) {
-        const loadView = document.getElementById('loadingView');
-        if (loadView && loadView.style.display !== 'none') loadView.innerHTML = `<h2 style="color:var(--lose)">Async Error</h2><p style="color:var(--muted)">${e.reason}. Please refresh.</p>`;
-    });
-
     // ==========================================
     // 1. SUPABASE CONFIGURATION & CLOCK
     // ==========================================
@@ -621,6 +632,43 @@
         if(menu && btn) {
             const isActive = menu.classList.toggle('menu-active');
             btn.style.display = isActive ? 'block' : 'none';
+        }
+    }
+
+    // Capture DOM as Image and download
+    async function downloadCardAsImage(cardId, event) {
+        if(event) event.stopPropagation(); // Stop card collapse
+        
+        const card = document.getElementById(cardId);
+        if (!card) return;
+
+        // Visual tweaks for snapshot: temporarily hide interaction elements
+        const actionsToHide = card.querySelectorAll('.action-cluster-header, #toggleFastBtn, .tabs-scroll-container, .delete-icon, .btn-add-habit, .integrated-chart-section');
+        actionsToHide.forEach(el => el.style.visibility = 'hidden');
+
+        try {
+            const canvas = await html2canvas(card, {
+                // Important: Match current theme background
+                backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--bg').trim(),
+                scale: 2, // Double resolution for crisp image
+                useCORS: true, // Allow fetching profile pictures
+                logging: false
+            });
+
+            // Restore elements
+            actionsToHide.forEach(el => el.style.visibility = 'visible');
+
+            // Generate image and download
+            const image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+            const link = document.createElement('a');
+            link.download = `MindfulRhythm-${cardId}-${new Date().toISOString().slice(0,10)}.png`;
+            link.href = image;
+            link.click();
+        } catch (err) {
+            console.error("Screenshot failed:", err);
+            // Ensure elements are restored on error
+            actionsToHide.forEach(el => el.style.visibility = 'visible');
+            alert("Failed to create image. Note: External assets like profile pictures may prevent snapshots depending on browser security settings.");
         }
     }
 
