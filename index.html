@@ -12,10 +12,14 @@
         [data-theme="dark"] {
             --bg: #0a0a0f; --surface: #13131a; --border: #1e1e2e;
             --text: #e8e8f0; --muted: #6b6b80; 
-            --accent: #ff4757; --win: #3ecf7a; --lose: #ef4444;
+            --accent: #22c55e; --win: #3ecf7a; --lose: #ef4444;
             --card-shadow: 0 4px 20px rgba(0,0,0,0.5);
             --toggle-bg: #1e1e2e; --input-bg: #13131a;
-            --fasting: #ff4757; --fasting-glow: rgba(255, 71, 87, 0.35);
+            
+            /* The New Discipline Green */
+            --fasting: #22c55e; 
+            --fasting-glow: rgba(34, 197, 94, 0.35);
+            
             --feasting: #eab308; --feasting-glow: rgba(234, 179, 8, 0.15);
             --chart-grid: #1e1e2e;
         }
@@ -23,10 +27,14 @@
         [data-theme="light"] {
             --bg: #f2f2f7; --surface: #ffffff; --border: #dde0ea;
             --text: #0f0f1a; --muted: #8888a0; 
-            --accent: #e11d48; --win: #1a8a4a; --lose: #d63030;
+            --accent: #16a34a; --win: #1a8a4a; --lose: #d63030;
             --card-shadow: 0 4px 15px rgba(0,0,0,0.05);
             --toggle-bg: #dde0ea; --input-bg: #ffffff;
-            --fasting: #e11d48; --fasting-glow: rgba(225, 29, 72, 0.35);
+            
+            /* The New Discipline Green */
+            --fasting: #16a34a; 
+            --fasting-glow: rgba(22, 163, 74, 0.35);
+            
             --feasting: #d97706; --feasting-glow: rgba(217, 119, 6, 0.15);
             --chart-grid: #e2e8f0;
         }
@@ -193,24 +201,34 @@
 
         .chart-wrapper { width: 100%; height: 260px; position: relative; }
 
-        /* --- Dashboard Grid --- */
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        /* --- Tabbed Habits Card --- */
         .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: var(--card-shadow); }
-        .dash-card h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.1rem; text-transform: uppercase; color: var(--muted); margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; }
+        
+        .tabs-header { display: flex; gap: 0.75rem; overflow-x: auto; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem; scrollbar-width: none; }
+        .tabs-header::-webkit-scrollbar { display: none; }
+        .tab-btn { background: var(--input-bg); border: 1px solid var(--border); color: var(--muted); padding: 0.6rem 1.2rem; border-radius: 20px; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; white-space: nowrap; transition: all 0.2s; font-size: 0.9rem;}
+        .tab-btn.active { background: var(--fasting); color: #fff; border-color: var(--fasting); box-shadow: 0 0 12px var(--fasting-glow); }
+        
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .dash-list { display: flex; flex-direction: column; gap: 1rem; }
-        .dash-item { display: flex; flex-direction: column; gap: 0.4rem; }
-        .dash-item-header { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; }
-        .dash-bar-bg { width: 100%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
-        .dash-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
-
-        .habit-row { display: flex; align-items: center; gap: 1rem; padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
+        .dash-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .habit-row { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--border); }
         .habit-row:last-child { border-bottom: none; }
-        .habit-check { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; background: var(--input-bg); transition: all 0.2s; }
-        .habit-check.done { background: var(--win); border-color: var(--win); }
+        
+        .habit-check { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; background: var(--input-bg); transition: all 0.2s; flex-shrink: 0;}
+        .habit-check.done { background: var(--fasting); border-color: var(--fasting); }
         .habit-check.done::after { content: '✓'; color: #fff; font-size: 0.8rem; font-weight: bold; }
-        .habit-label { font-weight: 500; font-size: 0.95rem; }
-        .habit-streak { margin-left: auto; font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; color: var(--muted); font-weight: 700; }
+        
+        .habit-label { font-weight: 500; font-size: 1rem; flex-grow: 1; }
+        
+        /* The glowing dot for active streaks */
+        .alive-dot { width: 8px; height: 8px; background: var(--fasting); border-radius: 50%; box-shadow: 0 0 8px var(--fasting-glow); animation: pulseFasting 2s infinite ease-in-out; display: inline-block; margin-right: 6px; }
+        
+        .habit-streak { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; color: var(--text); font-weight: 700; display: flex; align-items: center; white-space: nowrap;}
+        .habit-streak.zero { color: var(--muted); }
+        .habit-streak.zero .alive-dot { display: none; }
 
     </style>
 </head>
@@ -270,7 +288,6 @@
             </div>
 
             <div class="hero-content">
-                
                 <div class="fast-ring" id="fastRing">
                     <div class="fast-hole">
                         <span class="fast-time" id="fastTimeDisplay">00:00:00</span>
@@ -311,50 +328,94 @@
             </div>
         </div>
 
-        <div class="dashboard-grid">
-            <div class="dash-card">
-                <h3>Strict Keto Macros <span>1,420 Kcal</span></h3>
-                <div class="dash-list">
-                    <div class="dash-item">
-                        <div class="dash-item-header"><span>Fat (Target: 70%)</span><span>110g / 130g</span></div>
-                        <div class="dash-bar-bg"><div class="dash-bar-fill" style="width: 85%; background: #fbbf24;"></div></div>
-                    </div>
-                    <div class="dash-item">
-                        <div class="dash-item-header"><span>Protein (Target: 25%)</span><span>85g / 110g</span></div>
-                        <div class="dash-bar-bg"><div class="dash-bar-fill" style="width: 77%; background: #60a5fa;"></div></div>
-                    </div>
-                    <div class="dash-item">
-                        <div class="dash-item-header"><span>Net Carbs (Target: < 20g)</span><span style="color: var(--win);">12g / 20g</span></div>
-                        <div class="dash-bar-bg"><div class="dash-bar-fill" style="width: 60%; background: var(--win);"></div></div>
-                    </div>
-                </div>
+        <div class="dash-card">
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="switchTab('tab-productive')" id="btn-tab-productive">Productive</button>
+                <button class="tab-btn" onclick="switchTab('tab-sleep')" id="btn-tab-sleep">Sleep</button>
+                <button class="tab-btn" onclick="switchTab('tab-food')" id="btn-tab-food">Food</button>
+                <button class="tab-btn" onclick="switchTab('tab-unproductive')" id="btn-tab-unproductive">Unproductive</button>
             </div>
 
-            <div class="dash-card">
-                <h3>Daily Non-Negotiables <span>Score: 75%</span></h3>
+            <div id="tab-productive" class="tab-content active">
                 <div class="dash-list">
                     <div class="habit-row">
                         <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
-                        <span class="habit-label">Sugar-Free Compliant</span>
-                        <span class="habit-streak">🔥 14 Day Streak</span>
+                        <span class="habit-label">PADI Theory / Instructor Study</span>
+                        <span class="habit-streak"><span class="alive-dot"></span> 4 Days</span>
                     </div>
                     <div class="habit-row">
-                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
-                        <span class="habit-label">Electrolytes & Hydration</span>
-                        <span class="habit-streak">🔥 5 Day Streak</span>
+                        <div class="habit-check" onclick="this.classList.toggle('done')"></div>
+                        <span class="habit-label">Camp & Dive Web App Dev</span>
+                        <span class="habit-streak zero">0 Days</span>
                     </div>
                     <div class="habit-row">
                         <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
                         <span class="habit-label">Deep Work Block (2h)</span>
-                        <span class="habit-streak">🔥 2 Day Streak</span>
+                        <span class="habit-streak"><span class="alive-dot"></span> 12 Days</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-sleep" class="tab-content">
+                <div class="dash-list">
+                    <div class="habit-row">
+                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
+                        <span class="habit-label">7+ Hours Restful Sleep</span>
+                        <span class="habit-streak"><span class="alive-dot"></span> 2 Days</span>
                     </div>
                     <div class="habit-row">
                         <div class="habit-check" onclick="this.classList.toggle('done')"></div>
                         <span class="habit-label">Evening Mobility / Stretch</span>
-                        <span class="habit-streak" style="color: var(--border);">0 Day</span>
+                        <span class="habit-streak zero">0 Days</span>
+                    </div>
+                    <div class="habit-row">
+                        <div class="habit-check" onclick="this.classList.toggle('done')"></div>
+                        <span class="habit-label">Screens off 1hr Before Bed</span>
+                        <span class="habit-streak zero">0 Days</span>
                     </div>
                 </div>
             </div>
+
+            <div id="tab-food" class="tab-content">
+                <div class="dash-list">
+                    <div class="habit-row">
+                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
+                        <span class="habit-label">Strict Keto / Sugar-Free Compliant</span>
+                        <span class="habit-streak"><span class="alive-dot"></span> 14 Days</span>
+                    </div>
+                    <div class="habit-row">
+                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
+                        <span class="habit-label">Black Coffee / Tea Only (Fasting)</span>
+                        <span class="habit-streak"><span class="alive-dot"></span> 21 Days</span>
+                    </div>
+                    <div class="habit-row">
+                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
+                        <span class="habit-label">Electrolytes & Hydration</span>
+                        <span class="habit-streak"><span class="alive-dot"></span> 5 Days</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-unproductive" class="tab-content">
+                <div class="dash-list">
+                    <div class="habit-row">
+                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
+                        <span class="habit-label">No PlayStation Binge Gaming</span>
+                        <span class="habit-streak"><span class="alive-dot"></span> 8 Days</span>
+                    </div>
+                    <div class="habit-row">
+                        <div class="habit-check done" onclick="this.classList.toggle('done')"></div>
+                        <span class="habit-label">No Mindless Doom Scrolling</span>
+                        <span class="habit-streak"><span class="alive-dot"></span> 3 Days</span>
+                    </div>
+                    <div class="habit-row">
+                        <div class="habit-check" onclick="this.classList.toggle('done')"></div>
+                        <span class="habit-label">No Social Media Before Noon</span>
+                        <span class="habit-streak zero">0 Days</span>
+                    </div>
+                </div>
+            </div>
+            
         </div>
 
     </div>
@@ -389,7 +450,6 @@
             if (session) {
                 currentUser = session.user;
                 
-                // Load profile data
                 const meta = currentUser.user_metadata;
                 if (meta) {
                     if (meta.avatar_url) document.getElementById('userAvatar').src = meta.avatar_url;
@@ -400,7 +460,6 @@
                 document.getElementById('logoutBtn').style.display = 'block';
                 showView('main');
                 
-                // Check if user previously collapsed the card
                 if(localStorage.getItem('fastingCardCollapsed') === 'true') {
                     document.getElementById('fastingHero').classList.add('collapsed');
                 }
@@ -658,9 +717,22 @@
     function initChart() {
         renderChart();
     }
+    
+    // ==========================================
+    // 4. HABIT TABS LOGIC
+    // ==========================================
+    function switchTab(tabId) {
+        // Hide all contents and remove active class from all buttons
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        // Show selected content and highlight selected button
+        document.getElementById(tabId).classList.add('active');
+        document.getElementById('btn-' + tabId).classList.add('active');
+    }
 
     // ==========================================
-    // 4. THEME TOGGLE & BOOT
+    // 5. THEME TOGGLE & BOOT
     // ==========================================
     function toggleTheme() {
         const html = document.documentElement;
