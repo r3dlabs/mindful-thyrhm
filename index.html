@@ -23,18 +23,14 @@
             --fasting: #22c55e; --fasting-glow: rgba(34, 197, 94, 0.35);
             --feasting: #eab308; --feasting-glow: rgba(234, 179, 8, 0.15);
             --chart-grid: #1e1e2e;
-            
             --pulse-y: #eab308; --pulse-y-glow: rgba(234, 179, 8, 0.4);
             --toggle-track-bg: #1e1e2e; --toggle-knob-bg: #e8e8f0; --toggle-icon-color: #0a0a0f;
-
-            /* Vibrant Moment States Colors */
             --state-purpose: #5c88f2; --glow-purpose: rgba(92, 136, 242, 0.2);
             --state-waste: #fc7281;   --glow-waste: rgba(252, 114, 129, 0.2);
             --state-nourish: #f5c43d; --glow-nourish: rgba(245, 196, 61, 0.2);
             --state-train: #47d18c;   --glow-train: rgba(71, 209, 140, 0.2);
             --state-recover: #8d94e5; --glow-recover: rgba(141, 148, 229, 0.2);
         }
-
         [data-theme="light"] {
             --bg: #f2f2f7; --surface: #ffffff; --border: #dde0ea;
             --text: #0f0f1a; --muted: #8888a0; 
@@ -44,315 +40,99 @@
             --fasting: #16a34a; --fasting-glow: rgba(22, 163, 74, 0.35);
             --feasting: #d97706; --feasting-glow: rgba(217, 119, 6, 0.15);
             --chart-grid: #e2e8f0;
-            
             --pulse-y: #d97706; --pulse-y-glow: rgba(217, 119, 6, 0.4);
             --toggle-track-bg: #dde0ea; --toggle-knob-bg: #0f0f1a; --toggle-icon-color: #ffffff;
-
-            /* Vibrant Moment States Colors */
             --state-purpose: #5c88f2; --glow-purpose: rgba(92, 136, 242, 0.2);
             --state-waste: #fc7281;   --glow-waste: rgba(252, 114, 129, 0.2);
             --state-nourish: #f5c43d; --glow-nourish: rgba(245, 196, 61, 0.2);
             --state-train: #47d18c;   --glow-train: rgba(71, 209, 140, 0.2);
             --state-recover: #8d94e5; --glow-recover: rgba(141, 148, 229, 0.2);
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; padding: 0 0 4rem 0; transition: background 0.25s, color 0.25s; }
 
-        /* --- Friction Modal --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); animation: fadeIn 0.2s ease; }
+        /* Modal & UI Elements */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
         .modal-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 2.5rem 2rem; max-width: 400px; width: 90%; text-align: center; box-shadow: var(--card-shadow); }
         .modal-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.8rem; text-transform: uppercase; color: var(--text); margin-bottom: 0.5rem; }
         .modal-desc { color: var(--muted); margin-bottom: 2rem; font-size: 1rem; }
         .modal-actions { display: flex; gap: 1rem; justify-content: center; }
         .modal-btn { padding: 0.8rem 1.5rem; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; transition: all 0.2s; border: none; flex: 1;}
         .btn-cancel { background: transparent; border: 2px solid var(--border); color: var(--text); }
-        .btn-cancel:hover { border-color: var(--muted); }
         .btn-confirm { background: var(--lose); color: #fff; border: 2px solid var(--lose); }
-        .btn-confirm:hover { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
 
-        /* --- Symmetrical Centered Header Layout --- */
+        /* Symmetrical Centered Header */
         header { 
             background: var(--bg); margin-bottom: 2rem; border-bottom: 1px solid var(--border); 
             display: flex; flex-direction: column; align-items: center; 
             padding: 2.5rem 1.5rem; position: relative; z-index: 900;
         }
-        
-        .logo-brand-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 0.4rem;
-        }
-        .header-logo-img {
-            height: 45px;
-            width: auto;
-            object-fit: contain;
-        }
-
-        .controls-cluster { 
-            display: flex; align-items: center; justify-content: center; 
-            gap: 1rem; margin-bottom: 1.5rem; width: 100%; flex-wrap: wrap; 
-        }
-        
+        .logo-brand-container { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 0.4rem; }
+        .header-logo-img { height: 45px; width: auto; object-fit: contain; }
+        .controls-cluster { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.5rem; width: 100%; flex-wrap: wrap; }
         .header-titles { text-align: center; width: 100%; }
         .header-titles h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(2.2rem, 5vw, 3rem); letter-spacing: 0.05em; text-transform: uppercase; color: var(--text); line-height: 1; }
         .header-titles p { color: var(--muted); font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.5rem; }
-
         .date-time-display { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
         #currentDate { font-size: 0.9rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
         #currentTime { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--text); letter-spacing: 0.02em; }
 
-        /* Icons & Toggles */
-        .icon-btn { background: transparent; border: none; color: var(--muted); cursor: pointer; transition: color 0.2s; display: flex; align-items: center; justify-content: center; padding: 0.2rem; outline: none; }
-        .icon-btn:hover { color: var(--text); }
-        
+        /* Interactive Toggles */
+        .icon-btn { background: transparent; border: none; color: var(--muted); cursor: pointer; transition: color 0.2s; display: flex; align-items: center; justify-content: center; padding: 0.2rem; }
         .theme-toggle-container { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; cursor: pointer; user-select: none;}
         .sleek-toggle-track { width: 50px; height: 28px; border-radius: 16px; background: var(--toggle-track-bg); position: relative; transition: background 0.3s ease; }
-        .sleek-toggle-knob { width: 20px; height: 20px; border-radius: 50%; background: var(--toggle-knob-bg); position: absolute; top: 4px; left: 4px; transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1), background 0.3s ease; display: flex; align-items: center; justify-content: center; color: var(--toggle-icon-color); }
+        .sleek-toggle-knob { width: 20px; height: 20px; border-radius: 50%; background: var(--toggle-knob-bg); position: absolute; top: 4px; left: 4px; transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1); display: flex; align-items: center; justify-content: center; color: var(--toggle-icon-color); }
         [data-theme="dark"] .sleek-toggle-knob { transform: translateX(22px); }
-        
-        /* Header Profile Menu Style */
-        .header-profile-menu { display: flex; align-items: center; gap: 0.6rem; cursor: pointer; border: 1px solid var(--border); background: var(--surface); border-radius: 20px; padding: 0.3rem 0.8rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;}
-        .header-profile-menu:hover { border-color: var(--accent); }
-        .user-avatar-header { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid var(--bg); flex-shrink: 0; }
-        .user-name-header { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 1rem; color: var(--text); text-transform: none; letter-spacing: 0;}
-        .header-profile-menu svg { width: 14px; height: 14px; color: var(--muted); transition: transform 0.2s; }
-        .header-profile-menu.menu-active svg { transform: rotate(180deg); }
-        
-        .btn-text-logout-header { 
-            font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; 
-            color: #000000; background: #ffffff; border: 2px solid #000000; 
-            border-radius: 20px; padding: 0.3rem 1.2rem; cursor: pointer; 
-            transition: all 0.2s; white-space: nowrap; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-        }
-        .btn-text-logout-header:hover { background: #000000; color: #ffffff; }
-        
-        [data-theme="dark"] .btn-text-logout-header { color: #000000; background: #ffffff; border-color: #ffffff; }
-        [data-theme="dark"] .btn-text-logout-header:hover { background: #cccccc; border-color: #cccccc;}
 
-        @media (max-width: 768px) { 
-            header { padding: 1.5rem 1rem 2rem; }
-            .controls-cluster { gap: 0.6rem; margin-bottom: 1.2rem; } 
-            .user-name-header { font-size: 0.9rem; }
-            .user-avatar-header { width: 26px; height: 26px; }
-            .header-profile-menu { gap: 0.4rem; padding: 0.2rem 0.6rem; }
-        }
+        /* Profile & Auth */
+        .header-profile-menu { display: flex; align-items: center; gap: 0.6rem; cursor: pointer; border: 1px solid var(--border); background: var(--surface); border-radius: 20px; padding: 0.3rem 0.8rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .user-avatar-header { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid var(--bg); }
+        .user-name-header { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 1rem; color: var(--text); }
+        .btn-text-logout-header { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; color: #000; background: #fff; border: 2px solid #000; border-radius: 20px; padding: 0.3rem 1.2rem; cursor: pointer; }
 
         .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+        .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; box-shadow: var(--card-shadow); margin-bottom: 2rem; position: relative;}
+        .card-title-centered { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); }
+        .dynamic-name { color: var(--accent); }
+        .card-header-flex { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; margin-bottom: 1.5rem; width: 100%; }
+        .card-header-flex .card-title-centered { grid-column: 2; text-align: center; }
+        .action-cluster-header.abs-right { grid-column: 3; justify-self: end; display: flex; gap: 0.4rem; background: var(--input-bg); border: 1px solid var(--border); border-radius: 20px; padding: 0.25rem 0.5rem; }
 
-        /* --- Generic Dash Card --- */
-        .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; box-shadow: var(--card-shadow); margin-bottom: 2rem; transition: all 0.4s ease; position: relative;}
-        .card-title-centered { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); transition: color 0.3s;}
-        .dynamic-name { text-transform: none; letter-spacing: 0; color: var(--accent); }
-
-        /* Shared Action Cluster */
-        .action-cluster-header { 
-            display: flex; align-items: center; gap: 0.4rem; 
-            background: var(--input-bg); border: 1px solid var(--border); 
-            border-radius: 20px; padding: 0.25rem 0.5rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
-            transition: all 0.2s;
-        }
-        .action-cluster-header:hover { border-color: var(--accent); }
-
-        /* CSS Grid Card Headers */
-        .card-header-flex { 
-            display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; 
-            gap: 1rem; margin-bottom: 1.5rem; width: 100%;
-        }
-        .card-header-flex::before { content: ''; display: block; }
-        .card-header-flex .card-title-centered { grid-column: 2; margin-bottom: 0; text-align: center; white-space: nowrap;}
-        .action-cluster-header.abs-right { grid-column: 3; justify-self: end; }
-
-        @media (max-width: 600px) {
-            .card-header-flex { display: flex; flex-direction: column; justify-content: center; text-align: center; }
-            .card-header-flex .card-title-centered { white-space: normal; }
-            .action-cluster-header.abs-right { align-self: center; margin-top: -0.5rem; }
-        }
-
-        /* --- Fasting Hero --- */
-        .hero-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; gap: 1rem; flex-wrap: wrap; }
-        .dash-card:not(.collapsed) .hero-header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
-        .hero-header-left { display: flex; align-items: center; gap: 1rem; flex-grow: 1;}
-        .hero-header-right { display: flex; align-items: center; gap: 1rem; flex-shrink: 0;}
-
-        .mini-pulse { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
-        .fasting-mode .mini-pulse { background: var(--fasting); box-shadow: 0 0 10px var(--fasting-glow); animation: pulseFasting 2.5s infinite ease-in-out; }
-        .feasting-mode .mini-pulse { background: var(--feasting); box-shadow: 0 0 10px var(--feasting-glow); animation: pulseFeasting 4s infinite ease-in-out; }
-
-        .hero-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); }
-        .mini-time { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.4rem; tabular-nums; color: var(--muted); letter-spacing: 0.05em;}
-        .dash-card:not(.collapsed) .mini-time { display: none; }
-
-        .chevron-icon { width: 24px; height: 24px; color: var(--muted); transition: transform 0.3s ease; flex-shrink: 0; }
-        .dash-card.collapsed .chevron-icon { transform: rotate(-90deg); }
-
-        .hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .dash-card.collapsed .hero-content { display: none; }
-        
-        .fast-ring { 
-            width: 100%; max-width: 320px; aspect-ratio: 1; height: auto;
-            border-radius: 50%; background: var(--surface); display: flex; align-items: center; 
-            justify-content: center; margin: 0 auto 1.5rem; position: relative; overflow: visible;
-            flex-shrink: 0;
-        }
-        
+        /* Fasting Layout */
+        .hero-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; gap: 1rem; }
+        .fast-ring { width: 100%; max-width: 320px; aspect-ratio: 1; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; position: relative; }
+        .fast-time { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(3rem, 12vw, 4.8rem); font-weight: 900; color: var(--text); font-variant-numeric: tabular-nums; }
+        .fasting-mode .fast-ring { animation: pulseFasting 2.5s infinite ease-in-out; }
+        .feasting-mode .fast-ring { animation: pulseFeasting 4s infinite ease-in-out; }
         @keyframes pulseFasting { 0% { box-shadow: 0 0 20px var(--fasting-glow); } 50% { box-shadow: 0 0 65px var(--fasting-glow), 0 0 15px var(--fasting); } 100% { box-shadow: 0 0 20px var(--fasting-glow); } }
         @keyframes pulseFeasting { 0% { box-shadow: 0 0 15px var(--feasting-glow); } 50% { box-shadow: 0 0 45px var(--feasting-glow); } 100% { box-shadow: 0 0 15px var(--feasting-glow); } }
 
-        .fasting-mode .fast-ring { animation: pulseFasting 2.5s infinite ease-in-out; }
-        .feasting-mode .fast-ring { animation: pulseFeasting 4s infinite ease-in-out; }
-
-        .fast-hole { width: 100%; height: 100%; position: absolute; top: 0; left: 0; border-radius: 50%; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; z-index: 2; }
-        
-        .fast-time { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(3rem, 12vw, 4.8rem); font-weight: 900; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
-        .fast-label { font-size: clamp(0.75rem, 3.5vw, 1rem); text-transform: uppercase; font-weight: 700; letter-spacing: 0.1em; transition: color 0.3s; margin-top: 0.5rem; padding: 0 0.5rem;}
-        .fasting-mode .fast-label { color: var(--fasting); }
-        .feasting-mode .fast-label { color: var(--feasting); }
-
-        .stage-container { max-width: 600px; margin: 0.5rem auto 2.5rem; min-height: 80px; }
-        .stage-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; text-transform: uppercase; transition: color 0.3s;}
-        .stage-desc { font-size: 0.95rem; color: var(--muted); line-height: 1.5; }
-        .fasting-mode .stage-title { color: var(--fasting); }
-        .feasting-mode .stage-title { color: var(--feasting); }
-
-        .action-btn { background: transparent; border: 2px solid var(--border); color: var(--text); padding: 1rem 3rem; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.3rem; text-transform: uppercase; cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em; outline: none;}
-        
-        .feasting-mode .action-btn { border-color: var(--fasting); color: var(--fasting); }
-        .feasting-mode .action-btn:hover { background: var(--fasting); color: #fff; box-shadow: 0 0 20px var(--fasting-glow);}
-        
-        .fasting-mode .action-btn { border-color: var(--border); color: var(--text); }
-        .fasting-mode .action-btn:hover { background: var(--lose); color: #fff; border-color: var(--lose); box-shadow: 0 0 20px rgba(252, 114, 129, 0.3); }
-
-        .integrated-chart-section { width: 100%; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--border); }
-        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;}
-        .date-picker { display: flex; align-items: center; gap: 1rem; background: var(--input-bg); padding: 0.3rem 0.8rem; border-radius: 20px; border: 1px solid var(--border);}
-        .date-nav-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: color 0.2s; padding: 0.2rem;}
-        .date-nav-btn:hover { color: var(--text); }
-        .date-range-display { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); min-width: 140px; text-align: center;}
-        .view-toggle-group { display: flex; background: var(--toggle-bg); border-radius: 20px; padding: 3px; border: 1px solid var(--border); }
-        .view-toggle-btn { background: transparent; border: none; padding: 0.4rem 1.2rem; border-radius: 17px; color: var(--muted); cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.85rem; transition: all 0.2s; }
-        .view-toggle-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-        .chart-wrapper { width: 100%; height: 260px; position: relative; }
-
-        /* --- Moment States Dashboard --- */
+        /* Moment Dashboard */
         .moment-dashboard-layout { display: flex; gap: 3rem; align-items: center; justify-content: space-between; }
         .moment-timers-col { flex: 1; display: flex; flex-direction: column; gap: 0.75rem; }
-        .moment-donut-col { width: 300px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;}
-        
-        .moment-btn { 
-            background: var(--input-bg); border: 3px solid var(--border); border-radius: 12px; 
-            padding: 1rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; 
-            transition: all 0.3s ease; position: relative; outline: none; text-align: left;
-        }
+        .moment-btn { background: var(--input-bg); border: 3px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; }
+        .moment-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.15rem; text-transform: uppercase; color: var(--muted); }
+        .moment-timer-text { font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 1.15rem; tabular-nums; color: var(--text); }
+        .moment-donut-col { width: 300px; flex-shrink: 0; position: relative; }
+        .moment-donut-wrapper { width: 100%; aspect-ratio: 1; position: relative; display: flex; align-items: center; justify-content: center; }
+        /* Empty donut center layout */
+        .donut-center-content { position: absolute; display: flex; align-items: center; justify-content: center; z-index: 10; pointer-events: none; }
 
-        .moment-left-controls { display: flex; align-items: baseline; gap: 0.6rem; }
-        .moment-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); transition: color 0.3s;}
-        .moment-subtext { font-family: 'Barlow', sans-serif; font-size: 0.85rem; color: var(--muted); font-weight: 400; text-transform: none; opacity: 0.8; transition: color 0.3s; }
-        
-        .moment-right-controls { display: flex; align-items: center; gap: 1rem; }
-        .moment-timer-text { font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 1.15rem; tabular-nums; color: var(--text); transition: color 0.3s;}
-        .moment-audio-btn { color: var(--muted); background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.3s; }
-        .moment-audio-btn:hover { color: var(--text); }
-        
-        @media (max-width: 768px) { 
-            .moment-dashboard-layout { flex-direction: column; gap: 2.5rem; } 
-            .moment-donut-col { width: 100%; max-width: 280px; margin: 0 auto; } 
-            .moment-left-controls { flex-direction: column; align-items: flex-start; gap: 0.1rem; }
-            .moment-subtext { font-size: 0.8rem; }
-            .moment-btn { padding: 0.8rem 1.2rem; }
-        }
-        
-        /* Active State Fills */
-        .moment-btn.active-purpose { border-color: var(--state-purpose); background: var(--surface); box-shadow: 0 4px 15px var(--glow-purpose); }
-        .moment-btn.active-purpose .moment-label, .moment-btn.active-purpose .moment-subtext, .moment-btn.active-purpose .moment-audio-btn { color: var(--state-purpose); }
-        
-        .moment-btn.active-waste { border-color: var(--state-waste); background: var(--surface); box-shadow: 0 4px 15px var(--glow-waste); }
-        .moment-btn.active-waste .moment-label, .moment-btn.active-waste .moment-subtext, .moment-btn.active-waste .moment-audio-btn { color: var(--state-waste); }
-
-        .moment-btn.active-nourish { border-color: var(--state-nourish); background: var(--surface); box-shadow: 0 4px 15px var(--glow-nourish); }
-        .moment-btn.active-nourish .moment-label, .moment-btn.active-nourish .moment-subtext, .moment-btn.active-nourish .moment-audio-btn { color: var(--state-nourish); }
-
-        .moment-btn.active-train { border-color: var(--state-train); background: var(--surface); box-shadow: 0 4px 15px var(--glow-train); }
-        .moment-btn.active-train .moment-label, .moment-btn.active-train .moment-subtext, .moment-btn.active-train .moment-audio-btn { color: var(--state-train); }
-
-        .moment-btn.active-recover { border-color: var(--state-recover); background: var(--surface); box-shadow: 0 4px 15px var(--glow-recover); }
-        .moment-btn.active-recover .moment-label, .moment-btn.active-recover .moment-subtext, .moment-btn.active-recover .moment-audio-btn { color: var(--state-recover); }
-
-        .moment-donut-wrapper { width: 100%; aspect-ratio: 1; position: relative; display: flex; align-items: center; justify-content: center; margin: 0 auto; overflow: hidden; border-radius: 50%;}
-        .moment-donut-wrapper canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;}
-        .donut-center-content { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; z-index: 10; pointer-events: none; }
-        .user-avatar-donut { width: 160px; height: 160px; border-radius: 50%; object-fit: cover; border: 4px solid var(--surface); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        
-        /* --- Dynamic Tabbed Habits Card --- */
-        .tabs-scroll-container { display: flex; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem; gap: 0.2rem;}
-        .scroll-arrow { background: transparent; border: none; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0.5rem 0.2rem; transition: color 0.2s; flex-shrink: 0; outline: none; }
-        .scroll-arrow:hover { color: var(--text); }
-        .tabs-header { display: flex; gap: 0.75rem; overflow-x: auto; scrollbar-width: none; align-items: center; justify-content: center; flex-grow: 1; scroll-behavior: smooth; padding: 0 0.5rem; }
-        .tabs-header::-webkit-scrollbar { display: none; }
-        
-        .tab-btn-group { display: flex; align-items: center; position: relative; }
-        
-        .tab-btn { background: var(--input-bg); border: 3px solid var(--border); padding: 0.6rem 1.2rem; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.2rem; outline: none; min-width: max-content; }
-        
-        .cat-name { color: var(--text); font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 1.05rem; transition: color 0.3s;}
-        .cat-subtext { color: var(--muted); font-family: 'Barlow', sans-serif; font-size: 0.75rem; font-weight: 400; opacity: 0.7; letter-spacing: 0; text-transform: none; transition: color 0.3s;}
-
-        .tab-btn.active-tab-purpose { border-color: var(--state-purpose); background: var(--surface); box-shadow: 0 4px 15px var(--glow-purpose); }
-        .tab-btn.active-tab-purpose .cat-name { color: var(--state-purpose); }
-
-        .tab-btn.active-tab-waste { border-color: var(--state-waste); background: var(--surface); box-shadow: 0 4px 15px var(--glow-waste); }
-        .tab-btn.active-tab-waste .cat-name { color: var(--state-waste); }
-
-        .tab-btn.active-tab-nourish { border-color: var(--state-nourish); background: var(--surface); box-shadow: 0 4px 15px var(--glow-nourish); }
-        .tab-btn.active-tab-nourish .cat-name { color: var(--state-nourish); }
-
-        .tab-btn.active-tab-train { border-color: var(--state-train); background: var(--surface); box-shadow: 0 4px 15px var(--glow-train); }
-        .tab-btn.active-tab-train .cat-name { color: var(--state-train); }
-
-        .tab-btn.active-tab-recover { border-color: var(--state-recover); background: var(--surface); box-shadow: 0 4px 15px var(--glow-recover); }
-        .tab-btn.active-tab-recover .cat-name { color: var(--state-recover); }
-
-        .tab-btn.active .cat-subtext { color: var(--muted); opacity: 0.9; }
-
-        .cat-pulse-wrapper { display: flex; align-items: center; gap: 0.4rem; justify-content: center;}
-        .cat-pulse { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; transition: border-color 0.3s;}
-        
-        .pulse-g { background: var(--win); box-shadow: 0 0 8px var(--win); animation: pulseG 2s infinite ease-in-out; }
-        .pulse-y { background: var(--pulse-y); box-shadow: 0 0 8px var(--pulse-y-glow); animation: pulseY 2s infinite ease-in-out; }
-        .pulse-r { background: var(--lose); box-shadow: 0 0 8px var(--lose); animation: pulseR 2s infinite ease-in-out; }
-        
-        @keyframes pulseG { 0% { box-shadow: 0 0 4px var(--win); } 50% { box-shadow: 0 0 12px var(--win); } 100% { box-shadow: 0 0 4px var(--win); } }
-        @keyframes pulseY { 0% { box-shadow: 0 0 4px var(--pulse-y-glow); } 50% { box-shadow: 0 0 12px var(--pulse-y-glow); } 100% { box-shadow: 0 0 4px var(--pulse-y-glow); } }
-        @keyframes pulseR { 0% { box-shadow: 0 0 4px var(--lose); } 50% { box-shadow: 0 0 12px var(--lose); } 100% { box-shadow: 0 0 4px var(--lose); } }
-        
-        .editable-text { cursor: text; border-bottom: 1px dashed transparent; transition: border-color 0.2s; white-space: nowrap;}
-        .editable-text:hover, .editable-text:focus { border-bottom-color: var(--muted); outline: none; }
-        
-        .delete-icon { opacity: 0; background: none; border: none; color: var(--lose); cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; padding: 0 0.5rem; }
-        .habit-row:hover .delete-icon { opacity: 1; }
-
-        .dash-list { display: flex; flex-direction: column; gap: 0.5rem; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        /* Habits UI */
+        .tabs-scroll-container { display: flex; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem; }
+        .tabs-header { display: flex; gap: 0.75rem; overflow-x: auto; scrollbar-width: none; align-items: center; justify-content: center; flex-grow: 1; }
+        .tab-btn { background: var(--input-bg); border: 3px solid var(--border); padding: 0.6rem 1.2rem; border-radius: 12px; cursor: pointer; }
+        .cat-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; text-transform: uppercase; }
         .habit-row { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--border); }
-        .habit-row:last-child { border-bottom: none; }
-        .habit-check { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; background: var(--input-bg); transition: all 0.2s; flex-shrink: 0;}
+        .habit-check { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; }
         .habit-check.done { background: var(--fasting); border-color: var(--fasting); }
-        .habit-check.done::after { content: '✓'; color: #fff; font-size: 0.8rem; font-weight: bold; }
-        .habit-label { font-weight: 500; font-size: 1rem; flex-grow: 1; white-space: normal; word-break: break-word;}
-        .alive-dot { width: 8px; height: 8px; background: var(--fasting); border-radius: 50%; box-shadow: 0 0 8px var(--fasting-glow); animation: pulseFasting 2s infinite ease-in-out; display: inline-block; margin-right: 6px; }
-        .habit-streak { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; color: var(--text); font-weight: 700; display: flex; align-items: center; white-space: nowrap;}
-        .habit-streak.zero { color: var(--muted); }
-        .habit-streak.zero .alive-dot { display: none; }
-        .btn-add-habit { background: transparent; border: 1px dashed var(--border); color: var(--muted); width: 100%; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-family: 'Barlow', sans-serif; font-weight: 500; transition: all 0.2s; margin-top: 0.5rem; text-align: left; }
-        .btn-add-habit:hover { border-color: var(--text); color: var(--text); }
+        .habit-label { flex-grow: 1; font-weight: 500; }
         
-        /* Auth Card */
-        .auth-card, .loading-card { max-width: 450px; margin: 4rem auto; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 4rem 2rem; text-align: center; box-shadow: var(--card-shadow); }
-        .auth-card h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 2rem; text-transform: uppercase; margin-bottom: 0.5rem; color: var(--text); }
-        .auth-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; width: 100%; padding: 0.8rem 1rem; margin-top: 2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s; }
-        .auth-btn:hover { border-color: #4285F4; }
+        /* Layout Queries */
+        @media (max-width: 768px) {
+            .moment-dashboard-layout { flex-direction: column; }
+            .card-header-flex { display: flex; flex-direction: column; text-align: center; }
+        }
     </style>
 </head>
 <body>
@@ -360,7 +140,7 @@
 <div id="fastingModal" class="modal-overlay" style="display:none;">
     <div class="modal-card">
         <h3 class="modal-title">Break Fasting?</h3>
-        <p class="modal-desc">Are you sure you want to end your current fast? This will lock in your progress.</p>
+        <p class="modal-desc">Are you sure you want to end your current fast?</p>
         <div class="modal-actions">
             <button class="modal-btn btn-cancel" onclick="closeFastingModal()">Cancel</button>
             <button class="modal-btn btn-confirm" onclick="executeToggleFasting()">Confirm</button>
@@ -370,41 +150,23 @@
 
 <header>
     <div class="controls-cluster">
-        <div id="headerProfileMenu" class="header-profile-menu" onclick="toggleHeaderLogout()" style="display: none;" title="Account Settings">
+        <div id="headerProfileMenu" class="header-profile-menu" onclick="toggleHeaderLogout()" style="display: none;">
             <img id="userAvatarHeader" class="user-avatar-header" src="" alt="Profile" crossorigin="anonymous">
             <span id="userNameHeader" class="user-name-header">User</span>
             <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
         </div>
-        
         <button id="logoutBtnHeader" class="btn-text-logout-header" style="display: none;" onclick="signOut()">Log Out</button>
-
-        <button id="fullscreenBtn" class="icon-btn" onclick="toggleFullscreen()" title="Fullscreen Mode">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-            </svg>
-        </button>
-
-        <div class="theme-toggle-container" onclick="toggleTheme()" title="Toggle mode">
-            <div class="sleek-toggle-track">
-                <div class="sleek-toggle-knob">
-                    <svg id="icon-sun" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
-                    </svg>
-                    <svg id="icon-moon" style="display: none;" width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
-                    </svg>
-                </div>
-            </div>
+        <button class="icon-btn" onclick="toggleFullscreen()"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg></button>
+        <div class="theme-toggle-container" onclick="toggleTheme()">
+            <div class="sleek-toggle-track"><div class="sleek-toggle-knob">✦</div></div>
         </div>
     </div>
-    
     <div class="header-titles">
         <div class="logo-brand-container">
             <img src="logo-mindful-rhythm.png" alt="Logo" class="header-logo-img">
             <h1>Mindful Rhythm</h1>
         </div>
         <p>Live the Moment</p>
-        
         <div class="date-time-display">
             <span id="currentDate"></span>
             <span id="currentTime"></span>
@@ -413,470 +175,137 @@
 </header>
 
 <div class="container">
-    <div id="loadingView" class="loading-card">
-        <h2 style="color: var(--muted); font-size: 1.2rem;">Syncing Systems...</h2>
-    </div>
-
-    <div id="loginView" class="auth-card" style="display: none;">
-        <h2>Connect Account</h2>
-        <p style="color: var(--muted); font-size: 0.95rem;">Sign in to sync your records.</p>
-        <button class="auth-btn" onclick="signInWithGoogle()">
-            <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg" style="margin-right: 8px;">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            Continue with Google
-        </button>
+    <div id="loadingView" class="dash-card"><h2 style="text-align:center; color:var(--muted);">Syncing Systems...</h2></div>
+    <div id="loginView" class="dash-card" style="display:none; text-align:center; padding: 4rem 2rem;">
+        <h2 style="font-family:'Barlow Condensed'; font-size:2rem; margin-bottom:1rem;">CONNECT ACCOUNT</h2>
+        <button onclick="signInWithGoogle()" style="padding:1rem 2rem; border-radius:8px; border:1px solid var(--border); cursor:pointer; font-weight:600;">Continue with Google</button>
     </div>
 
     <div id="mainContent" style="display: none;">
-        
         <div id="fastingHero" class="dash-card feasting-mode">
-            <div class="hero-header" onclick="toggleFastingCollapse()">
-                <div class="hero-header-left">
-                    <div class="mini-pulse"></div>
-                    <span class="hero-title" id="miniHeroTitle">Feasting</span>
-                </div>
-                <div class="hero-header-right">
-                    <div class="action-cluster-header">
-                        <button class="icon-btn" onclick="shareStatus('fasting', event)" title="Share Fasting Status">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-                        </button>
-                        <button class="icon-btn" onclick="downloadCardAsImage('fastingHero', event)" title="Download as Image">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                        </button>
-                    </div>
-                    <span class="mini-time" id="miniFastTimeDisplay">00:00</span>
-                    <svg class="chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
+            <div class="hero-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                <span class="hero-title" id="miniHeroTitle">Feasting Window</span>
+                <span class="fast-time" id="fastTimeDisplay">00:00</span>
             </div>
-
             <div class="hero-content">
-                <div class="fast-ring" id="fastRing">
-                    <div class="fast-hole">
-                        <span class="fast-time" id="fastTimeDisplay">00:00</span>
-                        <span class="fast-label" id="fastStatusLabel">Feasting</span>
-                    </div>
-                </div>
-                <div class="stage-container">
-                    <div class="stage-title" id="stageTitle">Loading...</div>
-                    <div class="stage-desc" id="stageDesc">Calculating current biological phase...</div>
+                <div class="fast-ring"><span class="fast-time" id="fastTimeDisplayLarge">00:00</span></div>
+                <div style="margin-bottom:2rem;">
+                    <h3 id="stageTitle" class="card-title-centered">Loading...</h3>
+                    <p id="stageDesc" style="color:var(--muted);">Calculating phase...</p>
                 </div>
                 <button id="toggleFastBtn" class="action-btn" onclick="attemptToggleFasting(event)">Start Fasting</button>
-
-                <div class="integrated-chart-section">
-                    <div class="chart-header">
-                        <div class="date-picker">
-                            <button class="date-nav-btn" onclick="shiftChartData(-1)"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
-                            <span class="date-range-display" id="chartDateRange">Mar 19 - Mar 25</span>
-                            <button class="date-nav-btn" onclick="shiftChartData(1)"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button>
-                        </div>
-                        <div class="view-toggle-group">
-                            <button id="btnWeekly" class="view-toggle-btn active" onclick="setChartView('weekly')">Weekly</button>
-                            <button id="btnMonthly" class="view-toggle-btn" onclick="setChartView('monthly')">Monthly</button>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper"><canvas id="fastingChart"></canvas></div>
-                </div>
+                <div class="integrated-chart-section"><canvas id="fastingChart" style="height:200px;"></canvas></div>
             </div>
         </div>
 
         <div id="momentCard" class="dash-card">
             <div class="card-header-flex">
-                <h3 class="card-title-centered" id="momentCardHeader"><span id="momentUserName" class="dynamic-name">User</span>'S MOMENT</h3>
-                <div class="action-cluster-header abs-right">
-                    <button class="icon-btn" onclick="shareStatus('moment', event)" title="Share Moment Status">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-                    </button>
-                    <button class="icon-btn" onclick="downloadCardAsImage('momentCard', event)" title="Download as Image">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    </button>
-                </div>
+                <h3 class="card-title-centered"><span id="momentUserName" class="dynamic-name">USER</span>'S MOMENT</h3>
             </div>
-            
             <div class="moment-dashboard-layout">
                 <div class="moment-timers-col">
-                    <button class="moment-btn" id="btn-moment-purpose" onclick="toggleMomentState('purpose')">
-                        <div class="moment-left-controls">
-                            <span class="moment-label">Purposeful</span>
-                            <span class="moment-subtext">What you live for</span>
-                        </div>
-                        <div class="moment-right-controls">
-                            <span class="moment-timer-text" id="time-purpose">00:00:00</span>
-                            <div class="moment-audio-btn" onclick="toggleSpecificMute(event)" title="Toggle Audio">
-                                <svg class="audio-on" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                                <svg class="audio-off" style="display:none;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
-                            </div>
-                        </div>
-                    </button>
-                    <button class="moment-btn" id="btn-moment-waste" onclick="toggleMomentState('waste')">
-                        <div class="moment-left-controls">
-                            <span class="moment-label">Wasteful</span>
-                            <span class="moment-subtext">What drains you</span>
-                        </div>
-                        <div class="moment-right-controls">
-                            <span class="moment-timer-text" id="time-waste">00:00:00</span>
-                            <div class="moment-audio-btn" onclick="toggleSpecificMute(event)" title="Toggle Audio">
-                                <svg class="audio-on" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                                <svg class="audio-off" style="display:none;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
-                            </div>
-                        </div>
-                    </button>
-                    <button class="moment-btn" id="btn-moment-nourish" onclick="toggleMomentState('nourish')">
-                        <div class="moment-left-controls">
-                            <span class="moment-label">Nourishing</span>
-                            <span class="moment-subtext">What fuels you</span>
-                        </div>
-                        <div class="moment-right-controls">
-                            <span class="moment-timer-text" id="time-nourish">00:00:00</span>
-                            <div class="moment-audio-btn" onclick="toggleSpecificMute(event)" title="Toggle Audio">
-                                <svg class="audio-on" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                                <svg class="audio-off" style="display:none;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
-                            </div>
-                        </div>
-                    </button>
-                    <button class="moment-btn" id="btn-moment-train" onclick="toggleMomentState('train')">
-                        <div class="moment-left-controls">
-                            <span class="moment-label">Training</span>
-                            <span class="moment-subtext">What strengthens you</span>
-                        </div>
-                        <div class="moment-right-controls">
-                            <span class="moment-timer-text" id="time-train">00:00:00</span>
-                            <div class="moment-audio-btn" onclick="toggleSpecificMute(event)" title="Toggle Audio">
-                                <svg class="audio-on" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                                <svg class="audio-off" style="display:none;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
-                            </div>
-                        </div>
-                    </button>
-                    <button class="moment-btn" id="btn-moment-recover" onclick="toggleMomentState('recover')">
-                        <div class="moment-left-controls">
-                            <span class="moment-label">Recovering</span>
-                            <span class="moment-subtext">What restores you</span>
-                        </div>
-                        <div class="moment-right-controls">
-                            <span class="moment-timer-text" id="time-recover">00:00:00</span>
-                            <div class="moment-audio-btn" onclick="toggleSpecificMute(event)" title="Toggle Audio">
-                                <svg class="audio-on" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                                <svg class="audio-off" style="display:none;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
-                            </div>
-                        </div>
-                    </button>
+                    <button class="moment-btn" onclick="toggleMomentState('purpose')"><span>Purposeful</span><span id="time-purpose">00:00:00</span></button>
+                    <button class="moment-btn" onclick="toggleMomentState('waste')"><span>Wasteful</span><span id="time-waste">00:00:00</span></button>
+                    <button class="moment-btn" onclick="toggleMomentState('nourish')"><span>Nourishing</span><span id="time-nourish">00:00:00</span></button>
+                    <button class="moment-btn" onclick="toggleMomentState('train')"><span>Training</span><span id="time-train">00:00:00</span></button>
+                    <button class="moment-btn" onclick="toggleMomentState('recover')"><span>Recovering</span><span id="time-recover">00:00:00</span></button>
                 </div>
-
                 <div class="moment-donut-col">
                     <div class="moment-donut-wrapper">
                         <canvas id="momentDonutChart"></canvas>
-                        <div class="donut-center-content">
-                            <img id="userAvatarDonut" class="user-avatar-donut" src="" alt="Profile" crossorigin="anonymous">
-                        </div>
+                        <div class="donut-center-content"></div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="habitCard" class="dash-card">
-            <div class="card-header-flex">
-                <h3 class="card-title-centered" id="habitCardHeader"><span id="habitUserName" class="dynamic-name">User</span>'S HABITS</h3>
-                <div class="action-cluster-header abs-right">
-                    <button class="icon-btn" onclick="shareStatus('habit', event)" title="Share Habits Status">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-                    </button>
-                    <button class="icon-btn" onclick="downloadCardAsImage('habitCard', event)" title="Download as Image">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    </button>
-                </div>
-            </div>
-
-            <div class="tabs-scroll-container">
-                <button class="scroll-arrow" onclick="scrollTabs(-1)"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
-                <div class="tabs-header" id="dynamicTabsHeader"></div>
-                <button class="scroll-arrow" onclick="scrollTabs(1)"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button>
-            </div>
+            <div class="card-header-flex"><h3 class="card-title-centered"><span id="habitUserName" class="dynamic-name">USER</span>'S HABITS</h3></div>
+            <div class="tabs-header" id="dynamicTabsHeader"></div>
             <div id="dynamicHabitsContainer"></div>
         </div>
-
     </div>
 </div>
 
-<audio id="audio-purpose" loop src="purpose.mp3"></audio>
-<audio id="audio-waste" loop src="waste.mp3"></audio>
-<audio id="audio-nourish" loop src="nourish.mp3"></audio>
-<audio id="audio-train" loop src="train.mp3"></audio>
-<audio id="audio-recover" loop src="recover.mp3"></audio>
-
 <script>
-    // Global Error Safety Nets
-    window.addEventListener('error', function(e) {
-        const loadView = document.getElementById('loadingView');
-        if (loadView && loadView.style.display !== 'none') loadView.innerHTML = `<h2 style="color:var(--lose)">Engine Error</h2><p style="color:var(--muted)">${e.message}. Please refresh or check your connection.</p>`;
-    });
-
     const SUPABASE_URL = 'https://ambpjxgidojgmwvvjglg.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtYnBqeGdpZG9qZ213dnZqZ2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MzQzNTQsImV4cCI6MjA5MDAxMDM1NH0.8TfCIQhAjPChBZn8op5J9ykyMc3hPDJ_vJuUEm3WcP4';
-    
-    let supabaseClient = null;
-    if (window.supabase) {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
-    
+    const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
     let currentUser = null;
-    const views = { loading: document.getElementById('loadingView'), login: document.getElementById('loginView'), main: document.getElementById('mainContent') };
-
-    function showView(viewName) {
-        Object.values(views).forEach(el => { if(el) el.style.display = 'none'; });
-        if (views[viewName]) views[viewName].style.display = 'block';
-    }
 
     function updateClock() {
         const now = new Date();
-        const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-        let h = now.getHours();
-        const m = String(now.getMinutes()).padStart(2, '0');
-        const ampm = h >= 12 ? 'PM' : 'AM';
-        h = h % 12; h = h ? h : 12; 
-        const timeStr = `${h}:${m} ${ampm}`;
-        const dateEl = document.getElementById('currentDate');
-        const timeEl = document.getElementById('currentTime');
-        if(dateEl) dateEl.innerText = dateStr;
-        if(timeEl) timeEl.innerText = timeStr;
+        document.getElementById('currentDate').innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        document.getElementById('currentTime').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    function toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(err => console.log(err));
-        } else {
-            document.exitFullscreen();
-        }
-    }
-
-    function toggleHeaderLogout() {
-        const menu = document.getElementById('headerProfileMenu');
-        const btn = document.getElementById('logoutBtnHeader');
-        if(menu && btn) {
-            const isActive = menu.classList.toggle('menu-active');
-            btn.style.display = isActive ? 'block' : 'none';
-        }
-    }
-
-    async function downloadCardAsImage(cardId, event) {
-        if(event) event.stopPropagation();
-        const card = document.getElementById(cardId);
-        if (!card) return;
-        const actionsToHide = card.querySelectorAll('.action-cluster-header, #toggleFastBtn, .tabs-scroll-container, .delete-icon, .btn-add-habit, .integrated-chart-section');
-        actionsToHide.forEach(el => el.style.visibility = 'hidden');
-        try {
-            const canvas = await html2canvas(card, {
-                backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--bg').trim(),
-                scale: 2, useCORS: true, logging: false
-            });
-            actionsToHide.forEach(el => el.style.visibility = 'visible');
-            const image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-            const link = document.createElement('a');
-            link.download = `MindfulRhythm-${cardId}-${new Date().toISOString().slice(0,10)}.png`;
-            link.href = image;
-            link.click();
-        } catch (err) {
-            console.error("Screenshot failed:", err);
-            actionsToHide.forEach(el => el.style.visibility = 'visible');
-            alert("Failed to create image.");
-        }
-    }
-
-    async function shareStatus(type, event) {
-        if(event) event.stopPropagation(); 
-        let shareText = "I'm tracking my intentions with Mindful Rhythm!";
-        const url = window.location.href; 
-        if (navigator.share) {
-            try { await navigator.share({ title: "Mindful Rhythm", text: shareText, url: url }); } catch (err) {}
-        } else {
-            try { await navigator.clipboard.writeText(`${shareText} ${url}`); alert("Status copied!"); } catch (err) {}
-        }
-    }
+    setInterval(updateClock, 1000); updateClock();
 
     async function checkUser() {
         if (!supabaseClient) return;
-        try {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                const meta = currentUser.user_metadata;
-                const firstName = (meta.full_name ? meta.full_name.split(' ')[0] : 'User').toUpperCase();
-                
-                const avatarHeader = document.getElementById('userAvatarHeader');
-                const nameHeader = document.getElementById('userNameHeader');
-                const profileMenu = document.getElementById('headerProfileMenu');
-                if(avatarHeader && nameHeader && profileMenu) {
-                    avatarHeader.src = meta.avatar_url;
-                    nameHeader.innerText = meta.full_name.split(' ')[0];
-                    profileMenu.style.display = 'flex';
-                }
-                const avatarDonut = document.getElementById('userAvatarDonut');
-                if(avatarDonut) avatarDonut.src = meta.avatar_url;
-                
-                document.getElementById('momentUserName').innerText = firstName;
-                document.getElementById('habitUserName').innerText = firstName;
-                
-                showView('main');
-                await initFastingTracker(); 
-                renderHabitsUI(); 
-                initMomentStates(); 
-            } else {
-                showView('login');
-            }
-        } catch (err) { showView('login'); }
-    }
-
-    async function signInWithGoogle() { if(supabaseClient) await supabaseClient.auth.signInWithOAuth({ provider: 'google' }); }
-    async function signOut() { if(supabaseClient) await supabaseClient.auth.signOut(); window.location.reload(); }
-
-    let isAudioMuted = true; 
-    function toggleSpecificMute(event) {
-        event.stopPropagation();
-        isAudioMuted = !isAudioMuted;
-        document.querySelectorAll('.audio-on').forEach(el => el.style.display = isAudioMuted ? 'none' : 'block');
-        document.querySelectorAll('.audio-off').forEach(el => el.style.display = isAudioMuted ? 'block' : 'none');
-        if (isAudioMuted) {
-            ['purpose', 'waste', 'nourish', 'train', 'recover'].forEach(key => {
-                const audio = document.getElementById(`audio-${key}`);
-                if(audio) audio.pause();
-            });
-        } else if (activeMomentKey) {
-            const activeAudio = document.getElementById(`audio-${activeMomentKey}`);
-            if(activeAudio) activeAudio.play();
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+            currentUser = session.user;
+            const meta = currentUser.user_metadata;
+            document.getElementById('userAvatarHeader').src = meta.avatar_url;
+            document.getElementById('userNameHeader').innerText = meta.full_name.split(' ')[0];
+            document.getElementById('headerProfileMenu').style.display = 'flex';
+            document.getElementById('momentUserName').innerText = meta.full_name.split(' ')[0].toUpperCase();
+            document.getElementById('habitUserName').innerText = meta.full_name.split(' ')[0].toUpperCase();
+            document.getElementById('loadingView').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            initFastingTracker(); renderHabitsUI(); initMomentStates();
+        } else {
+            document.getElementById('loadingView').style.display = 'none';
+            document.getElementById('loginView').style.display = 'block';
         }
     }
 
-    const momentStatesData = { purpose: { ms: 0, color: '' }, waste: { ms: 0, color: '' }, nourish: { ms: 0, color: '' }, train: { ms: 0, color: '' }, recover: { ms: 0, color: '' } };
+    async function signInWithGoogle() { await supabaseClient.auth.signInWithOAuth({ provider: 'google' }); }
+    async function signOut() { await supabaseClient.auth.signOut(); window.location.reload(); }
+    function toggleTheme() { const h = document.documentElement; h.setAttribute('data-theme', h.getAttribute('data-theme')==='dark'?'light':'dark'); }
+    function toggleFullscreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+    function toggleHeaderLogout() { const b = document.getElementById('logoutBtnHeader'); b.style.display = b.style.display==='none'?'block':'none'; }
+
+    // Moment logic
+    const momentStatesData = { purpose: { ms: 0, color: '#5c88f2' }, waste: { ms: 0, color: '#fc7281' }, nourish: { ms: 0, color: '#f5c43d' }, train: { ms: 0, color: '#47d18c' }, recover: { ms: 0, color: '#8d94e5' } };
     let activeMomentKey = null, momentLastTickMs = null, momentDonutChart = null;
 
     function initMomentStates() {
-        try {
-            const saved = localStorage.getItem('momentStatesData');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                for (let k in parsed) if(momentStatesData[k]) momentStatesData[k].ms = parsed[k];
-            }
-        } catch(e) {}
-        updateMomentChartColors(); renderMomentChart(); updateMomentUI();
-    }
-
-    function toggleMomentState(key) {
-        processMomentTick();
-        const activeBtn = document.getElementById(`btn-moment-${activeMomentKey}`);
-        const newBtn = document.getElementById(`btn-moment-${key}`);
-        if (activeMomentKey === key) {
-            if(activeBtn) activeBtn.classList.remove(`active-${activeMomentKey}`);
-            activeMomentKey = null; momentLastTickMs = null;
-        } else {
-            if(activeBtn) activeBtn.classList.remove(`active-${activeMomentKey}`);
-            activeMomentKey = key; momentLastTickMs = Date.now();
-            if(newBtn) newBtn.classList.add(`active-${key}`);
-        }
-        updateMomentUI();
-    }
-
-    function processMomentTick() {
-        if (activeMomentKey && momentLastTickMs) {
-            const now = Date.now();
-            momentStatesData[activeMomentKey].ms += (now - momentLastTickMs);
-            momentLastTickMs = now;
-            const saveObj = {}; for(let k in momentStatesData) saveObj[k] = momentStatesData[k].ms;
-            localStorage.setItem('momentStatesData', JSON.stringify(saveObj));
-        }
-    }
-
-    function updateMomentUI() {
-        for (let k in momentStatesData) {
-            const el = document.getElementById(`time-${k}`);
-            if(el) {
-                const sec = Math.floor(momentStatesData[k].ms / 1000);
-                const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
-                el.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-            }
-        }
-        if(momentDonutChart) {
-            momentDonutChart.data.datasets[0].data = Object.values(momentStatesData).map(d => Math.floor(d.ms / 1000));
-            momentDonutChart.update();
-        }
-    }
-
-    function updateMomentChartColors() {
-        const html = document.documentElement;
-        momentStatesData.purpose.color = getComputedStyle(html).getPropertyValue('--state-purpose').trim();
-        momentStatesData.waste.color = getComputedStyle(html).getPropertyValue('--state-waste').trim();
-        momentStatesData.nourish.color = getComputedStyle(html).getPropertyValue('--state-nourish').trim();
-        momentStatesData.train.color = getComputedStyle(html).getPropertyValue('--state-train').trim();
-        momentStatesData.recover.color = getComputedStyle(html).getPropertyValue('--state-recover').trim();
-    }
-
-    function renderMomentChart() {
         const ctx = document.getElementById('momentDonutChart').getContext('2d');
-        if(momentDonutChart) momentDonutChart.destroy();
-        momentDonutChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Purpose', 'Waste', 'Nourish', 'Train', 'Recover'],
-                datasets: [{ data: [0,0,0,0,0], backgroundColor: Object.values(momentStatesData).map(d => d.color), borderWidth: 0 }]
-            },
-            options: { responsive: true, cutout: '82%', plugins: { legend: { display: false } } }
-        });
-    }
-
-    let categories = [
-        { id: 'cat_1', name: 'Purposeful', subtext: 'What you live for', habits: [{ id: 'hab_1', name: 'PADI Theory Study', streak: 4, done: true }] },
-        { id: 'cat_2', name: 'Wasteful', subtext: 'What drains you', habits: [{ id: 'hab_3', name: 'No binge gaming', streak: 8, done: true }] },
-        { id: 'cat_3', name: 'Nourishing', subtext: 'What fuels you', habits: [{ id: 'hab_5', name: 'Strict Keto Compliant', streak: 14, done: true }] },
-        { id: 'cat_4', name: 'Training', subtext: 'What strengthens you', habits: [{ id: 'hab_7', name: 'Mobility / Stretch', streak: 2, done: true }] },
-        { id: 'cat_5', name: 'Recovering', subtext: 'What restores you', habits: [{ id: 'hab_8', name: '7+ Hours Sleep', streak: 2, done: true }] }
-    ];
-    let activeCatId = 'cat_1';
-    const catKeyMap = { cat_1: 'purpose', cat_2: 'waste', cat_3: 'nourish', cat_4: 'train', cat_5: 'recover' };
-
-    function renderHabitsUI() {
-        const tabs = document.getElementById('dynamicTabsHeader');
-        const list = document.getElementById('dynamicHabitsContainer');
-        tabs.innerHTML = '';
-        categories.forEach(cat => {
-            const isActive = cat.id === activeCatId;
-            const activeClass = isActive ? `active active-tab-${catKeyMap[cat.id]}` : '';
-            tabs.innerHTML += `<button class="tab-btn ${activeClass}" onclick="activeCatId='${cat.id}';renderHabitsUI();">
-                <span class="cat-name">${cat.name}</span><span class="cat-subtext">${cat.subtext}</span>
-            </button>`;
-        });
-        const activeCat = categories.find(c => c.id === activeCatId);
-        let html = '<div class="dash-list">';
-        activeCat.habits.forEach(h => {
-            html += `<div class="habit-row"><div class="habit-check ${h.done?'done':''}"></div><span class="habit-label">${h.name}</span></div>`;
-        });
-        list.innerHTML = html + '</div>';
-    }
-
-    let isFasting = false, startTime = null, currentFastId = null, fastingChart = null;
-    async function initFastingTracker() {
-        isFasting = false; startTime = Date.now();
+        momentDonutChart = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: [1,1,1,1,1], backgroundColor: Object.values(momentStatesData).map(d=>d.color), borderWidth: 0 }] }, options: { cutout: '82%', plugins: { legend: { display: false } } } });
         setInterval(() => {
-            if (!startTime) return;
-            const sec = Math.floor((Date.now() - startTime) / 1000);
-            const h = String(Math.floor(sec / 3600)).padStart(2, '0'), m = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
-            document.getElementById('fastTimeDisplay').innerText = `${h}:${m}`;
-            processMomentTick(); updateMomentUI();
+            if (activeMomentKey && momentLastTickMs) {
+                const now = Date.now(); momentStatesData[activeMomentKey].ms += (now - momentLastTickMs); momentLastTickMs = now;
+                const sec = Math.floor(momentStatesData[activeMomentKey].ms/1000);
+                document.getElementById(`time-${activeMomentKey}`).innerText = new Date(sec * 1000).toISOString().substr(11, 8);
+                momentDonutChart.data.datasets[0].data = Object.values(momentStatesData).map(d=>d.ms); momentDonutChart.update();
+            }
         }, 1000);
-        renderChart();
+    }
+    function toggleMomentState(key) { if(activeMomentKey===key) activeMomentKey=null; else { activeMomentKey=key; momentLastTickMs=Date.now(); } }
+
+    // Habit logic
+    let categories = [{ id: 'c1', name: 'Purpose', habits: [{ name: 'PADI Study', done: true }] }];
+    function renderHabitsUI() {
+        const h = document.getElementById('dynamicTabsHeader');
+        h.innerHTML = categories.map(c => `<button class="tab-btn">${c.name}</button>`).join('');
+        document.getElementById('dynamicHabitsContainer').innerHTML = categories[0].habits.map(hab => `<div class="habit-row"><div class="habit-check ${hab.done?'done':''}"></div><span class="habit-label">${hab.name}</span></div>`).join('');
     }
 
-    function renderChart() {
-        const ctx = document.getElementById('fastingChart').getContext('2d');
-        if(fastingChart) fastingChart.destroy();
-        fastingChart = new Chart(ctx, {
-            type: 'line',
-            data: { labels: ['M','T','W','T','F','S','S'], datasets: [{ data: [14, 15, 16, 18, 16, 15, 12], borderColor: '#16a34a', fill: true }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
+    // Fasting logic
+    let isFasting = false, startTime = Date.now();
+    function initFastingTracker() {
+        setInterval(() => {
+            const sec = Math.floor((Date.now() - startTime)/1000);
+            const h = String(Math.floor(sec/3600)).padStart(2,'0'), m = String(Math.floor((sec%3600)/60)).padStart(2,'0');
+            document.getElementById('fastTimeDisplay').innerText = `${h}:${m}`;
+            document.getElementById('fastTimeDisplayLarge').innerText = `${h}:${m}`;
+        }, 1000);
+        new Chart(document.getElementById('fastingChart'), { type:'line', data:{ labels:['M','T','W','T','F','S','S'], datasets:[{data:[14,16,15,18,17,16,14], borderColor:'#16a34a', fill:true}] }, options:{ maintainAspectRatio:false, plugins:{legend:{display:false}} } });
     }
+    function attemptToggleFasting() { document.getElementById('fastingModal').style.display='flex'; }
+    function closeFastingModal() { document.getElementById('fastingModal').style.display='none'; }
+    function executeToggleFasting() { isFasting = !isFasting; startTime=Date.now(); closeFastingModal(); }
 
     checkUser();
 </script>
