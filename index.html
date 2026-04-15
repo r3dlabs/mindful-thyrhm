@@ -1,1079 +1,535 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mindful Rhythm | Live the Moment</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --radius: 14px;
-      --purpose: #5c88f2;
-      --wasteful: #fc7281;
-      --nourishing: #f5c43d;
-      --training: #47d18c;
-      --recovering: #8d94e5;
-
-      --bg: #f5eddc;
-      --bg-soft: #fff8ea;
-      --card: rgba(255,255,255,0.72);
-      --card-strong: rgba(255,255,255,0.92);
-      --line: rgba(70,56,38,0.1);
-      --text: #231f1a;
-      --text-soft: #635b52;
-      --glow: 0 0 24px rgba(92,136,242,0.12);
-      --shadow: 0 18px 40px rgba(43, 34, 22, 0.08);
-    }
-
-    .dark {
-      --bg: #111418;
-      --bg-soft: #171b22;
-      --card: rgba(24,29,36,0.86);
-      --card-strong: rgba(30,35,44,0.96);
-      --line: rgba(255,255,255,0.08);
-      --text: #f6f2ea;
-      --text-soft: #b3b9c5;
-      --glow: 0 0 26px rgba(92,136,242,0.18);
-      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-    }
-
-    * { box-sizing: border-box; }
-    html, body { min-height: 100%; }
-    body {
-      margin: 0;
-      font-family: 'Barlow', sans-serif;
-      background:
-        radial-gradient(circle at top, rgba(92,136,242,0.11), transparent 28%),
-        radial-gradient(circle at bottom right, rgba(141,148,229,0.08), transparent 24%),
-        var(--bg);
-      color: var(--text);
-      transition: background 240ms ease, color 240ms ease;
-    }
-
-    .font-condensed { font-family: 'Barlow Condensed', sans-serif; }
-    .glass {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow), var(--glow);
-      backdrop-filter: blur(12px);
-    }
-    .glass-strong {
-      background: var(--card-strong);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
-    }
-    .pill {
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: color-mix(in srgb, var(--card-strong) 88%, transparent);
-    }
-    .muted { color: var(--text-soft); }
-    .ring-wrap {
-      position: relative;
-      width: 260px;
-      height: 260px;
-      margin: 0 auto;
-    }
-    .ring-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-    .ring-center {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 1rem;
-    }
-    .state-btn {
-      position: relative;
-      overflow: hidden;
-      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
-    }
-    .state-btn:hover { transform: translateY(-1px); }
-    .state-btn.active { box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 0 28px rgba(255,255,255,0.06); }
-    .state-btn::after {
-      content: '';
-      position: absolute;
-      inset: auto 0 0 0;
-      height: 4px;
-      background: currentColor;
-      opacity: 0.85;
-    }
-    .pulse {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      display: inline-block;
-      box-shadow: 0 0 10px currentColor;
-    }
-    .habit-row[contenteditable="true"]:focus {
-      outline: 2px solid rgba(92,136,242,0.45);
-      border-radius: 8px;
-      background: rgba(92,136,242,0.06);
-    }
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-      z-index: 50;
-    }
-    .modal-backdrop.show { display: flex; }
-    .profile-center {
-      position: absolute;
-      inset: 50% auto auto 50%;
-      transform: translate(-50%, -50%);
-      width: 88px;
-      height: 88px;
-      border-radius: 999px;
-      overflow: hidden;
-      border: 3px solid rgba(255,255,255,0.85);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-      z-index: 10;
-      background: var(--bg-soft);
-    }
-    .profile-center img { width: 100%; height: 100%; object-fit: cover; }
-    .card-actions button, .card-actions a {
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-    }
-    .thin-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
-    .thin-scroll::-webkit-scrollbar-thumb { background: rgba(127,127,127,0.35); border-radius: 999px; }
-    @media (max-width: 920px) {
-      .ring-wrap { width: 220px; height: 220px; }
-      .profile-center { width: 72px; height: 72px; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Mindful Rhythm | Live the Moment</title>
+    <!-- Tailwind + Fonts + Chart.js + Supabase -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Barlow', sans-serif; }
+        .font-condensed { font-family: 'Barlow Condensed', sans-serif; }
+        body {
+            transition: background-color 0.2s ease, color 0.2s;
+            background: #F9F5EC;
+        }
+        .dark body { background: #121826; }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        .card-glow {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 0 0 1px rgba(0,0,0,0.02);
+        }
+        .dark .card-glow {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
+        }
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 4px currentColor;
+        }
+        .habit-edit-input {
+            background: transparent;
+            border-bottom: 1px dashed currentColor;
+            outline: none;
+            width: auto;
+            min-width: 80px;
+        }
+        .modal-backdrop {
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+        }
+        button:active { transform: scale(0.97); transition: 0.05s; }
+        .state-btn-active {
+            box-shadow: 0 0 0 3px currentColor, 0 4px 12px rgba(0,0,0,0.1);
+            transform: scale(1.02);
+        }
+    </style>
 </head>
-<body>
-  <div id="app" class="min-h-screen px-4 py-5 md:px-6 lg:px-8">
-    <div class="mx-auto max-w-7xl space-y-6">
-      <header class="glass px-4 py-4 md:px-6">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div class="text-center md:text-left">
-            <p class="font-condensed text-sm uppercase tracking-[0.28em] muted">Mindful Rhythm</p>
-            <h1 class="font-condensed text-4xl font-bold tracking-wide md:text-5xl">Live the Moment</h1>
-            <p class="mt-1 muted">A focused rhythm dashboard for fasting, state timing, and habits.</p>
-          </div>
-          <div class="flex flex-wrap items-center justify-center gap-2 md:justify-end">
-            <button id="themeToggle" class="pill px-4 py-2">Toggle Theme</button>
-            <button id="signInBtn" class="rounded-[14px] bg-[var(--purpose)] px-4 py-2 font-semibold text-white shadow-lg shadow-blue-500/20">Sign in with Google</button>
-            <button id="signOutBtn" class="pill hidden px-4 py-2">Sign out</button>
-          </div>
+<body class="bg-[#F9F5EC] dark:bg-[#121826] text-gray-800 dark:text-gray-100 pb-8">
+
+    <div id="authContainer" class="min-h-screen flex items-center justify-center p-6">
+        <div class="max-w-md w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 text-center shadow-xl">
+            <h1 class="text-4xl font-bold font-condensed tracking-wide">🎧 Mindful Rhythm</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-2">Live the Moment</p>
+            <button id="googleSignInBtn" class="mt-8 w-full bg-[#5c88f2] hover:bg-[#4a73d9] text-white font-semibold py-3 rounded-2xl flex items-center justify-center gap-3 transition">
+                <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="white" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="white" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="white" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="white" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Sign in with Google
+            </button>
+            <p class="text-xs text-gray-400 mt-6">Secure sync with Supabase • Fasting sessions saved</p>
         </div>
-      </header>
-
-      <section class="grid grid-cols-1 gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <article id="fastingCard" class="glass p-5 md:p-6">
-          <div class="card-actions mb-4 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p class="font-condensed text-sm uppercase tracking-[0.24em] muted">Fasting Engine</p>
-              <h2 class="font-condensed text-3xl font-bold">Fasting Hero</h2>
-            </div>
-            <div class="flex gap-2">
-              <button id="shareFastingBtn" class="pill px-3 py-2">Share</button>
-              <button data-export="fastingCard" class="pill px-3 py-2">PNG</button>
-            </div>
-          </div>
-          <div class="grid grid-cols-1 items-center gap-6 lg:grid-cols-[320px_1fr]">
-            <div class="ring-wrap">
-              <svg class="ring-svg" viewBox="0 0 220 220">
-                <circle cx="110" cy="110" r="92" fill="none" stroke="rgba(127,127,127,0.14)" stroke-width="16"></circle>
-                <circle id="fastingProgress" cx="110" cy="110" r="92" fill="none" stroke="var(--purpose)" stroke-linecap="round" stroke-width="16" stroke-dasharray="578" stroke-dashoffset="578"></circle>
-              </svg>
-              <div class="ring-center">
-                <div id="fastHours" class="font-condensed text-5xl font-bold leading-none">0.0h</div>
-                <div class="mt-2 text-sm uppercase tracking-[0.18em] muted">Current Stage</div>
-                <div id="fastStage" class="mt-1 text-lg font-semibold">Fed</div>
-                <div id="fastStageWindow" class="mt-2 text-sm muted">0–4 hours</div>
-              </div>
-            </div>
-            <div class="space-y-4">
-              <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
-                <div class="glass-strong p-3 text-center">
-                  <div class="text-xs uppercase tracking-[0.18em] muted">Started</div>
-                  <div id="fastStartTime" class="mt-1 font-semibold">Not started</div>
-                </div>
-                <div class="glass-strong p-3 text-center">
-                  <div class="text-xs uppercase tracking-[0.18em] muted">Target</div>
-                  <div id="fastTarget" class="mt-1 font-semibold">24.0h</div>
-                </div>
-                <div class="glass-strong p-3 text-center">
-                  <div class="text-xs uppercase tracking-[0.18em] muted">Best Session</div>
-                  <div id="fastBest" class="mt-1 font-semibold">0.0h</div>
-                </div>
-                <div class="glass-strong p-3 text-center">
-                  <div class="text-xs uppercase tracking-[0.18em] muted">Status</div>
-                  <div id="fastStatus" class="mt-1 font-semibold">Idle</div>
-                </div>
-              </div>
-
-              <div class="glass-strong p-4">
-                <div class="mb-3 flex items-center justify-between gap-3">
-                  <h3 class="font-condensed text-2xl font-semibold">Biological Timeline</h3>
-                  <label class="text-sm muted">Goal Hours
-                    <input id="fastGoalInput" type="number" min="4" max="96" step="1" value="24" class="ml-2 w-20 rounded-xl border border-[var(--line)] bg-transparent px-2 py-1 text-right" />
-                  </label>
-                </div>
-                <div id="stageList" class="grid grid-cols-1 gap-2 md:grid-cols-2"></div>
-              </div>
-
-              <div class="flex flex-wrap gap-3">
-                <button id="startFastBtn" class="rounded-[14px] bg-[var(--purpose)] px-4 py-3 font-semibold text-white shadow-lg shadow-blue-500/20">Start Fast</button>
-                <button id="endFastBtn" class="pill px-4 py-3">End Fast</button>
-                <button id="loadSessionBtn" class="pill px-4 py-3">Load Latest Session</button>
-              </div>
-            </div>
-          </div>
-        </article>
-
-        <article id="profileCard" class="glass p-5 md:p-6">
-          <div class="card-actions mb-4 flex items-center justify-between gap-3">
-            <div>
-              <p class="font-condensed text-sm uppercase tracking-[0.24em] muted">Identity & Share</p>
-              <h2 class="font-condensed text-3xl font-bold">Presence</h2>
-            </div>
-            <button data-export="profileCard" class="pill px-3 py-2">PNG</button>
-          </div>
-          <div class="space-y-4 text-center">
-            <div class="mx-auto h-28 w-28 overflow-hidden rounded-full border-4 border-white/80 bg-[var(--bg-soft)] shadow-xl">
-              <img id="profileAvatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80" alt="Profile" class="h-full w-full object-cover" />
-            </div>
-            <div>
-              <h3 id="profileName" class="text-2xl font-bold">Guest User</h3>
-              <p id="profileEmail" class="muted">Sign in to sync fasting sessions</p>
-            </div>
-            <label class="block text-left text-sm">
-              <span class="mb-1 block muted">Profile Image URL</span>
-              <input id="avatarUrlInput" type="url" class="w-full rounded-[14px] border border-[var(--line)] bg-transparent px-3 py-2" placeholder="Paste image URL" />
-            </label>
-            <button id="updateAvatarBtn" class="pill w-full px-4 py-3">Update Profile Image</button>
-            <div class="glass-strong p-4 text-left">
-              <p class="text-xs uppercase tracking-[0.18em] muted">Supabase Setup</p>
-              <p class="mt-2 text-sm muted">Replace <strong>SUPABASE_URL</strong> and <strong>SUPABASE_ANON_KEY</strong> in the script. In Supabase, enable Google auth and add your site URL plus redirect URL for OAuth.</p>
-            </div>
-          </div>
-        </article>
-      </section>
-
-      <section id="statesCard" class="glass p-5 md:p-6">
-        <div class="card-actions mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p class="font-condensed text-sm uppercase tracking-[0.24em] muted">Moment States Engine</p>
-            <h2 class="font-condensed text-3xl font-bold">State Flow</h2>
-          </div>
-          <div class="flex gap-2">
-            <button id="stopAllStatesBtn" class="pill px-3 py-2">Stop Active State</button>
-            <button data-export="statesCard" class="pill px-3 py-2">PNG</button>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-          <div>
-            <div id="stateButtons" class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5"></div>
-            <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-              <div class="glass-strong p-4 text-center">
-                <div class="text-xs uppercase tracking-[0.18em] muted">Active State</div>
-                <div id="activeStateLabel" class="mt-2 text-lg font-semibold">None</div>
-              </div>
-              <div class="glass-strong p-4 text-center">
-                <div class="text-xs uppercase tracking-[0.18em] muted">Current Session</div>
-                <div id="activeStateTime" class="mt-2 text-lg font-semibold">00:00:00</div>
-              </div>
-              <div class="glass-strong p-4 text-center">
-                <div class="text-xs uppercase tracking-[0.18em] muted">Today Total</div>
-                <div id="todayTracked" class="mt-2 text-lg font-semibold">00:00:00</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="relative mx-auto w-full max-w-[430px] rounded-[14px] border border-[var(--line)] bg-transparent p-4">
-            <div class="profile-center">
-              <img id="chartProfileAvatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80" alt="Chart profile" />
-            </div>
-            <canvas id="momentChart" height="320"></canvas>
-          </div>
-        </div>
-      </section>
-
-      <section id="habitsCard" class="glass p-5 md:p-6">
-        <div class="card-actions mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p class="font-condensed text-sm uppercase tracking-[0.24em] muted">Tabbed Habit Tracker</p>
-            <h2 class="font-condensed text-3xl font-bold">Daily Rhythm Habits</h2>
-          </div>
-          <div class="flex gap-2">
-            <button id="addHabitBtn" class="pill px-3 py-2">Add Habit</button>
-            <button data-export="habitsCard" class="pill px-3 py-2">PNG</button>
-          </div>
-        </div>
-
-        <div class="mb-4 flex flex-wrap gap-2" id="habitTabs"></div>
-        <div class="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_320px]">
-          <div class="glass-strong p-4">
-            <div class="mb-3 flex items-center justify-between gap-3">
-              <div>
-                <h3 id="activeHabitCategoryTitle" class="font-condensed text-2xl font-semibold">Purposeful Habits</h3>
-                <p class="text-sm muted">Click the checkbox to complete today. Edit names inline.</p>
-              </div>
-            </div>
-            <div id="habitList" class="thin-scroll max-h-[420px] space-y-3 overflow-auto pr-1"></div>
-          </div>
-          <aside class="glass-strong p-4">
-            <h3 class="font-condensed text-2xl font-semibold">Category Pulse</h3>
-            <div id="habitSummary" class="mt-4 space-y-3"></div>
-          </aside>
-        </div>
-      </section>
     </div>
-  </div>
 
-  <div id="frictionModal" class="modal-backdrop">
-    <div class="glass-strong w-full max-w-md p-5">
-      <p class="font-condensed text-sm uppercase tracking-[0.22em] muted">Friction Modal</p>
-      <h3 class="mt-1 font-condensed text-3xl font-bold">End your fast?</h3>
-      <p class="mt-3 muted">A little pause helps protect momentum. Are you sure you want to end this fasting session now?</p>
-      <div class="mt-5 flex flex-wrap justify-end gap-3">
-        <button id="cancelEndFastBtn" class="pill px-4 py-2">Keep Going</button>
-        <button id="confirmEndFastBtn" class="rounded-[14px] bg-[var(--wasteful)] px-4 py-2 font-semibold text-white">Yes, End Fast</button>
-      </div>
+    <div id="appContainer" class="max-w-lg mx-auto px-4 py-5 hidden">
+        <div class="flex justify-between items-center mb-5">
+            <h1 class="text-2xl font-bold font-condensed tracking-wide">🌿 Mindful Rhythm</h1>
+            <div class="flex gap-3 items-center">
+                <button id="themeToggle" class="text-2xl w-10 h-10 rounded-full bg-white/40 dark:bg-gray-700/40 flex items-center justify-center">🌙</button>
+                <button id="signOutBtn" class="text-sm bg-gray-200 dark:bg-gray-700 px-3 py-1.5 rounded-full">🚪 Exit</button>
+            </div>
+        </div>
+
+        <!-- FASTING HERO CARD -->
+        <div class="card-glow bg-white dark:bg-gray-800/70 rounded-2xl p-5 mb-6 shadow-md">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="font-semibold text-lg">⚡ Fasting Tracker</h2>
+                    <p id="fastStageName" class="text-sm text-[#5c88f2] font-medium">Fed</p>
+                    <p id="fastStageDesc" class="text-xs text-gray-500 dark:text-gray-400">Nourishing state</p>
+                </div>
+                <div class="relative w-24 h-24">
+                    <svg class="w-full h-full" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="#e2e8f0" stroke-width="8" />
+                        <circle id="fastRing" cx="50" cy="50" r="42" fill="none" stroke="#5c88f2" stroke-width="8" stroke-linecap="round" class="progress-ring__circle" stroke-dasharray="263.89" stroke-dashoffset="263.89" />
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center text-xs font-bold" id="fastElapsed">0h</div>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-4">
+                <button id="startFastBtn" class="flex-1 bg-[#47d18c] text-white py-2 rounded-xl font-semibold">✨ Start Fast</button>
+                <button id="endFastBtn" class="flex-1 bg-[#fc7281] text-white py-2 rounded-xl font-semibold">⏹️ End Fast</button>
+            </div>
+        </div>
+
+        <!-- MOMENT STATES ENGINE -->
+        <div class="mb-6">
+            <h3 class="text-md font-semibold mb-2 flex items-center gap-2">🌀 State Timers <span class="text-xs text-gray-400">(tap to flow)</span></h3>
+            <div class="grid grid-cols-5 gap-2">
+                <button data-state="purposeful" class="state-btn bg-[#5c88f2]/20 dark:bg-[#5c88f2]/30 p-3 rounded-xl flex flex-col items-center transition"><span class="text-xl">🎯</span><span class="text-xs font-medium">Purpose</span></button>
+                <button data-state="wasteful" class="state-btn bg-[#fc7281]/20 dark:bg-[#fc7281]/30 p-3 rounded-xl flex flex-col"><span class="text-xl">📱</span><span class="text-xs">Waste</span></button>
+                <button data-state="nourishing" class="state-btn bg-[#f5c43d]/20 dark:bg-[#f5c43d]/30 p-3 rounded-xl flex flex-col"><span class="text-xl">🍎</span><span class="text-xs">Nourish</span></button>
+                <button data-state="training" class="state-btn bg-[#47d18c]/20 dark:bg-[#47d18c]/30 p-3 rounded-xl flex flex-col"><span class="text-xl">💪</span><span class="text-xs">Train</span></button>
+                <button data-state="recovering" class="state-btn bg-[#8d94e5]/20 dark:bg-[#8d94e5]/30 p-3 rounded-xl flex flex-col"><span class="text-xl">🧘</span><span class="text-xs">Recover</span></button>
+            </div>
+            <div class="mt-3 bg-white/40 dark:bg-gray-800/40 rounded-xl p-2 flex justify-between items-center">
+                <span class="text-sm font-medium">Active: <span id="activeStateLabel">—</span></span>
+                <span class="font-mono text-lg" id="activeTimerDisplay">00:00:00</span>
+                <button id="stopTimerBtn" class="text-xs bg-gray-300 dark:bg-gray-700 px-3 py-1 rounded-full">⏹️ Stop</button>
+            </div>
+        </div>
+
+        <!-- DONUT CHART + PROFILE -->
+        <div class="relative bg-white/40 dark:bg-gray-800/30 rounded-2xl p-4 mb-6">
+            <h3 class="text-sm font-semibold mb-2 text-center">🌀 Time Distribution</h3>
+            <div class="relative w-48 h-48 mx-auto">
+                <canvas id="stateDonutChart" width="200" height="200" class="w-full h-full"></canvas>
+                <div id="profileAvatarContainer" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white dark:bg-gray-700 shadow-md overflow-hidden border-2 border-white dark:border-gray-600 flex items-center justify-center">
+                    <img id="userAvatar" class="w-full h-full object-cover" src="https://via.placeholder.com/48" alt="profile">
+                </div>
+            </div>
+        </div>
+
+        <!-- TABBED HABIT TRACKER -->
+        <div class="bg-white/50 dark:bg-gray-800/50 rounded-2xl p-4">
+            <div class="flex overflow-x-auto gap-1 border-b border-gray-300 dark:border-gray-600 pb-2" id="habitTabsHeader"></div>
+            <div id="habitContent" class="mt-4"></div>
+        </div>
     </div>
-  </div>
 
-  <audio id="stateAudio" loop></audio>
-
-  <script>
-    // =============================
-    // Configuration
-    // =============================
-    const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
-    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-    const FASTING_TABLE = 'fasting_sessions';
-
-    const FASTING_STAGES = [
-      { label: 'Fed', min: 0, max: 4, description: 'Digesting and absorbing nutrients.' },
-      { label: 'Early Fasting', min: 4, max: 8, description: 'Insulin settles and glycogen use begins.' },
-      { label: 'Ketosis', min: 8, max: 14, description: 'Fat burning rises and ketone production starts.' },
-      { label: 'Autophagy', min: 14, max: 20, description: 'Cellular cleanup becomes more meaningful.' },
-      { label: 'Deep Fasting', min: 20, max: 24, description: 'Deeper metabolic flexibility and repair.' },
-      { label: 'Immune Regeneration', min: 24, max: 72, description: 'Extended fasting territory with recovery signaling.' }
-    ];
-
-    const STATES = [
-      { key: 'purposeful', label: 'Purpose', color: '#5c88f2', audio: 'purpose.mp3', icon: '✦' },
-      { key: 'wasteful', label: 'Waste', color: '#fc7281', audio: 'waste.mp3', icon: '–' },
-      { key: 'nourishing', label: 'Nourish', color: '#f5c43d', audio: 'nourish.mp3', icon: '◉' },
-      { key: 'training', label: 'Train', color: '#47d18c', audio: 'train.mp3', icon: '▲' },
-      { key: 'recovering', label: 'Recover', color: '#8d94e5', audio: 'recover.mp3', icon: '☾' }
-    ];
-
-    const defaultHabits = {
-      purposeful: [
-        { id: crypto.randomUUID(), name: 'Deep work block', streak: 0, completedDates: [] },
-        { id: crypto.randomUUID(), name: 'Plan top 3 priorities', streak: 0, completedDates: [] }
-      ],
-      wasteful: [
-        { id: crypto.randomUUID(), name: 'Avoid doom scrolling', streak: 0, completedDates: [] },
-        { id: crypto.randomUUID(), name: 'No random tab hopping', streak: 0, completedDates: [] }
-      ],
-      nourishing: [
-        { id: crypto.randomUUID(), name: 'Eat on purpose', streak: 0, completedDates: [] },
-        { id: crypto.randomUUID(), name: 'Hydrate intentionally', streak: 0, completedDates: [] }
-      ],
-      training: [
-        { id: crypto.randomUUID(), name: 'Train for 30 minutes', streak: 0, completedDates: [] },
-        { id: crypto.randomUUID(), name: 'Walk after meals', streak: 0, completedDates: [] }
-      ],
-      recovering: [
-        { id: crypto.randomUUID(), name: 'Wind down early', streak: 0, completedDates: [] },
-        { id: crypto.randomUUID(), name: 'Journal or breathe', streak: 0, completedDates: [] }
-      ]
-    };
-
-    const state = {
-      theme: localStorage.getItem('mr_theme') || 'light',
-      fasting: JSON.parse(localStorage.getItem('mr_fasting') || 'null') || {
-        start: null,
-        end: null,
-        goalHours: 24,
-        bestHours: 0,
-        active: false,
-        syncedId: null
-      },
-      activeState: null,
-      activeStateStartedAt: null,
-      stateTotals: JSON.parse(localStorage.getItem('mr_state_totals') || 'null') || {
-        date: todayKey(),
-        purposeful: 0,
-        wasteful: 0,
-        nourishing: 0,
-        training: 0,
-        recovering: 0
-      },
-      habits: JSON.parse(localStorage.getItem('mr_habits') || 'null') || structuredClone(defaultHabits),
-      activeHabitTab: 'purposeful',
-      user: JSON.parse(localStorage.getItem('mr_user') || 'null'),
-      chart: null,
-      supabase: null
-    };
-
-    // =============================
-    // Helpers
-    // =============================
-    function todayKey() {
-      return new Date().toISOString().slice(0, 10);
-    }
-
-    function formatDuration(ms) {
-      const total = Math.max(0, Math.floor(ms / 1000));
-      const h = String(Math.floor(total / 3600)).padStart(2, '0');
-      const m = String(Math.floor((total % 3600) / 60)).padStart(2, '0');
-      const s = String(total % 60).padStart(2, '0');
-      return `${h}:${m}:${s}`;
-    }
-
-    function formatHours(ms) {
-      return `${(Math.max(0, ms) / 3600000).toFixed(1)}h`;
-    }
-
-    function formatDateTime(input) {
-      if (!input) return 'Not started';
-      return new Date(input).toLocaleString();
-    }
-
-    function getElapsedFastMs() {
-      if (!state.fasting.active || !state.fasting.start) return 0;
-      return Date.now() - new Date(state.fasting.start).getTime();
-    }
-
-    function getFastingStage(hours) {
-      return FASTING_STAGES.find(stage => hours >= stage.min && hours < stage.max) || FASTING_STAGES[FASTING_STAGES.length - 1];
-    }
-
-    function clamp(value, min, max) {
-      return Math.min(max, Math.max(min, value));
-    }
-
-    function saveFasting() {
-      localStorage.setItem('mr_fasting', JSON.stringify(state.fasting));
-    }
-
-    function saveStateTotals() {
-      localStorage.setItem('mr_state_totals', JSON.stringify(state.stateTotals));
-    }
-
-    function saveHabits() {
-      localStorage.setItem('mr_habits', JSON.stringify(state.habits));
-    }
-
-    function saveUser() {
-      localStorage.setItem('mr_user', JSON.stringify(state.user));
-    }
-
-    function ensureTodayBucket() {
-      if (state.stateTotals.date !== todayKey()) {
-        state.stateTotals = {
-          date: todayKey(),
-          purposeful: 0,
-          wasteful: 0,
-          nourishing: 0,
-          training: 0,
-          recovering: 0
-        };
-        saveStateTotals();
-      }
-    }
-
-    function updateTheme() {
-      document.documentElement.classList.toggle('dark', state.theme === 'dark');
-      localStorage.setItem('mr_theme', state.theme);
-    }
-
-    function getPulseColor(key) {
-      const habits = state.habits[key] || [];
-      if (!habits.length) return '#f5c43d';
-      const today = todayKey();
-      const completed = habits.filter(h => h.completedDates.includes(today)).length;
-      if (completed === habits.length) return '#47d18c';
-      if (completed === 0) return '#fc7281';
-      return '#f5c43d';
-    }
-
-    function calculateStreak(completedDates) {
-      const set = new Set(completedDates);
-      let streak = 0;
-      const cursor = new Date();
-      cursor.setHours(0,0,0,0);
-      while (set.has(cursor.toISOString().slice(0, 10))) {
-        streak += 1;
-        cursor.setDate(cursor.getDate() - 1);
-      }
-      return streak;
-    }
-
-    // =============================
-    // Supabase
-    // =============================
-    function initSupabase() {
-      if (!SUPABASE_URL.startsWith('https://') || SUPABASE_ANON_KEY.includes('YOUR_')) return;
-      state.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
-
-    async function hydrateUser() {
-      if (!state.supabase) return;
-      const { data } = await state.supabase.auth.getSession();
-      const session = data?.session;
-      if (session?.user) {
-        state.user = {
-          id: session.user.id,
-          email: session.user.email,
-          name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'Signed In User',
-          avatar: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || document.getElementById('profileAvatar').src
-        };
-        saveUser();
-        renderUser();
-      }
-
-      state.supabase.auth.onAuthStateChange((event, sessionData) => {
-        const user = sessionData?.user;
-        if (user) {
-          state.user = {
-            id: user.id,
-            email: user.email,
-            name: user.user_metadata?.full_name || user.user_metadata?.name || 'Signed In User',
-            avatar: user.user_metadata?.avatar_url || user.user_metadata?.picture || document.getElementById('profileAvatar').src
-          };
-        } else {
-          state.user = null;
-        }
-        saveUser();
-        renderUser();
-      });
-    }
-
-    async function signInWithGoogle() {
-      if (!state.supabase) {
-        alert('Add your Supabase URL and anon key in the script first.');
-        return;
-      }
-      await state.supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.href }
-      });
-    }
-
-    async function signOut() {
-      if (!state.supabase) {
-        state.user = null;
-        saveUser();
-        renderUser();
-        return;
-      }
-      await state.supabase.auth.signOut();
-    }
-
-    async function saveFastingSessionToSupabase(hours) {
-      if (!state.supabase || !state.user?.id || !state.fasting.start || !state.fasting.end) return;
-      const payload = {
-        user_id: state.user.id,
-        started_at: state.fasting.start,
-        ended_at: state.fasting.end,
-        duration_hours: Number(hours.toFixed(2)),
-        goal_hours: Number(state.fasting.goalHours)
-      };
-      const { data, error } = await state.supabase
-        .from(FASTING_TABLE)
-        .insert(payload)
-        .select()
-        .single();
-      if (!error && data?.id) {
-        state.fasting.syncedId = data.id;
-        saveFasting();
-      }
-    }
-
-    async function loadLatestSessionFromSupabase() {
-      if (!state.supabase || !state.user?.id) {
-        alert('Sign in first to load remote sessions.');
-        return;
-      }
-      const { data, error } = await state.supabase
-        .from(FASTING_TABLE)
-        .select('*')
-        .eq('user_id', state.user.id)
-        .order('started_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (error || !data) {
-        alert('No fasting session found yet.');
-        return;
-      }
-
-      state.fasting.start = data.started_at;
-      state.fasting.end = data.ended_at;
-      state.fasting.goalHours = data.goal_hours || state.fasting.goalHours;
-      state.fasting.bestHours = Math.max(state.fasting.bestHours, Number(data.duration_hours || 0));
-      state.fasting.active = false;
-      state.fasting.syncedId = data.id;
-      saveFasting();
-      renderFasting();
-    }
-
-    // =============================
-    // Renderers
-    // =============================
-    function renderUser() {
-      const signOutBtn = document.getElementById('signOutBtn');
-      const signInBtn = document.getElementById('signInBtn');
-      const nameEl = document.getElementById('profileName');
-      const emailEl = document.getElementById('profileEmail');
-      const avatar = document.getElementById('profileAvatar');
-      const chartAvatar = document.getElementById('chartProfileAvatar');
-
-      if (state.user) {
-        nameEl.textContent = state.user.name || 'Signed In User';
-        emailEl.textContent = state.user.email || '';
-        if (state.user.avatar) {
-          avatar.src = state.user.avatar;
-          chartAvatar.src = state.user.avatar;
-        }
-        signOutBtn.classList.remove('hidden');
-        signInBtn.classList.add('hidden');
-      } else {
-        nameEl.textContent = 'Guest User';
-        emailEl.textContent = 'Sign in to sync fasting sessions';
-        signOutBtn.classList.add('hidden');
-        signInBtn.classList.remove('hidden');
-      }
-    }
-
-    function renderStageList(activeLabel) {
-      const stageList = document.getElementById('stageList');
-      stageList.innerHTML = '';
-      FASTING_STAGES.forEach(stage => {
-        const card = document.createElement('div');
-        card.className = 'rounded-[14px] border p-3';
-        card.style.borderColor = activeLabel === stage.label ? 'var(--purpose)' : 'var(--line)';
-        card.style.background = activeLabel === stage.label ? 'rgba(92,136,242,0.08)' : 'transparent';
-        card.innerHTML = `
-          <div class="flex items-center justify-between gap-3">
-            <div>
-              <div class="font-semibold">${stage.label}</div>
-              <div class="text-sm muted">${stage.description}</div>
+    <!-- FRICTION MODAL -->
+    <div id="frictionModal" class="fixed inset-0 flex items-center justify-center z-50 hidden transition-all">
+        <div class="modal-backdrop absolute inset-0" id="modalBackdrop"></div>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 w-72 text-center z-10 shadow-2xl">
+            <p class="text-xl mb-2">🧘 End fast?</p>
+            <p class="text-sm text-gray-500">Ending early may reduce benefits. Confirm?</p>
+            <div class="flex gap-3 mt-5">
+                <button id="confirmEndFast" class="flex-1 bg-[#fc7281] text-white py-2 rounded-xl">Yes, end</button>
+                <button id="cancelEndFast" class="flex-1 bg-gray-300 dark:bg-gray-700 py-2 rounded-xl">Keep going</button>
             </div>
-            <div class="text-right text-sm muted">${stage.min}–${stage.max}h</div>
-          </div>
-        `;
-        stageList.appendChild(card);
-      });
-    }
+        </div>
+    </div>
 
-    function renderFasting() {
-      const elapsedMs = getElapsedFastMs();
-      const elapsedHours = elapsedMs / 3600000;
-      const goalHours = Number(state.fasting.goalHours || 24);
-      const currentStage = getFastingStage(elapsedHours);
-      const circumference = 2 * Math.PI * 92;
-      const progress = clamp(elapsedHours / goalHours, 0, 1);
-      const offset = circumference * (1 - progress);
+    <script>
+        // ==================== SUPABASE CREDENTIALS (USER PROVIDED) ==================
+        const SUPABASE_URL = "https://ambpjxgidojgmwvvjglg.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtYnBqeGdpZG9qZ213dnZqZ2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MzQzNTQsImV4cCI6MjA5MDAxMDM1NH0.8TfCIQhAjPChBZn8op5J9ykyMc3hPDJ_vJuUEm3WcP4";
+        
+        let supabase;
+        let currentUser = null;
 
-      document.getElementById('fastHours').textContent = `${elapsedHours.toFixed(1)}h`;
-      document.getElementById('fastStage').textContent = state.fasting.active ? currentStage.label : 'Fed';
-      document.getElementById('fastStageWindow').textContent = state.fasting.active ? `${currentStage.min}–${currentStage.max} hours` : '0–4 hours';
-      document.getElementById('fastStartTime').textContent = formatDateTime(state.fasting.start);
-      document.getElementById('fastTarget').textContent = `${goalHours.toFixed(1)}h`;
-      document.getElementById('fastBest').textContent = `${Number(state.fasting.bestHours || 0).toFixed(1)}h`;
-      document.getElementById('fastStatus').textContent = state.fasting.active ? 'In Progress' : (state.fasting.end ? 'Completed' : 'Idle');
-      document.getElementById('fastGoalInput').value = goalHours;
-      document.getElementById('fastingProgress').setAttribute('stroke-dasharray', String(circumference));
-      document.getElementById('fastingProgress').setAttribute('stroke-dashoffset', String(offset));
+        let activeState = null;
+        let stateStartTime = null;
+        let stateTimerInterval = null;
+        let currentAudioSource = null;
+        let audioCtx = null;
+        let audioBuffers = {};
+        let stateAccumulated = { purposeful:0, wasteful:0, nourishing:0, training:0, recovering:0 };
+        let donutChart = null;
+        
+        let currentFastStart = null;
+        let fastInterval = null;
+        
+        let habitCategories = ['purposeful','wasteful','nourishing','training','recovering'];
+        let habitsMap = {};
 
-      renderStageList(state.fasting.active ? currentStage.label : 'Fed');
-    }
-
-    function renderStateButtons() {
-      const container = document.getElementById('stateButtons');
-      container.innerHTML = '';
-      STATES.forEach(item => {
-        const isActive = state.activeState === item.key;
-        const btn = document.createElement('button');
-        btn.className = `state-btn glass-strong min-h-[108px] p-4 text-left ${isActive ? 'active' : ''}`;
-        btn.style.color = item.color;
-        btn.dataset.key = item.key;
-        btn.innerHTML = `
-          <div class="flex items-center justify-between gap-3">
-            <div>
-              <div class="font-condensed text-2xl font-bold">${item.label}</div>
-              <div class="text-sm" style="color: var(--text-soft)">${isActive ? 'Active now' : 'Start timer + audio'}</div>
-            </div>
-            <div class="text-3xl font-bold">${item.icon}</div>
-          </div>
-        `;
-        btn.addEventListener('click', () => activateState(item.key));
-        container.appendChild(btn);
-      });
-    }
-
-    function renderStateMeta() {
-      ensureTodayBucket();
-      const active = STATES.find(s => s.key === state.activeState);
-      const currentMs = state.activeState && state.activeStateStartedAt ? Date.now() - state.activeStateStartedAt : 0;
-      const todayTotalMs = Object.entries(state.stateTotals)
-        .filter(([k]) => k !== 'date')
-        .reduce((sum, [, val]) => sum + val, 0) + currentMs;
-
-      document.getElementById('activeStateLabel').textContent = active ? active.label : 'None';
-      document.getElementById('activeStateTime').textContent = formatDuration(currentMs);
-      document.getElementById('todayTracked').textContent = formatDuration(todayTotalMs);
-    }
-
-    function createChart() {
-      const ctx = document.getElementById('momentChart');
-      state.chart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: STATES.map(s => s.label),
-          datasets: [{
-            data: STATES.map(s => state.stateTotals[s.key] || 0),
-            backgroundColor: STATES.map(s => s.color),
-            borderWidth: 0,
-            hoverOffset: 8,
-            spacing: 5
-          }]
-        },
-        options: {
-          responsive: true,
-          cutout: '62%',
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                color: getComputedStyle(document.documentElement).getPropertyValue('--text'),
-                font: { family: 'Barlow', size: 12 }
-              }
-            },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  return `${context.label}: ${formatDuration(context.raw)}`;
-                }
-              }
+        // ==================== Helper functions ====================
+        function escapeHtml(str) { 
+            if(!str) return '';
+            return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;});
+        }
+        
+        function loadUserLocalData(userId) {
+            const storageKey = `mindful_${userId}`;
+            const data = localStorage.getItem(storageKey);
+            if(data) {
+                const parsed = JSON.parse(data);
+                stateAccumulated = parsed.stateAccumulated || { purposeful:0, wasteful:0, nourishing:0, training:0, recovering:0 };
+                habitsMap = parsed.habitsMap || getDefaultHabits();
+            } else {
+                stateAccumulated = { purposeful:0, wasteful:0, nourishing:0, training:0, recovering:0 };
+                habitsMap = getDefaultHabits();
             }
-          }
+            updateDonutChart();
+            renderHabitTracker();
         }
-      });
-    }
-
-    function updateChart() {
-      ensureTodayBucket();
-      if (!state.chart) return createChart();
-      const currentSnapshot = STATES.map(s => {
-        const base = state.stateTotals[s.key] || 0;
-        if (state.activeState === s.key && state.activeStateStartedAt) {
-          return base + (Date.now() - state.activeStateStartedAt);
+        
+        function saveUserLocalData(userId) {
+            const storageKey = `mindful_${userId}`;
+            localStorage.setItem(storageKey, JSON.stringify({ stateAccumulated, habitsMap }));
         }
-        return base;
-      });
-      state.chart.data.datasets[0].data = currentSnapshot;
-      state.chart.options.plugins.legend.labels.color = getComputedStyle(document.documentElement).getPropertyValue('--text');
-      state.chart.update();
-    }
-
-    function renderHabitTabs() {
-      const tabs = document.getElementById('habitTabs');
-      tabs.innerHTML = '';
-      STATES.forEach(item => {
-        const active = state.activeHabitTab === item.key;
-        const pulseColor = getPulseColor(item.key);
-        const btn = document.createElement('button');
-        btn.className = `pill flex items-center gap-2 px-4 py-2 ${active ? 'ring-2 ring-white/30' : ''}`;
-        btn.innerHTML = `
-          <span class="pulse" style="color:${pulseColor}; background:${pulseColor}"></span>
-          <span style="color:${item.color}; font-weight:700">${item.label}</span>
-        `;
-        btn.addEventListener('click', () => {
-          state.activeHabitTab = item.key;
-          renderHabits();
-        });
-        tabs.appendChild(btn);
-      });
-    }
-
-    function renderHabitSummary() {
-      const wrapper = document.getElementById('habitSummary');
-      wrapper.innerHTML = '';
-      STATES.forEach(item => {
-        const habits = state.habits[item.key] || [];
-        const today = todayKey();
-        const completed = habits.filter(h => h.completedDates.includes(today)).length;
-        const pulseColor = getPulseColor(item.key);
-        const row = document.createElement('div');
-        row.className = 'rounded-[14px] border border-[var(--line)] p-3';
-        row.innerHTML = `
-          <div class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-2">
-              <span class="pulse" style="color:${pulseColor}; background:${pulseColor}"></span>
-              <span class="font-semibold" style="color:${item.color}">${item.label}</span>
-            </div>
-            <span class="text-sm muted">${completed}/${habits.length || 0} done</span>
-          </div>
-        `;
-        wrapper.appendChild(row);
-      });
-    }
-
-    function renderHabits() {
-      renderHabitTabs();
-      renderHabitSummary();
-      const category = state.activeHabitTab;
-      const title = STATES.find(s => s.key === category)?.label || 'Habits';
-      document.getElementById('activeHabitCategoryTitle').textContent = `${title} Habits`;
-      const list = document.getElementById('habitList');
-      list.innerHTML = '';
-      const habits = state.habits[category] || [];
-      const today = todayKey();
-
-      habits.forEach(habit => {
-        habit.streak = calculateStreak(habit.completedDates);
-        const checked = habit.completedDates.includes(today);
-        const row = document.createElement('div');
-        row.className = 'rounded-[14px] border border-[var(--line)] p-3';
-        row.innerHTML = `
-          <div class="flex items-start justify-between gap-3">
-            <div class="flex items-start gap-3">
-              <input type="checkbox" class="mt-1 h-5 w-5" ${checked ? 'checked' : ''} />
-              <div>
-                <div class="habit-row min-w-[180px] text-lg font-semibold" contenteditable="true">${habit.name}</div>
-                <div class="mt-1 text-sm muted">Daily streak: <strong>${habit.streak}</strong></div>
-              </div>
-            </div>
-            <button class="pill px-3 py-1 text-sm">Delete</button>
-          </div>
-        `;
-
-        const checkbox = row.querySelector('input');
-        const editable = row.querySelector('.habit-row');
-        const del = row.querySelector('button');
-
-        checkbox.addEventListener('change', () => {
-          if (checkbox.checked) {
-            if (!habit.completedDates.includes(today)) habit.completedDates.push(today);
-          } else {
-            habit.completedDates = habit.completedDates.filter(d => d !== today);
-          }
-          habit.streak = calculateStreak(habit.completedDates);
-          saveHabits();
-          renderHabits();
-        });
-
-        editable.addEventListener('blur', () => {
-          habit.name = editable.textContent.trim() || 'Untitled Habit';
-          saveHabits();
-        });
-
-        del.addEventListener('click', () => {
-          state.habits[category] = state.habits[category].filter(h => h.id !== habit.id);
-          saveHabits();
-          renderHabits();
-        });
-
-        list.appendChild(row);
-      });
-    }
-
-    // =============================
-    // Actions
-    // =============================
-    function startFast() {
-      state.fasting.start = new Date().toISOString();
-      state.fasting.end = null;
-      state.fasting.active = true;
-      state.fasting.syncedId = null;
-      saveFasting();
-      renderFasting();
-    }
-
-    async function finalizeFast() {
-      if (!state.fasting.active || !state.fasting.start) return;
-      state.fasting.end = new Date().toISOString();
-      state.fasting.active = false;
-      const hours = (new Date(state.fasting.end).getTime() - new Date(state.fasting.start).getTime()) / 3600000;
-      state.fasting.bestHours = Math.max(Number(state.fasting.bestHours || 0), hours);
-      saveFasting();
-      renderFasting();
-      await saveFastingSessionToSupabase(hours);
-    }
-
-    function activateState(key) {
-      ensureTodayBucket();
-      if (state.activeState === key) {
-        stopActiveState();
-        return;
-      }
-      stopActiveState(false);
-      state.activeState = key;
-      state.activeStateStartedAt = Date.now();
-      const config = STATES.find(s => s.key === key);
-      const audio = document.getElementById('stateAudio');
-      audio.src = config.audio;
-      audio.currentTime = 0;
-      audio.play().catch(() => {
-        console.warn('Audio autoplay blocked until user interaction or missing file.');
-      });
-      renderStateButtons();
-      renderStateMeta();
-      updateChart();
-    }
-
-    function stopActiveState(render = true) {
-      if (state.activeState && state.activeStateStartedAt) {
-        const elapsed = Date.now() - state.activeStateStartedAt;
-        state.stateTotals[state.activeState] = (state.stateTotals[state.activeState] || 0) + elapsed;
-        saveStateTotals();
-      }
-      state.activeState = null;
-      state.activeStateStartedAt = null;
-      const audio = document.getElementById('stateAudio');
-      audio.pause();
-      audio.removeAttribute('src');
-      audio.load();
-      if (render) {
-        renderStateButtons();
-        renderStateMeta();
-        updateChart();
-      }
-    }
-
-    async function exportCardAsPng(cardId) {
-      const el = document.getElementById(cardId);
-      if (!el) return;
-      const canvas = await html2canvas(el, {
-        backgroundColor: null,
-        scale: 2,
-        useCORS: true,
-        logging: false
-      });
-      const link = document.createElement('a');
-      link.href = canvas.toDataURL('image/png');
-      link.download = `${cardId}.png`;
-      link.click();
-    }
-
-    async function shareStatus() {
-      const elapsedHours = (getElapsedFastMs() / 3600000).toFixed(1);
-      const activeState = STATES.find(s => s.key === state.activeState)?.label || 'None';
-      const text = `Mindful Rhythm update: fasting ${elapsedHours}h, active state: ${activeState}.`;
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: 'Mindful Rhythm', text });
-        } catch (e) {
-          console.warn('Share canceled or failed', e);
+        
+        function getDefaultHabits() {
+            return {
+                purposeful: [{ id:'p1', name:'Morning intention', streak:0, completedToday:false, lastCompletionDate:null }],
+                wasteful: [{ id:'w1', name:'Limit scrolling', streak:0, completedToday:false, lastCompletionDate:null }],
+                nourishing: [{ id:'n1', name:'Hydrate well', streak:0, completedToday:false, lastCompletionDate:null }],
+                training: [{ id:'t1', name:'Move 15min', streak:0, completedToday:false, lastCompletionDate:null }],
+                recovering: [{ id:'r1', name:'Breathwork', streak:0, completedToday:false, lastCompletionDate:null }]
+            };
         }
-      } else {
-        await navigator.clipboard.writeText(text);
-        alert('Share API unavailable. Status copied to clipboard instead.');
-      }
-    }
-
-    // =============================
-    // Tick loop
-    // =============================
-    function tick() {
-      renderFasting();
-      renderStateMeta();
-      updateChart();
-      requestAnimationFrame(() => {
-        setTimeout(tick, 1000);
-      });
-    }
-
-    // =============================
-    // Init
-    // =============================
-    function bindEvents() {
-      document.getElementById('themeToggle').addEventListener('click', () => {
-        state.theme = state.theme === 'light' ? 'dark' : 'light';
-        updateTheme();
-        updateChart();
-      });
-      document.getElementById('startFastBtn').addEventListener('click', startFast);
-      document.getElementById('endFastBtn').addEventListener('click', () => {
-        if (!state.fasting.active) return;
-        document.getElementById('frictionModal').classList.add('show');
-      });
-      document.getElementById('cancelEndFastBtn').addEventListener('click', () => {
-        document.getElementById('frictionModal').classList.remove('show');
-      });
-      document.getElementById('confirmEndFastBtn').addEventListener('click', async () => {
-        document.getElementById('frictionModal').classList.remove('show');
-        await finalizeFast();
-      });
-      document.getElementById('fastGoalInput').addEventListener('change', (e) => {
-        state.fasting.goalHours = Number(e.target.value || 24);
-        saveFasting();
-        renderFasting();
-      });
-      document.getElementById('signInBtn').addEventListener('click', signInWithGoogle);
-      document.getElementById('signOutBtn').addEventListener('click', signOut);
-      document.getElementById('loadSessionBtn').addEventListener('click', loadLatestSessionFromSupabase);
-      document.getElementById('stopAllStatesBtn').addEventListener('click', () => stopActiveState());
-      document.getElementById('addHabitBtn').addEventListener('click', () => {
-        state.habits[state.activeHabitTab].unshift({
-          id: crypto.randomUUID(),
-          name: 'New Habit',
-          streak: 0,
-          completedDates: []
-        });
-        saveHabits();
-        renderHabits();
-      });
-      document.getElementById('shareFastingBtn').addEventListener('click', shareStatus);
-      document.getElementById('updateAvatarBtn').addEventListener('click', () => {
-        const url = document.getElementById('avatarUrlInput').value.trim();
-        if (!url) return;
-        document.getElementById('profileAvatar').src = url;
-        document.getElementById('chartProfileAvatar').src = url;
-        if (state.user) {
-          state.user.avatar = url;
-          saveUser();
+        
+        function updateHabitStreak(habit, completedNow) {
+            const today = new Date().toDateString();
+            if(completedNow) {
+                if(!habit.completedToday) {
+                    const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+                    const lastDate = habit.lastCompletionDate ? new Date(habit.lastCompletionDate).toDateString() : null;
+                    if(lastDate === yesterday.toDateString()) habit.streak++;
+                    else if(lastDate !== today) habit.streak = 1;
+                    habit.completedToday = true;
+                    habit.lastCompletionDate = new Date().toISOString();
+                }
+            } else {
+                if(habit.completedToday) habit.completedToday = false;
+            }
+            return habit;
         }
-      });
-
-      document.querySelectorAll('[data-export]').forEach(btn => {
-        btn.addEventListener('click', () => exportCardAsPng(btn.dataset.export));
-      });
-    }
-
-    async function init() {
-      updateTheme();
-      initSupabase();
-      renderUser();
-      renderFasting();
-      renderStateButtons();
-      renderStateMeta();
-      renderHabits();
-      createChart();
-      bindEvents();
-      await hydrateUser();
-      tick();
-    }
-
-    init();
-  </script>
+        
+        function getCategoryCompletion(cat) {
+            const habits = habitsMap[cat] || [];
+            if(!habits.length) return 0;
+            const completed = habits.filter(h => h.completedToday).length;
+            return Math.round((completed/habits.length)*100);
+        }
+        
+        function updateTabPulseDots() {
+            const tabs = document.querySelectorAll('.habit-tab');
+            tabs.forEach(tab => {
+                const cat = tab.dataset.category;
+                const completion = getCategoryCompletion(cat);
+                let dotColor = 'bg-red-500'; if(completion===100) dotColor = 'bg-green-500'; else if(completion>0) dotColor = 'bg-yellow-500';
+                const dotSpan = tab.querySelector('.pulse-dot');
+                if(dotSpan) dotSpan.className = `pulse-dot ${dotColor}`;
+            });
+        }
+        
+        function renderHabitTracker() {
+            const activeTab = document.querySelector('.habit-tab-active')?.dataset.category || 'purposeful';
+            const headerDiv = document.getElementById('habitTabsHeader');
+            if(!headerDiv) return;
+            headerDiv.innerHTML = '';
+            habitCategories.forEach(cat => {
+                const completion = getCategoryCompletion(cat);
+                let dotColor = 'bg-red-500'; if(completion===100) dotColor = 'bg-green-500'; else if(completion>0) dotColor = 'bg-yellow-500';
+                const isActive = (activeTab === cat);
+                headerDiv.innerHTML += `<button data-category="${cat}" class="habit-tab ${isActive ? 'habit-tab-active border-b-2 border-[#5c88f2]' : ''} px-4 py-1 text-sm font-medium flex items-center gap-1">${cat.slice(0,4)} <span class="pulse-dot ${dotColor}"></span></button>`;
+            });
+            document.querySelectorAll('.habit-tab').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.habit-tab').forEach(b => b.classList.remove('habit-tab-active','border-b-2','border-[#5c88f2]'));
+                    btn.classList.add('habit-tab-active','border-b-2','border-[#5c88f2]');
+                    renderHabitTracker();
+                });
+            });
+            const contentDiv = document.getElementById('habitContent');
+            const category = activeTab;
+            const habits = habitsMap[category] || [];
+            contentDiv.innerHTML = `<h4 class="font-semibold mb-2 capitalize">${category} habits</h4><ul class="space-y-3">` + habits.map((habit, idx) => `
+                <li class="flex items-center justify-between bg-white/30 dark:bg-gray-700/30 p-2 rounded-xl">
+                    <div class="flex items-center gap-2 flex-1">
+                        <input type="checkbox" data-cat="${category}" data-id="${habit.id}" class="habit-checkbox w-5 h-5 rounded" ${habit.completedToday ? 'checked' : ''}>
+                        <span class="habit-name-text text-sm" data-cat="${category}" data-id="${habit.id}">${escapeHtml(habit.name)}</span>
+                        <input type="text" class="habit-edit-input hidden text-sm" data-cat="${category}" data-id="${habit.id}" value="${escapeHtml(habit.name)}">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-mono">🔥 ${habit.streak}</span>
+                        <button class="edit-habit-btn text-xs text-blue-400" data-cat="${category}" data-id="${habit.id}">✎</button>
+                    </div>
+                </li>
+            `).join('') + `</ul><button class="add-habit-btn mt-3 text-sm text-[#5c88f2]" data-cat="${category}">+ Add habit</button>`;
+            attachHabitEvents();
+        }
+        
+        function attachHabitEvents() {
+            document.querySelectorAll('.habit-checkbox').forEach(cb => {
+                cb.addEventListener('change', (e) => {
+                    const cat = cb.dataset.cat, id = cb.dataset.id;
+                    const habit = habitsMap[cat]?.find(h => h.id === id);
+                    if(habit) {
+                        updateHabitStreak(habit, cb.checked);
+                        if(!cb.checked) habit.completedToday = false;
+                        saveUserLocalData(currentUser.id);
+                        renderHabitTracker();
+                        updateTabPulseDots();
+                    }
+                });
+            });
+            document.querySelectorAll('.edit-habit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const cat = btn.dataset.cat, id = btn.dataset.id;
+                    const textSpan = document.querySelector(`.habit-name-text[data-cat="${cat}"][data-id="${id}"]`);
+                    const editInput = document.querySelector(`.habit-edit-input[data-cat="${cat}"][data-id="${id}"]`);
+                    if(textSpan && editInput) {
+                        textSpan.classList.add('hidden');
+                        editInput.classList.remove('hidden');
+                        editInput.focus();
+                        const saveEdit = () => {
+                            const newName = editInput.value.trim();
+                            if(newName) {
+                                const habit = habitsMap[cat]?.find(h => h.id === id);
+                                if(habit) habit.name = newName;
+                                saveUserLocalData(currentUser.id);
+                            }
+                            renderHabitTracker();
+                        };
+                        editInput.addEventListener('blur', saveEdit, { once: true });
+                        editInput.addEventListener('keypress', (e) => { if(e.key==='Enter') editInput.blur(); });
+                    }
+                });
+            });
+            document.querySelectorAll('.add-habit-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const cat = btn.dataset.category;
+                    const newId = Date.now().toString();
+                    habitsMap[cat].push({ id:newId, name:'New habit', streak:0, completedToday:false, lastCompletionDate:null });
+                    saveUserLocalData(currentUser.id);
+                    renderHabitTracker();
+                });
+            });
+        }
+        
+        // Audio (Web Audio simple loops)
+        async function initAudio() {
+            if(audioCtx) return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const createTone = (freq, duration=2) => {
+                const sampleRate = audioCtx.sampleRate;
+                const length = sampleRate * duration;
+                const buffer = audioCtx.createBuffer(1, length, sampleRate);
+                const data = buffer.getChannelData(0);
+                for(let i=0; i<length; i++) {
+                    let t = i / sampleRate;
+                    data[i] = Math.sin(2 * Math.PI * freq * t) * 0.3 * Math.exp(-t*0.8);
+                }
+                return buffer;
+            };
+            audioBuffers = {
+                purposeful: createTone(523.25, 2.5),
+                wasteful: createTone(220, 2),
+                nourishing: createTone(329.63, 2.2),
+                training: createTone(440, 2.4),
+                recovering: createTone(196, 3)
+            };
+        }
+        function playStateAudio(stateKey) {
+            if(!audioCtx) return;
+            if(currentAudioSource) { try { currentAudioSource.stop(); } catch(e){} }
+            const buffer = audioBuffers[stateKey];
+            if(buffer) {
+                const source = audioCtx.createBufferSource();
+                source.buffer = buffer;
+                source.loop = true;
+                source.connect(audioCtx.destination);
+                source.start();
+                currentAudioSource = source;
+            }
+        }
+        function stopAudio() {
+            if(currentAudioSource) { try{ currentAudioSource.stop(); }catch(e){} currentAudioSource = null; }
+        }
+        
+        function stopActiveStateAndRecord() {
+            if(activeState && stateStartTime) {
+                const elapsedSec = Math.floor((Date.now() - stateStartTime) / 1000);
+                if(elapsedSec > 0) {
+                    stateAccumulated[activeState] = (stateAccumulated[activeState] || 0) + elapsedSec;
+                    saveUserLocalData(currentUser.id);
+                    updateDonutChart();
+                }
+            }
+            if(stateTimerInterval) clearInterval(stateTimerInterval);
+            stopAudio();
+            activeState = null; stateStartTime = null;
+            document.getElementById('activeStateLabel').innerText = '—';
+            document.getElementById('activeTimerDisplay').innerText = '00:00:00';
+        }
+        
+        function startState(stateKey) {
+            if(!currentUser) return;
+            stopActiveStateAndRecord();
+            activeState = stateKey;
+            stateStartTime = Date.now();
+            stateTimerInterval = setInterval(() => {
+                if(activeState && stateStartTime) {
+                    const diff = Math.floor((Date.now() - stateStartTime)/1000);
+                    const h = Math.floor(diff/3600), m = Math.floor((diff%3600)/60), s = diff%60;
+                    document.getElementById('activeTimerDisplay').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                }
+            }, 1000);
+            document.getElementById('activeStateLabel').innerText = stateKey.toUpperCase();
+            if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            playStateAudio(stateKey);
+        }
+        
+        function updateDonutChart() {
+            if(!donutChart) return;
+            const values = habitCategories.map(c => stateAccumulated[c] || 0);
+            donutChart.data.datasets[0].data = values;
+            donutChart.update();
+        }
+        
+        // Fasting stages
+        const stages = [
+            { name:'Fed', minH:0, maxH:4, desc:'Energy from meal', color:'#f5c43d' },
+            { name:'Early Fasting', minH:4, maxH:8, desc:'Insulin drops', color:'#8d94e5' },
+            { name:'Ketosis', minH:8, maxH:12, desc:'Fat burning', color:'#47d18c' },
+            { name:'Autophagy', minH:12, maxH:16, desc:'Cellular clean', color:'#5c88f2' },
+            { name:'Deep Fasting', minH:16, maxH:24, desc:'GH increase', color:'#8d94e5' },
+            { name:'Immune Regeneration', minH:24, maxH:48, desc:'Stem cell boost', color:'#fc7281' }
+        ];
+        function updateFastingUI() {
+            if(!currentFastStart) { 
+                document.getElementById('fastElapsed').innerText='0h'; 
+                document.getElementById('fastStageName').innerText='Not started'; 
+                document.getElementById('fastStageDesc').innerText='Start a fast'; 
+                const ring = document.getElementById('fastRing'); 
+                if(ring) ring.style.strokeDashoffset = '263.89'; 
+                return; 
+            }
+            const elapsedH = (Date.now() - currentFastStart) / (1000*3600);
+            document.getElementById('fastElapsed').innerText = elapsedH.toFixed(1)+'h';
+            let stage = stages[0];
+            for(let s of stages) if(elapsedH >= s.minH && elapsedH < s.maxH) { stage = s; break; }
+            if(elapsedH >= 48) stage = stages[5];
+            document.getElementById('fastStageName').innerText = stage.name;
+            document.getElementById('fastStageDesc').innerText = stage.desc;
+            const maxH = stage.maxH === 48 ? 48 : stage.maxH;
+            let progress = Math.min(1, (elapsedH - stage.minH)/(maxH - stage.minH));
+            if(stage.name === 'Fed') progress = elapsedH/4;
+            const circumference = 263.89;
+            const offset = circumference * (1 - progress);
+            const ring = document.getElementById('fastRing');
+            ring.style.strokeDashoffset = offset;
+            ring.setAttribute('stroke', stage.color);
+        }
+        function startFast() {
+            if(!currentUser) return;
+            currentFastStart = Date.now();
+            if(fastInterval) clearInterval(fastInterval);
+            fastInterval = setInterval(updateFastingUI, 1000);
+            updateFastingUI();
+        }
+        async function endFastToSupabase() {
+            if(!currentFastStart || !currentUser) return;
+            const endTime = new Date().toISOString();
+            const startTime = new Date(currentFastStart).toISOString();
+            const durationHours = (Date.now() - currentFastStart) / (3600000);
+            try {
+                const { error } = await supabase.from('fasting_sessions').insert([{ user_id: currentUser.id, start_time: startTime, end_time: endTime, duration_hours: durationHours }]);
+                if(error) console.error('Supabase insert error:', error);
+            } catch(e) { console.warn('Table might not exist yet'); }
+            currentFastStart = null;
+            if(fastInterval) clearInterval(fastInterval);
+            updateFastingUI();
+        }
+        
+        // Supabase auth
+        async function initSupabase() {
+            const { createClient } = supabase;
+            const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            return sb;
+        }
+        
+        async function handleGoogleLogin() {
+            if(!supabase) { alert('Supabase not ready'); return; }
+            const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+            if(error) alert(error.message);
+        }
+        
+        async function setupAuthListener() {
+            const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+                if(session?.user) {
+                    currentUser = session.user;
+                    document.getElementById('authContainer').classList.add('hidden');
+                    document.getElementById('appContainer').classList.remove('hidden');
+                    document.getElementById('userAvatar').src = currentUser.user_metadata?.avatar_url || 'https://ui-avatars.com/api/?background=5c88f2&color=fff&name=User';
+                    loadUserLocalData(currentUser.id);
+                    renderHabitTracker();
+                    updateTabPulseDots();
+                } else {
+                    currentUser = null;
+                    document.getElementById('authContainer').classList.remove('hidden');
+                    document.getElementById('appContainer').classList.add('hidden');
+                    stopActiveStateAndRecord();
+                    if(fastInterval) clearInterval(fastInterval);
+                }
+            });
+        }
+        
+        // DOM ready
+        window.addEventListener('DOMContentLoaded', async () => {
+            supabase = await initSupabase();
+            if(supabase) await setupAuthListener();
+            
+            // UI event listeners
+            document.getElementById('googleSignInBtn')?.addEventListener('click', handleGoogleLogin);
+            document.getElementById('signOutBtn')?.addEventListener('click', async () => { if(supabase) await supabase.auth.signOut(); });
+            document.getElementById('themeToggle')?.addEventListener('click', () => { document.documentElement.classList.toggle('dark'); });
+            
+            document.querySelectorAll('.state-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    if(!currentUser) return;
+                    await initAudio();
+                    if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+                    const state = btn.dataset.state;
+                    startState(state);
+                });
+            });
+            document.getElementById('stopTimerBtn')?.addEventListener('click', () => { stopActiveStateAndRecord(); });
+            document.getElementById('startFastBtn')?.addEventListener('click', () => { if(currentUser) startFast(); });
+            const modal = document.getElementById('frictionModal');
+            document.getElementById('endFastBtn')?.addEventListener('click', () => { if(currentFastStart) modal.classList.remove('hidden'); else alert('No active fast'); });
+            document.getElementById('confirmEndFast')?.addEventListener('click', async () => { await endFastToSupabase(); modal.classList.add('hidden'); });
+            document.getElementById('cancelEndFast')?.addEventListener('click', () => { modal.classList.add('hidden'); });
+            document.getElementById('modalBackdrop')?.addEventListener('click', () => { modal.classList.add('hidden'); });
+            
+            // Chart
+            const ctx = document.getElementById('stateDonutChart')?.getContext('2d');
+            if(ctx) {
+                donutChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: { labels: ['Purpose','Waste','Nourish','Train','Recover'], datasets: [{ data: [0,0,0,0,0], backgroundColor: ['#5c88f2','#fc7281','#f5c43d','#47d18c','#8d94e5'], borderWidth: 0 }] },
+                    options: { cutout: '65%', plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } } }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
