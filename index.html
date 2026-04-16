@@ -187,46 +187,47 @@
   }
   .ring-wrap {
     position: relative;
-    width: 200px; height: 200px;
-    margin-bottom: 20px;
+    width: 210px; height: 210px;
+    margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
   }
-  #ring-svg {
-    width: 200px; height: 200px;
-    transform: rotate(-90deg);
+  .ring-glow {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: radial-gradient(ellipse at center, var(--glow-color, rgba(124,58,237,0.18)) 0%, transparent 70%);
+    transition: background .8s ease;
+    pointer-events: none;
   }
-  .ring-track {
-    fill: none; stroke: var(--ring-bg); stroke-width: 14;
-  }
-  .ring-progress {
-    fill: none; stroke: var(--accent); stroke-width: 14;
-    stroke-linecap: round;
-    stroke-dasharray: 502;
-    stroke-dashoffset: 502;
-    transition: stroke-dashoffset .8s ease, stroke .8s ease;
+  .ring-outer {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 1.5px solid var(--glow-color, rgba(124,58,237,0.25));
+    transition: border-color .8s ease;
   }
   .ring-center {
-    position: absolute; inset: 0;
+    position: relative; z-index: 1;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    gap: 2px;
+    gap: 0;
   }
   #fast-stage-emoji {
-    font-size: 26px; line-height: 1; margin-bottom: 2px;
+    font-size: 28px; line-height: 1; margin-bottom: 6px;
     transition: transform .4s ease;
+  }
+  #fast-stage-ring {
+    font-family: var(--font-cond); font-weight: 700;
+    font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 8px;
+    transition: color .6s;
   }
   #fast-hhmm {
     font-family: var(--font-cond); font-weight: 700;
-    font-size: 38px; line-height: 1;
-    color: var(--text); letter-spacing: -.01em;
+    font-size: 44px; line-height: 1;
+    color: var(--text); letter-spacing: -.02em;
   }
   #fast-seconds {
-    font-family: var(--font-cond); font-size: 18px;
-    color: var(--text3); font-weight: 500;
-  }
-  #fast-stage-ring {
-    font-family: var(--font-cond); font-weight: 600;
-    font-size: 13px; letter-spacing: .08em; text-transform: uppercase;
-    color: var(--accent); margin-top: 2px;
+    font-family: var(--font-cond); font-size: 15px;
+    color: var(--text3); font-weight: 500; margin-top: 3px;
+    letter-spacing: .06em;
   }
   .fast-btns { display: flex; gap: 12px; width: 100%; }
   .btn-start {
@@ -324,11 +325,11 @@
   }
 
   /* Donut wrap */
-  #donut-wrap {
+  #donut-wrap, #fast-dist-wrap {
     margin: 12px 16px 0;
     padding: 20px 16px;
   }
-  #donut-wrap canvas { max-height: 200px; }
+  #donut-wrap canvas, #fast-dist-wrap canvas { max-height: 200px; }
   .donut-legend {
     display: grid; grid-template-columns: 1fr 1fr;
     gap: 6px; margin-top: 14px;
@@ -652,16 +653,14 @@
 
     <!-- FASTING HERO -->
     <div class="card" id="fasting-hero">
-      <div class="ring-wrap">
-        <svg id="ring-svg" viewBox="0 0 180 180">
-          <circle class="ring-track" cx="90" cy="90" r="80"/>
-          <circle class="ring-progress" id="ring-prog" cx="90" cy="90" r="80"/>
-        </svg>
+      <div class="ring-wrap" id="ring-wrap">
+        <div class="ring-glow" id="ring-glow"></div>
+        <div class="ring-outer" id="ring-outer"></div>
         <div class="ring-center">
           <div id="fast-stage-emoji">🍽️</div>
+          <div id="fast-stage-ring">Fed</div>
           <div id="fast-hhmm">00:00</div>
           <div id="fast-seconds">00</div>
-          <div id="fast-stage-ring">Fed</div>
         </div>
       </div>
 
@@ -722,6 +721,13 @@
       <div class="section-title" style="margin-bottom:0">Time Distribution</div>
       <canvas id="donut-chart"></canvas>
       <div class="donut-legend" id="donut-legend"></div>
+    </div>
+
+    <!-- Fasting stage distribution -->
+    <div class="card" id="fast-dist-wrap">
+      <div class="section-title" style="margin-bottom:0">Fasting Distribution</div>
+      <canvas id="fast-dist-chart"></canvas>
+      <div class="donut-legend" id="fast-dist-legend"></div>
     </div>
 
     <!-- HABITS -->
@@ -974,7 +980,43 @@ const STAGES = [
   { name:'Immune Regen.',    icon:'🛡️', start:48,   end:9999, color:'#E05C7A', desc:'Immune system regeneration may begin. Old immune cells are recycled and new ones produced.' },
 ];
 const FAST_TARGET_HRS = 16;
-const CIRCUMFERENCE = 2 * Math.PI * 80;
+
+// Stage glow colors (r,g,b)
+const STAGE_COLORS_RGB = [
+  '158,149,184', // Fed
+  '124,111,199', // Early Fasting
+  '232,168,56',  // Ketosis
+  '52,201,138',  // Autophagy
+  '124,58,237',  // Deep Fasting
+  '224,92,122',  // Immune Regen
+];
+
+// Fed timer — tracks time spent NOT fasting (daily)
+let fedState = LS.get('fed') || { startTs: null, totalSecs: 0, lastDate: null };
+
+function getFedElapsed() {
+  const td = today();
+  if (fedState.lastDate !== td) {
+    fedState = { startTs: null, totalSecs: 0, lastDate: td };
+    LS.set('fed', fedState);
+  }
+  if (fastState.running) return fedState.totalSecs || 0;
+  if (!fedState.startTs) return fedState.totalSecs || 0;
+  return fedState.totalSecs + Math.floor((Date.now() - fedState.startTs) / 1000);
+}
+
+function syncFedTimer() {
+  const td = today();
+  if (fedState.lastDate !== td) fedState = { startTs: null, totalSecs: 0, lastDate: td };
+  if (!fastState.running && !fedState.startTs) {
+    fedState.startTs = Date.now();
+    fedState.lastDate = td;
+  } else if (fastState.running && fedState.startTs) {
+    fedState.totalSecs = getFedElapsed();
+    fedState.startTs = null;
+  }
+  LS.set('fed', fedState);
+}
 
 let fastState = LS.get('fast') || { running:false, startTs:null, totalSecs:0, log:[] };
 
@@ -991,43 +1033,39 @@ function getCurrentStage(hrs) {
 }
 
 function updateFastUI() {
-  const secs  = getFastElapsed();
-  const hrs   = secs / 3600;
-  const stIdx = getCurrentStage(hrs);
+  const isFasting = fastState.running;
+  const fastSecs  = getFastElapsed();
+  const displaySecs = isFasting ? fastSecs : getFedElapsed();
+  const hrs   = fastSecs / 3600;
+  const stIdx = isFasting ? getCurrentStage(hrs) : 0;
   const st    = STAGES[stIdx];
-  const tgt   = FAST_TARGET_HRS * 3600;
-  const pct   = Math.min(secs / tgt, 1);
+  const rgb   = STAGE_COLORS_RGB[stIdx];
 
-  // Ring
-  const offset = CIRCUMFERENCE * (1 - pct);
-  const ring = document.getElementById('ring-prog');
-  ring.style.strokeDashoffset = offset;
-  ring.style.strokeDasharray  = CIRCUMFERENCE;
-  ring.style.stroke = st.color;
+  // Glow circle — set CSS custom property via style.setProperty
+  const glowEl  = document.getElementById('ring-glow');
+  const outerEl = document.getElementById('ring-outer');
+  if (glowEl)  glowEl.style.setProperty('--glow-color', `rgba(${rgb},0.22)`);
+  if (outerEl) outerEl.style.setProperty('--glow-color', `rgba(${rgb},0.45)`);
 
-  // Time display
-  document.getElementById('fast-hhmm').textContent = fmtHHMM(secs);
-  document.getElementById('fast-seconds').textContent = String(secs % 60).padStart(2,'0');
-  document.getElementById('fast-stage-ring').textContent = st.name;
-  document.getElementById('fast-stage-ring').style.color = st.color;
-
-
+  // Timer display
+  document.getElementById('fast-hhmm').textContent = fmtHHMM(displaySecs);
+  document.getElementById('fast-seconds').textContent = String(displaySecs % 60).padStart(2,'0');
+  document.getElementById('fast-stage-ring').textContent = isFasting ? st.name : 'FED';
+  document.getElementById('fast-stage-ring').style.color = `rgb(${rgb})`;
 
   // Btn
   const btn = document.getElementById('fast-btn');
-  if (fastState.running) {
+  if (isFasting) {
     btn.textContent = 'End Fast';
     btn.classList.add('danger');
   } else {
-    btn.textContent = secs > 0 ? 'Resume Fast' : 'Start Fast';
+    btn.textContent = fastSecs > 0 ? 'Resume Fast' : 'Start Fast';
     btn.classList.remove('danger');
   }
 
-  // Stage badges
+  // Stage badges + description
   renderStageBadges(stIdx);
-  updateNextEta(secs);
-
-
+  updateNextEta(fastSecs);
 }
 
 function renderStageBadges(activeIdx) {
@@ -1060,17 +1098,16 @@ function updateNextEta(secs) {
 
 function handleFastBtn() {
   if (fastState.running) {
-    // Show friction modal
     const secs = getFastElapsed();
     const st = STAGES[getCurrentStage(secs/3600)];
     document.getElementById('modal-time').textContent = fmtHHMM(secs);
     document.getElementById('modal-stage').textContent = st.name;
     document.getElementById('modal-overlay').classList.add('open');
   } else {
-    // Start
     fastState.running = true;
     fastState.startTs = Date.now();
     LS.set('fast', fastState);
+    syncFedTimer();
     toast('Fast started 🚀');
   }
 }
@@ -1080,13 +1117,15 @@ function confirmEndFast() {
   const st   = STAGES[getCurrentStage(secs/3600)];
   fastState.log = fastState.log || [];
   fastState.log.unshift({ date: today(), secs, stage: st.name });
-  fastState.running  = false;
-  fastState.startTs  = null;
+  fastState.running   = false;
+  fastState.startTs   = null;
   fastState.totalSecs = 0;
   LS.set('fast', fastState);
+  syncFedTimer();
   closeModal();
   toast('Fast ended. Great work!');
   saveToSupabase('fasts', { date: today(), secs, stage: st.name });
+  buildFastDist();
 }
 
 
@@ -1200,6 +1239,61 @@ function buildDonut() {
     const pct = Math.round(data[i]/total*100);
     leg.innerHTML += `<div class="legend-row"><div class="legend-dot" style="background:${colors[i]}"></div>${STATE_LABELS[s]}<span class="legend-val">${pct}%</span></div>`;
   });
+}
+
+/* ─── FASTING STAGE DISTRIBUTION ────────────────────────────*/
+let fastDistChart = null;
+
+function buildFastDist() {
+  const log    = fastState.log || [];
+  const fedSec = getFedElapsed();
+
+  // Accumulate seconds per stage from log
+  const stageSecs = new Array(STAGES.length).fill(0);
+  log.forEach(entry => {
+    const idx = STAGES.findIndex(s => s.name === entry.stage);
+    if (idx >= 0) stageSecs[idx] += entry.secs;
+  });
+  // Add live current fast
+  if (fastState.running) {
+    const liveSecs = getFastElapsed();
+    const liveIdx  = getCurrentStage(liveSecs / 3600);
+    stageSecs[liveIdx] += liveSecs;
+  }
+  // Fed time (today)
+  stageSecs[0] = Math.max(stageSecs[0], fedSec);
+
+  const total = stageSecs.reduce((a,b)=>a+b,0) || 1;
+  const colors = STAGES.map((_,i) => `rgb(${STAGE_COLORS_RGB[i]})`);
+  const labels = STAGES.map(s => s.name);
+
+  const canvas = document.getElementById('fast-dist-chart');
+  if (!canvas) return;
+
+  if (fastDistChart) {
+    fastDistChart.data.datasets[0].data = stageSecs;
+    fastDistChart.update('none');
+  } else {
+    const ctx = canvas.getContext('2d');
+    fastDistChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: { labels, datasets: [{ data: stageSecs, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] },
+      options: {
+        cutout: '70%', responsive: true, maintainAspectRatio: true,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${fmtDur(ctx.raw)}` } } }
+      }
+    });
+  }
+
+  const leg = document.getElementById('fast-dist-legend');
+  if (leg) {
+    leg.innerHTML = '';
+    STAGES.forEach((s, i) => {
+      if (!stageSecs[i]) return;
+      const pct = Math.round(stageSecs[i]/total*100);
+      leg.innerHTML += `<div class="legend-row"><span class="legend-dot" style="background:${colors[i]}"></span>${s.icon} ${s.name}<span class="legend-val">${pct}%</span></div>`;
+    });
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1444,13 +1538,23 @@ function tick() {
   buildDonut();
 }
 
+// Slower refresh for distribution charts (every 10s)
+let distTick = 0;
+function tickSlow() {
+  distTick++;
+  if (distTick % 10 === 0) buildFastDist();
+}
+
 function init() {
   initAuth();
+  syncFedTimer();
   renderStageBadges(0);
   renderHabitTabs();
   renderHabitList();
   tick();
+  buildFastDist();
   setInterval(tick, 1000);
+  setInterval(tickSlow, 1000);
 }
 
 init();
