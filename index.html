@@ -1534,17 +1534,17 @@ function buildDayTracker() {
   el.innerHTML = '';
   STAGES.forEach((s, i) => {
     const secs = stageSecs[i];
-    if (!secs && i !== 0) return; // always show Feeding
-    const pct = Math.min(Math.round(secs / DAY_SECS * 100), 100);
+    const pct  = Math.min(Math.round(secs / DAY_SECS * 100), 100);
     const isActive = (i === 0 && !fastState.running) ||
                      (fastState.running && i === getCurrentStageIdx());
     const row = document.createElement('div');
     row.className = 'dst-row';
+    row.style.opacity = secs > 0 ? '1' : '0.32';
     row.innerHTML = `
       <span class="dst-icon">${s.icon}</span>
       <span class="dst-name" style="color:${isActive ? s.color : ''}">${s.name}</span>
-      <span class="dst-time">${fmtHHMM(secs)}</span>
-      <span class="dst-pct" style="color:${s.color}">${pct}%</span>`;
+      <span class="dst-time">${secs > 0 ? fmtHHMM(secs) : '—'}</span>
+      <span class="dst-pct" style="color:${secs > 0 ? s.color : 'var(--text3)'}">${secs > 0 ? pct+'%' : '—'}</span>`;
     el.appendChild(row);
   });
 }
