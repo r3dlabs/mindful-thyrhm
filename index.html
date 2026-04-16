@@ -3695,47 +3695,31 @@ async function refreshDiag() {
 function copyDiag() {
   const el = document.getElementById('diag-content');
   if (!el) return;
-  // Extract plain text from the rendered rows
-  const rows = el.querySelectorAll('.diag-row');
-  const seps = el.querySelectorAll('[style*="letter-spacing"]');
-  let text = '=== AUTH DIAGNOSTICS ===
-';
-  text += `Copied: ${new Date().toLocaleString()}
-
-`;
-
-  // Walk all children in order
-  el.childNodes.forEach(node => {
-    if (node.nodeType === 1) {
-      const style = node.getAttribute('style') || '';
-      if (style.includes('letter-spacing')) {
-        // Section header
-        text += `
---- ${node.textContent.trim()} ---
-`;
-      } else if (node.classList?.contains('diag-row')) {
-        const k = node.querySelector('.diag-key')?.textContent?.trim() || '';
-        const v = node.querySelector('.diag-val')?.textContent?.trim() || '';
-        text += `${k.padEnd(22)} ${v}
-`;
-      }
+  let lines = ['=== AUTH DIAGNOSTICS ===', 'Copied: ' + new Date().toLocaleString(), ''];
+  el.childNodes.forEach(function(node) {
+    if (node.nodeType !== 1) return;
+    const style = node.getAttribute('style') || '';
+    if (style.indexOf('letter-spacing') >= 0) {
+      lines.push('');
+      lines.push('--- ' + node.textContent.trim() + ' ---');
+    } else if (node.classList && node.classList.contains('diag-row')) {
+      const k = (node.querySelector('.diag-key') || {}).textContent || '';
+      const v = (node.querySelector('.diag-val') || {}).textContent || '';
+      lines.push(k.trim().padEnd(22) + ' ' + v.trim());
     }
   });
-
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('diag-copy-btn');
-    if (btn) { btn.textContent = 'COPIED ✓'; setTimeout(() => btn.textContent = 'COPY', 2000); }
-  }).catch(() => {
-    // Fallback
+  const text = lines.join('\n');
+  const btn = document.getElementById('diag-copy-btn');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() {
+      if (btn) { btn.textContent = 'COPIED \u2713'; setTimeout(function(){ btn.textContent = 'COPY'; }, 2000); }
+    });
+  } else {
     const ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    const btn = document.getElementById('diag-copy-btn');
-    if (btn) { btn.textContent = 'COPIED ✓'; setTimeout(() => btn.textContent = 'COPY', 2000); }
-  });
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    if (btn) { btn.textContent = 'COPIED \u2713'; setTimeout(function(){ btn.textContent = 'COPY'; }, 2000); }
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
