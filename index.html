@@ -795,6 +795,66 @@
   }
   .wday-fill { height: 100%; border-radius: 2px; background: var(--accent); }
 
+  /* ─── MONTHLY TRIO LAYOUT ────────────────────────────── */
+  .mo-trio {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .mo-col {
+    padding: 16px 16px 0;
+  }
+  .mo-col-calendar {
+    /* calendar gets natural sizing */
+  }
+  .mo-dow-row {
+    display: grid; grid-template-columns: repeat(7,1fr);
+    gap: 4px; margin-bottom: 4px;
+  }
+  .mo-dow-row span {
+    text-align: center;
+    font-family: var(--font-cond); font-size: 10px;
+    color: var(--text3); font-weight: 600; letter-spacing: .06em;
+  }
+  .mo-cal-legend {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 10px;
+  }
+  .mo-cal-legend-item {
+    display: flex; align-items: center; gap: 4px;
+    font-family: var(--font-cond); font-size: 10px;
+    color: var(--text3); letter-spacing: .04em;
+  }
+  .mo-cal-legend-dot {
+    width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0;
+  }
+
+  @media (min-width: 768px) {
+    .mo-trio {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px 16px 0;
+    }
+    .mo-col {
+      flex: 1; min-width: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .mo-col-calendar {
+      flex: 0 0 auto;
+      width: 260px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .mo-trio { gap: 16px; padding: 16px 16px 0; }
+    .mo-col  { padding: 20px; }
+    .mo-col-calendar { width: 280px; }
+  }
+
   /* ─── STATS TRIO LAYOUT ──────────────────────────────── */
   .stats-trio {
     display: flex;
@@ -1357,6 +1417,7 @@
 
   <!-- ░░░ MONTHLY VIEW ░░░ -->
   <div class="view" id="view-monthly">
+
     <div class="date-header">
       <div class="date-big" id="month-label">April</div>
       <div class="date-sub" id="month-year">2026</div>
@@ -1366,24 +1427,25 @@
       <div class="week-range" id="month-name-label">—</div>
       <button class="week-nav-btn" onclick="shiftMonth(1)">›</button>
     </div>
-    <!-- Day-of-week headers -->
-    <div style="padding:0 16px;display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;">
-      <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">S</div>
-      <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">M</div>
-      <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">T</div>
-      <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">W</div>
-      <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">T</div>
-      <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">F</div>
-      <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">S</div>
-    </div>
-    <div class="month-grid" id="month-grid"></div>
 
-    <!-- MONTHLY STATS TRIO -->
-    <div class="stats-trio">
+    <!-- MONTHLY TRIO: Calendar · Fasting · Moments -->
+    <div class="mo-trio">
+
+      <!-- CALENDAR -->
+      <div class="mo-col mo-col-calendar">
+        <div class="stats-section-title" style="padding:0 0 10px">Calendar</div>
+        <div class="mo-dow-row">
+          <span>S</span><span>M</span><span>T</span>
+          <span>W</span><span>T</span><span>F</span><span>S</span>
+        </div>
+        <div class="month-grid" id="month-grid"></div>
+        <!-- Mini legend -->
+        <div class="mo-cal-legend" id="mo-cal-legend"></div>
+      </div>
 
       <!-- FASTING -->
-      <div class="stats-section stats-col">
-        <div class="stats-section-title">Fasting</div>
+      <div class="mo-col">
+        <div class="stats-section-title" style="padding:0 0 10px">Fasting</div>
         <div class="kpi-row">
           <div class="kpi-card">
             <div class="kpi-lbl">Deepest Stage</div>
@@ -1423,9 +1485,9 @@
         <div class="state-bar-list" id="mo-fast-bars"></div>
       </div>
 
-      <!-- MOMENTS — stacked bar chart by week -->
-      <div class="stats-section stats-col">
-        <div class="stats-section-title">Moments</div>
+      <!-- MOMENTS -->
+      <div class="mo-col">
+        <div class="stats-section-title" style="padding:0 0 10px">Moments</div>
         <div class="kpi-row">
           <div class="kpi-card">
             <div class="kpi-lbl">Most Time In</div>
@@ -1447,29 +1509,7 @@
         </div>
       </div>
 
-      <!-- HABITS -->
-      <div class="stats-section stats-col">
-        <div class="stats-section-title">Habits</div>
-        <div class="kpi-row">
-          <div class="kpi-card">
-            <div class="kpi-lbl">Best Streak</div>
-            <div class="kpi-val" id="mo-streak">—</div>
-            <div class="kpi-sub">across all habits</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-lbl">Total Breaks</div>
-            <div class="kpi-val" id="mo-breaks">—</div>
-            <div class="kpi-sub">this month</div>
-          </div>
-        </div>
-        <div class="state-bar-list" id="mo-habit-cat-bars"></div>
-        <div class="wk-break-section">
-          <div class="wk-break-title">Break Reasons</div>
-          <div class="state-bar-list" id="mo-break-reason-bars"></div>
-        </div>
-      </div>
-
-    </div><!-- /stats-trio -->
+    </div><!-- /mo-trio -->
 
     <div class="spacer"></div>
   </div>
@@ -2955,6 +2995,25 @@ function renderMonthly() {
     grid.appendChild(div);
   }
 
+  // Calendar legend — unique stages seen this month
+  const calLegEl = document.getElementById('mo-cal-legend');
+  if (calLegEl) {
+    const seenStages = new Set();
+    allMoFasts.forEach(f => {
+      const si = f.stageIdx||STAGES.findIndex(s=>s.name===f.stage);
+      if (si > 0) seenStages.add(si);
+    });
+    calLegEl.innerHTML = '';
+    seenStages.forEach(si => {
+      const s = STAGES[si];
+      if (!s) return;
+      const item = document.createElement('div');
+      item.className = 'mo-cal-legend-item';
+      item.innerHTML = `<span class="mo-cal-legend-dot" style="background:color-mix(in srgb,${s.color} 30%,var(--surface2))"></span>${s.icon} ${s.name}`;
+      calLegEl.appendChild(item);
+    });
+  }
+
   const isCurrentMonth = monthOffset === 0;
   const moStr   = `${yr}-${String(mo+1).padStart(2,'0')}`;
   const daysInMonth = new Date(yr, mo+1, 0).getDate();
@@ -3038,82 +3097,6 @@ function renderMonthly() {
     icon:sd.icon, name:sd.label, color:sd.color, secs:moMomentSecs[sd.key]
   })));
 
-  // ── Habits KPIs ────────────────────────────────────────────
-  const allH       = Object.values(habits).flat();
-  const bestStreak = allH.reduce((a,h)=>Math.max(a,h.streak||0),0);
-
-  // Break log entries this month
-  const moBreaks = [];
-  allH.forEach(h=>{
-    (h.breakLog||[]).forEach(b=>{
-      if (b.date && b.date.startsWith(moStr)) moBreaks.push(b);
-    });
-  });
-
-  setText('mo-streak', bestStreak||'—');
-  setText('mo-breaks', moBreaks.length||'—');
-
-  // Per-category bars
-  const moCatEl = document.getElementById('mo-habit-cat-bars');
-  if (moCatEl) {
-    moCatEl.innerHTML = '';
-    const CATS = ['purposeful','nourishing','training','recovering','wasteful'];
-    CATS.forEach(cat=>{
-      const sd   = STATE_DEFS.find(s=>s.key===cat);
-      const list = habits[cat]||[];
-      if (!list.length) return;
-      const done  = list.filter(h=>h.done).length;
-      const broke = list.filter(h=>h.broken&&h.broken.startsWith(moStr)).length;
-      const pct   = Math.round(done/list.length*100);
-      const bpct  = Math.round(broke/list.length*100);
-      const row = document.createElement('div');
-      row.className = 'sbl-row';
-      row.innerHTML = `
-        <span class="sbl-icon">${sd?.icon||''}</span>
-        <span class="sbl-name">${sd?.label||cat}</span>
-        <div class="sbl-bar-wrap"><div class="sbl-bar" style="width:${pct}%;background:${sd?.color||'var(--accent)'}"></div></div>
-        <span class="sbl-time" style="font-size:10px">${done}/${list.length}</span>
-        <span class="sbl-pct" style="color:${sd?.color||'var(--accent)'}">${pct}%</span>`;
-      moCatEl.appendChild(row);
-      if (broke>0){
-        const bd=document.createElement('div');
-        bd.className='sbl-row'; bd.style.paddingLeft='28px';
-        bd.innerHTML=`
-          <span class="sbl-icon" style="font-size:11px">💔</span>
-          <span class="sbl-name" style="font-size:11px;color:var(--text3)">broken</span>
-          <div class="sbl-bar-wrap"><div class="sbl-bar" style="width:${bpct}%;background:var(--danger)"></div></div>
-          <span class="sbl-time" style="font-size:10px">${broke}/${list.length}</span>
-          <span class="sbl-pct" style="color:var(--danger)">${bpct}%</span>`;
-        moCatEl.appendChild(bd);
-      }
-    });
-  }
-
-  // Break reasons this month
-  const moReasonCounts={};
-  moBreaks.forEach(b=>{ const r=b.reason||'No reason'; moReasonCounts[r]=(moReasonCounts[r]||0)+1; });
-  const moReasonEl=document.getElementById('mo-break-reason-bars');
-  if (moReasonEl){
-    moReasonEl.innerHTML='';
-    const total=Object.values(moReasonCounts).reduce((a,b)=>a+b,0)||1;
-    const sorted=Object.entries(moReasonCounts).sort((a,b)=>b[1]-a[1]);
-    if (!sorted.length){
-      moReasonEl.innerHTML=`<div style="font-family:var(--font-cond);font-size:12px;color:var(--text3)">No breaks this month 🔥</div>`;
-    } else {
-      sorted.forEach(([reason,count])=>{
-        const pct=Math.round(count/total*100);
-        const div=document.createElement('div');
-        div.className='sbl-row';
-        div.innerHTML=`
-          <span class="sbl-icon" style="font-size:11px">—</span>
-          <span class="sbl-name" style="font-size:11px">${reason}</span>
-          <div class="sbl-bar-wrap"><div class="sbl-bar" style="width:${pct}%;background:var(--danger)"></div></div>
-          <span class="sbl-time" style="font-size:10px">${count}x</span>
-          <span class="sbl-pct" style="color:var(--danger)">${pct}%</span>`;
-        moReasonEl.appendChild(div);
-      });
-    }
-  }
 }
 
 /* ─── MONTHLY MOMENT CHART — stacked by week ─────────────── */
