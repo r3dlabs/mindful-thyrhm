@@ -2389,7 +2389,7 @@ function updateStateUI() {
     const pct    = Math.min(Math.round(secs / DAY_SECS * 100), 100);
     const timeEl = document.getElementById('mst-time-'+sd.key);
     const pctEl  = document.getElementById('mst-pct-'+sd.key);
-    if (timeEl) timeEl.textContent = secs > 0 ? fmtHHMM(secs) : '—';
+    if (timeEl) timeEl.textContent = secs > 0 ? fmtDur(secs) : '—';
     if (pctEl)  pctEl.textContent  = secs > 0 ? pct+'%' : '—';
     if (row) {
       row.classList.toggle('active', active === sd.key);
@@ -3770,12 +3770,35 @@ async function refreshDiag() {
   sep('App State');
   r('currentUser', currentUser ? currentUser.email : 'null',
     currentUser ? 'ok' : 'warn');
-  r('auth-area exists', document.getElementById('auth-area') ? 'YES' : 'NO',
-    document.getElementById('auth-area') ? 'ok' : 'err');
   r('auth-area HTML', (function() {
     var a = document.getElementById('auth-area');
     return a ? (a.innerHTML.trim().slice(0,50) || '(empty)') : 'NOT FOUND';
   })());
+
+  sep('Moments Engine');
+  r('active state', momentState.active || 'null',
+    momentState.active ? 'ok' : 'warn');
+  r('startTs', momentState.startTs ? new Date(momentState.startTs).toLocaleTimeString() : 'null',
+    momentState.startTs ? 'ok' : 'warn');
+  r('elapsed (active)', (function() {
+    if (!momentState.active || !momentState.startTs) return '0s';
+    var e = Math.floor((Date.now() - momentState.startTs) / 1000);
+    return e + 's (' + Math.floor(e/60) + 'm' + (e%60) + 's)';
+  })(), 'ok');
+  r('wasteful timer', (momentState.timers && momentState.timers.wasteful || 0) + 's');
+  r('purposeful timer', (momentState.timers && momentState.timers.purposeful || 0) + 's');
+  r('moment-hhmm el', document.getElementById('moment-hhmm') ? document.getElementById('moment-hhmm').textContent : 'NOT FOUND',
+    document.getElementById('moment-hhmm') ? 'ok' : 'err');
+  r('moment-ss el', document.getElementById('moment-ss') ? document.getElementById('moment-ss').textContent : 'NOT FOUND',
+    document.getElementById('moment-ss') ? 'ok' : 'err');
+  r('state list el', document.getElementById('moment-state-list') ? 'EXISTS' : 'NOT FOUND',
+    document.getElementById('moment-state-list') ? 'ok' : 'err');
+  r('state list rows', (function() {
+    var el = document.getElementById('moment-state-list');
+    return el ? el.children.length + ' rows' : 'N/A';
+  })());
+  r('tick running', typeof tick === 'function' ? 'YES' : 'NO',
+    typeof tick === 'function' ? 'ok' : 'err');
 
 
 
