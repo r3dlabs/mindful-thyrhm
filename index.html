@@ -70,6 +70,51 @@
   button { font-family: var(--font-body); cursor: pointer; border: none; background: none; }
   input, textarea { font-family: var(--font-body); }
 
+  /* ─── AUTH GATE ─────────────────────────────────────────── */
+  #auth-gate {
+    position: fixed; inset: 0; z-index: 500;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px 24px;
+  }
+  #auth-gate.hidden { display: none; }
+  .gate-inner {
+    display: flex; flex-direction: column;
+    align-items: center; text-align: center; gap: 0;
+    max-width: 320px; width: 100%;
+  }
+  .gate-logo {
+    font-family: var(--font-cond); font-weight: 800;
+    font-size: 32px; letter-spacing: .06em;
+    color: var(--text); margin-bottom: 6px;
+  }
+  .gate-logo span { color: var(--accent); }
+  .gate-tagline {
+    font-family: var(--font-cond); font-size: 12px;
+    letter-spacing: .18em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 48px;
+  }
+  .gate-desc {
+    font-size: 14px; color: var(--text2);
+    line-height: 1.7; margin-bottom: 32px;
+  }
+  .gate-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 16px 24px;
+    border-radius: var(--radius-sm);
+    background: var(--surface); border: 1.5px solid var(--border);
+    color: var(--text); cursor: pointer;
+    font-family: var(--font-cond); font-weight: 700;
+    font-size: 15px; letter-spacing: .05em;
+    transition: border-color .2s, box-shadow .2s;
+    box-shadow: var(--shadow);
+  }
+  .gate-btn:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+  }
+  .gate-btn img { border-radius: 50%; }
+
   /* ─── DIAGNOSTICS CARD ────────────────────────────────────── */
   #diag-card {
     position: fixed; bottom: 90px; left: 12px; right: 12px; z-index: 400;
@@ -1569,6 +1614,19 @@
   </div>
 </div>
 
+<!-- AUTH GATE -->
+<div id="auth-gate">
+  <div class="gate-inner">
+    <div class="gate-logo">MINDFUL <span>RHYTHM</span></div>
+    <div class="gate-tagline">Live the Moment</div>
+    <div class="gate-desc">Track your fasting journey, own your time,<br>build intentional habits.</div>
+    <button class="gate-btn" onclick="signInGoogle()">
+      <img src="https://www.google.com/favicon.ico" width="18" height="18" alt="">
+      Continue with Google
+    </button>
+  </div>
+</div>
+
 <!-- DIAGNOSTICS CARD -->
 <button id="diag-toggle" onclick="toggleDiag()">🔍 Diagnostics</button>
 <div id="diag-card" class="hidden">
@@ -1693,6 +1751,16 @@ let habits = LS.get('habits') || {
 };
 let activeHabitCat = 'purposeful';
 
+function showApp() {
+  const gate = document.getElementById('auth-gate');
+  if (gate) gate.classList.add('hidden');
+}
+
+function showGate() {
+  const gate = document.getElementById('auth-gate');
+  if (gate) gate.classList.remove('hidden');
+}
+
 function initAuth() {
   // onAuthStateChange catches future events (sign in, sign out, token refresh)
   sb.auth.onAuthStateChange((event, session) => {
@@ -1707,49 +1775,43 @@ function initAuth() {
   });
 }
 
+let _currentUserId = null;
+
 function setUser(user) {
-  try {
-    currentUser = user;
-    window._diagLog = window._diagLog || [];
-    window._diagLog.push('setUser called: ' + user.email);
+  // Dedupe — called by both getSession and onAuthStateChange
+  if (_currentUserId === user.id) return;
+  _currentUserId = user.id;
+  currentUser    = user;
 
-    const area = document.getElementById('auth-area');
-    window._diagLog.push('auth-area found: ' + !!area);
-    if (!area) { window._diagLog.push('ERROR: auth-area is null'); return; }
+  const area = document.getElementById('auth-area');
+  if (!area) return;
+  const meta = user.user_metadata || {};
+  const name = meta.full_name || meta.name || user.email || 'User';
+  const av   = meta.avatar_url;
+  area.innerHTML = '<div class="user-avatar" title="' + name + '" onclick="toggleProfileDropdown()">' +
+    (av ? '<img src="' + av + '" referrerpolicy="no-referrer">' : name[0].toUpperCase()) +
+    '</div>';
 
-    const meta = user.user_metadata || {};
-    const name = meta.full_name || meta.name || user.email || 'User';
-    const av   = meta.avatar_url;
-    area.innerHTML = '<div class="user-avatar" title="' + name + '" onclick="toggleProfileDropdown()">' +
-      (av ? '<img src="' + av + '" referrerpolicy="no-referrer">' : name[0].toUpperCase()) +
-      '</div>';
-    window._diagLog.push('avatar set OK');
+  const sm = document.getElementById('profile-avatar-sm');
+  if (sm) sm.innerHTML = av ? '<img src="' + av + '" referrerpolicy="no-referrer">' : name[0].toUpperCase();
+  const pn = document.getElementById('profile-name');
+  if (pn) pn.textContent = name;
+  const pe = document.getElementById('profile-email');
+  if (pe) pe.textContent = user.email || '';
 
-    const sm = document.getElementById('profile-avatar-sm');
-    if (sm) sm.innerHTML = av ? '<img src="' + av + '" referrerpolicy="no-referrer">' : name[0].toUpperCase();
-    const pn = document.getElementById('profile-name');
-    if (pn) pn.textContent = name;
-    const pe = document.getElementById('profile-email');
-    if (pe) pe.textContent = user.email || '';
-
-    window._diagLog.push('setUser complete');
-
-    loadUserData();
-    subscribeRealtime();
-    drainQueue();
-  } catch(e) {
-    window._diagLog = window._diagLog || [];
-    window._diagLog.push('setUser CRASH: ' + e.message);
-    currentUser = user; // ensure currentUser is set even if DOM ops fail
-  }
+  showApp();
+  loadUserData();
+  subscribeRealtime();
+  drainQueue();
 }
 
 function clearUser() {
-  currentUser = null;
+  currentUser    = null;
+  _currentUserId = null;
   unsubscribeRealtime();
   const area = document.getElementById('auth-area');
-  if (area) area.innerHTML = `<button id="login-btn" onclick="signInGoogle()">Sign In</button>`;
-  console.log('[Auth] User cleared');
+  if (area) area.innerHTML = '<button id="login-btn" onclick="signInGoogle()">Sign In</button>';
+  showGate();
 }
 
 
@@ -3715,13 +3777,7 @@ async function refreshDiag() {
     return a ? (a.innerHTML.trim().slice(0,50) || '(empty)') : 'NOT FOUND';
   })());
 
-  sep('setUser Log');
-  var diagLog = window._diagLog || ['(not called yet)'];
-  diagLog.forEach(function(line, i) {
-    var cls = line.indexOf('CRASH') >= 0 || line.indexOf('ERROR') >= 0 ? 'err' :
-              line.indexOf('OK') >= 0 || line.indexOf('complete') >= 0 ? 'ok' : '';
-    r('step ' + (i+1), line, cls);
-  });
+
 
   // ── onAuthStateChange test ─────────────────────────────────
   sep('Auth Listener');
