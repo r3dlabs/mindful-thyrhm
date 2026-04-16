@@ -70,6 +70,60 @@
   button { font-family: var(--font-body); cursor: pointer; border: none; background: none; }
   input, textarea { font-family: var(--font-body); }
 
+  /* ─── AUTH GATE ───────────────────────────────────────────── */
+  #auth-gate {
+    position: fixed; inset: 0; z-index: 500;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 32px 24px;
+    text-align: center;
+  }
+  #auth-gate.hidden { display: none; }
+  .gate-logo {
+    font-family: var(--font-cond); font-weight: 800;
+    font-size: 28px; letter-spacing: .08em;
+    margin-bottom: 6px; color: var(--text);
+  }
+  .gate-logo span { color: var(--accent); }
+  .gate-tagline {
+    font-family: var(--font-cond); font-size: 13px;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 48px;
+  }
+  .gate-ring {
+    width: 120px; height: 120px; border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px; margin-bottom: 40px;
+    position: relative;
+    animation: ring-pulse 3s ease-in-out infinite;
+  }
+  .gate-desc {
+    font-size: 14px; color: var(--text2); line-height: 1.7;
+    max-width: 280px; margin-bottom: 36px;
+  }
+  .gate-signin-btn {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 28px;
+    border-radius: var(--radius-sm);
+    background: var(--surface); border: 1.5px solid var(--border);
+    color: var(--text); cursor: pointer;
+    font-family: var(--font-cond); font-weight: 700;
+    font-size: 15px; letter-spacing: .06em;
+    transition: all .2s; box-shadow: var(--shadow);
+  }
+  .gate-signin-btn:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .gate-signin-btn img { width: 20px; height: 20px; border-radius: 50%; }
+  .gate-footer {
+    position: absolute; bottom: 24px;
+    font-size: 11px; color: var(--text3);
+    font-family: var(--font-cond); letter-spacing: .06em;
+  }
+
   /* ─── SCROLLBAR ───────────────────────────────────────────── */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -195,6 +249,9 @@
     padding-bottom: 80px;
     min-height: 100vh;
   }
+  #main.gated    { display: none; }
+  #nav.gated     { display: none; }
+  #topbar.gated  { display: none; }
   .view { display: none; }
   .view.active { display: block; }
 
@@ -1180,6 +1237,22 @@
 </head>
 <body>
 
+<!-- AUTH GATE — shown until user logs in -->
+<div id="auth-gate">
+  <div class="gate-logo">MINDFUL <span>RHYTHM</span></div>
+  <div class="gate-tagline">Live the Moment</div>
+  <div class="gate-ring">⏳</div>
+  <div class="gate-desc">
+    Track your fasting journey, own your time, build intentional habits.
+    Sign in to begin.
+  </div>
+  <button class="gate-signin-btn" onclick="signInGoogle()">
+    <img src="https://www.google.com/favicon.ico" alt="G">
+    Continue with Google
+  </button>
+  <div class="gate-footer">Your data is private and encrypted.</div>
+</div>
+
 <!-- TOP BAR -->
 <div id="topbar">
   <div class="brand">MINDFUL <span>RHYTHM</span></div>
@@ -1653,6 +1726,8 @@ async function setUser(user, killOthers = false) {
   const pe = document.getElementById('profile-email');
   if (pe) pe.textContent = user.email || '';
 
+  // Reveal app
+  showApp();
   // Sync, subscribe, drain
   await loadUserData();
   subscribeRealtime();
@@ -1664,43 +1739,16 @@ function clearUser(reason) {
   unsubscribeRealtime();
   const area = document.getElementById('auth-area');
   area.innerHTML = `<button id="login-btn" onclick="signInGoogle()">Sign In</button>`;
+  // Always show gate on sign out or session expiry
+  showGate();
   if (reason === 'session_expired') {
-    showSessionExpiredBanner();
+    // Gate already shown — update tagline to explain why
+    const desc = document.querySelector('.gate-desc');
+    if (desc) desc.innerHTML = `📱 You were signed in on another device.<br>Sign in again to continue.`;
   }
 }
 
-function showSessionExpiredBanner() {
-  // Remove existing banner if any
-  const existing = document.getElementById('session-banner');
-  if (existing) existing.remove();
 
-  const banner = document.createElement('div');
-  banner.id = 'session-banner';
-  banner.style.cssText = `
-    position:fixed; top:56px; left:0; right:0; z-index:150;
-    background:var(--surface); border-bottom:1px solid var(--border);
-    padding:10px 20px; display:flex; align-items:center; gap:12px;
-    font-family:var(--font-cond); font-size:13px; color:var(--text2);
-    box-shadow:var(--shadow);
-  `;
-  banner.innerHTML = `
-    <span>📱 Signed in on another device.</span>
-    <button onclick="signInGoogle()" style="
-      padding:6px 14px; border-radius:6px;
-      background:var(--accent); color:#fff;
-      font-family:var(--font-cond); font-weight:700; font-size:12px;
-      letter-spacing:.06em; cursor:pointer;
-    ">Sign Back In</button>
-    <button onclick="this.parentElement.remove()" style="
-      margin-left:auto; color:var(--text3);
-      font-family:var(--font-cond); font-size:12px; cursor:pointer;
-    ">✕</button>
-  `;
-  document.body.appendChild(banner);
-
-  // Auto-remove after 10s
-  setTimeout(() => banner.remove(), 10000);
-}
 
 async function signInGoogle() {
   _isNewSignIn = true; // flag so setUser knows to kill others
@@ -3810,7 +3858,28 @@ function initQuotes() {
   setInterval(renderQuote, 8000);
 }
 
+function showApp() {
+  // Remove gate, reveal app
+  document.getElementById('auth-gate').classList.add('hidden');
+  document.getElementById('main').classList.remove('gated');
+  document.getElementById('nav').classList.remove('gated');
+  document.getElementById('topbar').classList.remove('gated');
+}
+
+function showGate() {
+  // Show gate, hide app
+  document.getElementById('auth-gate').classList.remove('hidden');
+  document.getElementById('main').classList.add('gated');
+  document.getElementById('nav').classList.add('gated');
+  document.getElementById('topbar').classList.add('gated');
+}
+
 function init() {
+  // Start gated — hide app until auth resolves
+  document.getElementById('main').classList.add('gated');
+  document.getElementById('nav').classList.add('gated');
+  document.getElementById('topbar').classList.add('gated');
+
   initAuth();
   if (!fastState.running) startFeedingTimer();
   startWasteful();
