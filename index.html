@@ -1237,7 +1237,6 @@
 </head>
 <body>
 
-<!-- AUTH GATE — shown until user logs in -->
 <div id="auth-gate">
   <div class="gate-logo">MINDFUL <span>RHYTHM</span></div>
   <div class="gate-tagline">Live the Moment</div>
@@ -1253,7 +1252,6 @@
   <div class="gate-footer">Your data is private and encrypted.</div>
 </div>
 
-<!-- TOP BAR -->
 <div id="topbar">
   <div class="brand">MINDFUL <span>RHYTHM</span></div>
   <div class="topbar-right">
@@ -1270,7 +1268,6 @@
     </div>
   </div>
 
-  <!-- Admin panel (hidden until unlocked) -->
   <div id="admin-panel">
     <div class="admin-title">⚡ Dev Console</div>
     <div class="admin-divider"></div>
@@ -1286,13 +1283,10 @@
   </div>
 </div>
 
-<!-- MAIN -->
 <div id="main">
 
-  <!-- ░░░ DAILY VIEW ░░░ -->
   <div class="view active" id="view-daily">
 
-    <!-- Date header -->
     <div class="date-header">
       <div class="date-big" id="today-date">Today</div>
       <div class="date-right">
@@ -1301,12 +1295,9 @@
       </div>
     </div>
 
-    <!-- HERO DUO — side by side on tablet/desktop -->
     <div class="hero-duo">
 
-    <!-- FASTING HERO -->
     <div class="card" id="fasting-hero">
-      <!-- Ring + Day Tracker side by side -->
       <div class="hero-row">
         <div class="ring-wrap" id="ring-wrap">
           <svg id="ring-svg-glow" viewBox="0 0 170 170">
@@ -1324,11 +1315,9 @@
           </div>
         </div>
 
-        <!-- Day State List -->
         <div class="day-tracker" id="day-state-list"></div>
       </div>
 
-      <!-- Stage description scroller -->
       <div class="stage-desc-block">
         <div class="stage-nav">
           <button class="stage-nav-btn" id="stage-nav-prev" onclick="stageNavStep(-1)">
@@ -1348,16 +1337,13 @@
         </div>
       </div>
 
-      <!-- CTA -->
       <div class="fast-btns">
         <button class="btn-start" id="fast-btn" onclick="handleFastBtn()">Start Fast</button>
       </div>
     </div>
 
-    <!-- MOMENT HERO -->
     <div class="card" id="moment-hero">
 
-      <!-- Live the moment header -->
       <div class="ltm-header">
         <span class="ltm-live">LIVE THE </span><span class="ltm-moment">MOMENT</span>
       </div>
@@ -1365,13 +1351,10 @@
         <div class="quote-text active" id="quote-display"></div>
       </div>
 
-      <!-- States left · Ring right -->
       <div class="moment-row">
 
-        <!-- State list -->
         <div class="moment-state-list" id="moment-state-list"></div>
 
-        <!-- Ring timer -->
         <div id="moment-ring-wrap">
           <svg id="moment-ring-svg" viewBox="0 0 170 170">
             <circle class="moment-ring-track" cx="85" cy="85" r="74"/>
@@ -1392,10 +1375,7 @@
 
     </div>
 
-    </div><!-- /hero-duo -->
-
-    <!-- HABITS -->
-    <div class="section-pad" style="margin-top:4px;">
+    </div><div class="section-pad" style="margin-top:4px;">
       <div class="section-title">Habits</div>
     </div>
     <div class="habit-tabs" id="habit-tabs"></div>
@@ -1405,7 +1385,6 @@
     <div class="spacer"></div>
   </div>
 
-  <!-- ░░░ WEEKLY VIEW ░░░ -->
   <div class="view" id="view-weekly">
     <div class="date-header">
       <div class="date-big">Weekly</div>
@@ -1418,10 +1397,8 @@
     </div>
     <div class="week-grid" id="week-grid"></div>
 
-    <!-- STATS TRIO — side by side on tablet/desktop, stacked on mobile -->
     <div class="stats-trio">
 
-      <!-- FASTING STATS -->
       <div class="stats-section stats-col">
         <div class="stats-section-title">Fasting</div>
         <div class="kpi-row">
@@ -1451,7 +1428,6 @@
         <div class="state-bar-list" id="wk-fast-bars"></div>
       </div>
 
-      <!-- MOMENT STATS — stacked bar chart -->
       <div class="stats-section stats-col">
         <div class="stats-section-title">Moments</div>
         <div class="wk-chart-wrap">
@@ -1460,7 +1436,6 @@
         <div class="wk-chart-legend" id="wk-chart-legend"></div>
       </div>
 
-      <!-- HABITS -->
       <div class="stats-section stats-col">
         <div class="stats-section-title">Habits</div>
         <div class="state-bar-list" id="wk-habit-cat-bars"></div>
@@ -1470,12 +1445,9 @@
         </div>
       </div>
 
-    </div><!-- /stats-trio -->
-
-    <div class="spacer"></div>
+    </div><div class="spacer"></div>
   </div>
 
-  <!-- ░░░ MONTHLY VIEW ░░░ -->
   <div class="view" id="view-monthly">
     <div class="date-header">
       <div class="date-big" id="month-label">April</div>
@@ -1487,10 +1459,8 @@
       <button class="week-nav-btn" onclick="shiftMonth(1)">›</button>
     </div>
 
-    <!-- STATS TRIO — identical layout to weekly -->
     <div class="stats-trio">
 
-      <!-- FASTING -->
       <div class="stats-section stats-col">
         <div class="stats-section-title">Fasting</div>
         <div class="kpi-row">
@@ -1520,7 +1490,6 @@
         <div class="state-bar-list" id="mo-fast-bars"></div>
       </div>
 
-      <!-- MOMENTS -->
       <div class="stats-section stats-col">
         <div class="stats-section-title">Moments</div>
         <div class="wk-chart-wrap">
@@ -1529,7 +1498,6 @@
         <div class="wk-chart-legend" id="mo-chart-legend"></div>
       </div>
 
-      <!-- HABITS -->
       <div class="stats-section stats-col">
         <div class="stats-section-title">Habits</div>
         <div class="state-bar-list" id="mo-habit-cat-bars"></div>
@@ -1539,15 +1507,10 @@
         </div>
       </div>
 
-    </div><!-- /stats-trio -->
-
-    <div class="spacer"></div>
+    </div><div class="spacer"></div>
   </div>
 
-</div><!-- /main -->
-
-<!-- BOTTOM NAV -->
-<nav id="nav">
+</div><nav id="nav">
   <button class="nav-item active" data-view="daily" onclick="switchView('daily', this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
     Daily
@@ -1562,7 +1525,6 @@
   </button>
 </nav>
 
-<!-- ADMIN PASSWORD MODAL -->
 <div id="admin-pw-overlay" onclick="adminPwOverlayClick(event)">
   <div class="admin-pw-card">
     <div class="admin-pw-icon">
@@ -1584,7 +1546,6 @@
   </div>
 </div>
 
-<!-- FRICTION MODAL -->
 <div id="modal-overlay">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
@@ -1599,7 +1560,6 @@
   </div>
 </div>
 
-<!-- BREAK HABIT MODAL -->
 <div id="break-modal-overlay" onclick="closeBreakModal(event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -1612,7 +1572,6 @@
       Your streak of <strong id="break-habit-streak">—</strong> days will reset to zero.
     </div>
 
-    <!-- Reason tags -->
     <div class="break-reason-label">Why are you breaking it?</div>
     <div class="break-tags" id="break-tags">
       <button class="break-tag" onclick="selectBreakTag(this)">😴 Tired</button>
@@ -1633,7 +1592,6 @@
   </div>
 </div>
 
-<!-- PROFILE DROPDOWN -->
 <div id="profile-dropdown">
   <div class="profile-user-row">
     <div class="profile-avatar-sm" id="profile-avatar-sm"></div>
@@ -1652,7 +1610,6 @@
   </button>
 </div>
 
-<!-- TOAST -->
 <div id="toast"></div>
 
 <script>
@@ -1675,6 +1632,14 @@ let currentUser = null;
    On receiving a SIGNED_OUT event: show sign-in UI immediately.
 ═══════════════════════════════════════════════════════════════ */
 async function initAuth() {
+  const { data: { session }, error } = await sb.auth.getSession();
+  
+  if (error) {
+    console.error("Auth initialization error:", error.message);
+  } else if (session?.user) {
+    setUser(session.user);
+  }
+
   // onAuthStateChange fires reliably on every load including after
   // onAuthStateChange is the single source of truth.
   // On OAuth redirect: fires SIGNED_IN with the new session.
@@ -1748,7 +1713,7 @@ function clearUser(reason) {
 async function signInGoogle() {
   await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: 'https://www.mindful-rhythm.com' }
+    options: { redirectTo: window.location.origin }
   });
 }
 
