@@ -1681,12 +1681,16 @@ let habits = LS.get('habits') || {
 let activeHabitCat = 'purposeful';
 
 function initAuth() {
-  // Register listener FIRST — synchronously — so it catches
-  // the INITIAL_SESSION event that fires on OAuth redirect return.
-  // getSession() alone misses the token when called after redirect.
+  // onAuthStateChange catches future events (sign in, sign out, token refresh)
   sb.auth.onAuthStateChange((event, session) => {
     if (session?.user) setUser(session.user);
     else if (event === 'SIGNED_OUT') clearUser();
+  });
+
+  // getSession() handles the case where a session already exists in localStorage
+  // (returning user, page reload) — onAuthStateChange alone won't fire for these
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session?.user) setUser(session.user);
   });
 }
 
