@@ -70,60 +70,6 @@
   button { font-family: var(--font-body); cursor: pointer; border: none; background: none; }
   input, textarea { font-family: var(--font-body); }
 
-  /* ─── AUTH GATE ───────────────────────────────────────────── */
-  #auth-gate {
-    position: fixed; inset: 0; z-index: 500;
-    background: var(--bg);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 32px 24px;
-    text-align: center;
-  }
-  #auth-gate.hidden { display: none; }
-  .gate-logo {
-    font-family: var(--font-cond); font-weight: 800;
-    font-size: 28px; letter-spacing: .08em;
-    margin-bottom: 6px; color: var(--text);
-  }
-  .gate-logo span { color: var(--accent); }
-  .gate-tagline {
-    font-family: var(--font-cond); font-size: 13px;
-    letter-spacing: .14em; text-transform: uppercase;
-    color: var(--text3); margin-bottom: 48px;
-  }
-  .gate-ring {
-    width: 120px; height: 120px; border-radius: 50%;
-    border: 2px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 48px; margin-bottom: 40px;
-    position: relative;
-    animation: ring-pulse 3s ease-in-out infinite;
-  }
-  .gate-desc {
-    font-size: 14px; color: var(--text2); line-height: 1.7;
-    max-width: 280px; margin-bottom: 36px;
-  }
-  .gate-signin-btn {
-    display: flex; align-items: center; gap: 12px;
-    padding: 16px 28px;
-    border-radius: var(--radius-sm);
-    background: var(--surface); border: 1.5px solid var(--border);
-    color: var(--text); cursor: pointer;
-    font-family: var(--font-cond); font-weight: 700;
-    font-size: 15px; letter-spacing: .06em;
-    transition: all .2s; box-shadow: var(--shadow);
-  }
-  .gate-signin-btn:hover {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-glow);
-  }
-  .gate-signin-btn img { width: 20px; height: 20px; border-radius: 50%; }
-  .gate-footer {
-    position: absolute; bottom: 24px;
-    font-size: 11px; color: var(--text3);
-    font-family: var(--font-cond); letter-spacing: .06em;
-  }
-
   /* ─── SCROLLBAR ───────────────────────────────────────────── */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -249,9 +195,7 @@
     padding-bottom: 80px;
     min-height: 100vh;
   }
-  #main.gated    { display: none; }
-  #nav.gated     { display: none; }
-  #topbar.gated  { display: none; }
+
   .view { display: none; }
   .view.active { display: block; }
 
@@ -1237,21 +1181,7 @@
 </head>
 <body>
 
-<div id="auth-gate">
-  <div class="gate-logo">MINDFUL <span>RHYTHM</span></div>
-  <div class="gate-tagline">Live the Moment</div>
-  <div class="gate-ring">⏳</div>
-  <div class="gate-desc">
-    Track your fasting journey, own your time, build intentional habits.
-    Sign in to begin.
-  </div>
-  <button class="gate-signin-btn" onclick="signInGoogle()">
-    <img src="https://www.google.com/favicon.ico" alt="G">
-    Continue with Google
-  </button>
-  <div class="gate-footer">Your data is private and encrypted.</div>
-</div>
-
+<!-- TOP BAR -->
 <div id="topbar">
   <div class="brand">MINDFUL <span>RHYTHM</span></div>
   <div class="topbar-right">
@@ -1268,6 +1198,7 @@
     </div>
   </div>
 
+  <!-- Admin panel (hidden until unlocked) -->
   <div id="admin-panel">
     <div class="admin-title">⚡ Dev Console</div>
     <div class="admin-divider"></div>
@@ -1283,10 +1214,13 @@
   </div>
 </div>
 
+<!-- MAIN -->
 <div id="main">
 
+  <!-- ░░░ DAILY VIEW ░░░ -->
   <div class="view active" id="view-daily">
 
+    <!-- Date header -->
     <div class="date-header">
       <div class="date-big" id="today-date">Today</div>
       <div class="date-right">
@@ -1295,9 +1229,12 @@
       </div>
     </div>
 
+    <!-- HERO DUO — side by side on tablet/desktop -->
     <div class="hero-duo">
 
+    <!-- FASTING HERO -->
     <div class="card" id="fasting-hero">
+      <!-- Ring + Day Tracker side by side -->
       <div class="hero-row">
         <div class="ring-wrap" id="ring-wrap">
           <svg id="ring-svg-glow" viewBox="0 0 170 170">
@@ -1315,9 +1252,11 @@
           </div>
         </div>
 
+        <!-- Day State List -->
         <div class="day-tracker" id="day-state-list"></div>
       </div>
 
+      <!-- Stage description scroller -->
       <div class="stage-desc-block">
         <div class="stage-nav">
           <button class="stage-nav-btn" id="stage-nav-prev" onclick="stageNavStep(-1)">
@@ -1337,13 +1276,16 @@
         </div>
       </div>
 
+      <!-- CTA -->
       <div class="fast-btns">
         <button class="btn-start" id="fast-btn" onclick="handleFastBtn()">Start Fast</button>
       </div>
     </div>
 
+    <!-- MOMENT HERO -->
     <div class="card" id="moment-hero">
 
+      <!-- Live the moment header -->
       <div class="ltm-header">
         <span class="ltm-live">LIVE THE </span><span class="ltm-moment">MOMENT</span>
       </div>
@@ -1351,10 +1293,13 @@
         <div class="quote-text active" id="quote-display"></div>
       </div>
 
+      <!-- States left · Ring right -->
       <div class="moment-row">
 
+        <!-- State list -->
         <div class="moment-state-list" id="moment-state-list"></div>
 
+        <!-- Ring timer -->
         <div id="moment-ring-wrap">
           <svg id="moment-ring-svg" viewBox="0 0 170 170">
             <circle class="moment-ring-track" cx="85" cy="85" r="74"/>
@@ -1375,7 +1320,10 @@
 
     </div>
 
-    </div><div class="section-pad" style="margin-top:4px;">
+    </div><!-- /hero-duo -->
+
+    <!-- HABITS -->
+    <div class="section-pad" style="margin-top:4px;">
       <div class="section-title">Habits</div>
     </div>
     <div class="habit-tabs" id="habit-tabs"></div>
@@ -1385,6 +1333,7 @@
     <div class="spacer"></div>
   </div>
 
+  <!-- ░░░ WEEKLY VIEW ░░░ -->
   <div class="view" id="view-weekly">
     <div class="date-header">
       <div class="date-big">Weekly</div>
@@ -1397,8 +1346,10 @@
     </div>
     <div class="week-grid" id="week-grid"></div>
 
+    <!-- STATS TRIO — side by side on tablet/desktop, stacked on mobile -->
     <div class="stats-trio">
 
+      <!-- FASTING STATS -->
       <div class="stats-section stats-col">
         <div class="stats-section-title">Fasting</div>
         <div class="kpi-row">
@@ -1428,6 +1379,7 @@
         <div class="state-bar-list" id="wk-fast-bars"></div>
       </div>
 
+      <!-- MOMENT STATS — stacked bar chart -->
       <div class="stats-section stats-col">
         <div class="stats-section-title">Moments</div>
         <div class="wk-chart-wrap">
@@ -1436,6 +1388,7 @@
         <div class="wk-chart-legend" id="wk-chart-legend"></div>
       </div>
 
+      <!-- HABITS -->
       <div class="stats-section stats-col">
         <div class="stats-section-title">Habits</div>
         <div class="state-bar-list" id="wk-habit-cat-bars"></div>
@@ -1445,9 +1398,12 @@
         </div>
       </div>
 
-    </div><div class="spacer"></div>
+    </div><!-- /stats-trio -->
+
+    <div class="spacer"></div>
   </div>
 
+  <!-- ░░░ MONTHLY VIEW ░░░ -->
   <div class="view" id="view-monthly">
     <div class="date-header">
       <div class="date-big" id="month-label">April</div>
@@ -1459,8 +1415,10 @@
       <button class="week-nav-btn" onclick="shiftMonth(1)">›</button>
     </div>
 
+    <!-- STATS TRIO — identical layout to weekly -->
     <div class="stats-trio">
 
+      <!-- FASTING -->
       <div class="stats-section stats-col">
         <div class="stats-section-title">Fasting</div>
         <div class="kpi-row">
@@ -1490,6 +1448,7 @@
         <div class="state-bar-list" id="mo-fast-bars"></div>
       </div>
 
+      <!-- MOMENTS -->
       <div class="stats-section stats-col">
         <div class="stats-section-title">Moments</div>
         <div class="wk-chart-wrap">
@@ -1498,6 +1457,7 @@
         <div class="wk-chart-legend" id="mo-chart-legend"></div>
       </div>
 
+      <!-- HABITS -->
       <div class="stats-section stats-col">
         <div class="stats-section-title">Habits</div>
         <div class="state-bar-list" id="mo-habit-cat-bars"></div>
@@ -1507,10 +1467,15 @@
         </div>
       </div>
 
-    </div><div class="spacer"></div>
+    </div><!-- /stats-trio -->
+
+    <div class="spacer"></div>
   </div>
 
-</div><nav id="nav">
+</div><!-- /main -->
+
+<!-- BOTTOM NAV -->
+<nav id="nav">
   <button class="nav-item active" data-view="daily" onclick="switchView('daily', this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
     Daily
@@ -1525,6 +1490,7 @@
   </button>
 </nav>
 
+<!-- ADMIN PASSWORD MODAL -->
 <div id="admin-pw-overlay" onclick="adminPwOverlayClick(event)">
   <div class="admin-pw-card">
     <div class="admin-pw-icon">
@@ -1546,6 +1512,7 @@
   </div>
 </div>
 
+<!-- FRICTION MODAL -->
 <div id="modal-overlay">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
@@ -1560,6 +1527,7 @@
   </div>
 </div>
 
+<!-- BREAK HABIT MODAL -->
 <div id="break-modal-overlay" onclick="closeBreakModal(event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -1572,6 +1540,7 @@
       Your streak of <strong id="break-habit-streak">—</strong> days will reset to zero.
     </div>
 
+    <!-- Reason tags -->
     <div class="break-reason-label">Why are you breaking it?</div>
     <div class="break-tags" id="break-tags">
       <button class="break-tag" onclick="selectBreakTag(this)">😴 Tired</button>
@@ -1592,6 +1561,7 @@
   </div>
 </div>
 
+<!-- PROFILE DROPDOWN -->
 <div id="profile-dropdown">
   <div class="profile-user-row">
     <div class="profile-avatar-sm" id="profile-avatar-sm"></div>
@@ -1610,6 +1580,7 @@
   </button>
 </div>
 
+<!-- TOAST -->
 <div id="toast"></div>
 
 <script>
@@ -1632,66 +1603,22 @@ let currentUser = null;
    On receiving a SIGNED_OUT event: show sign-in UI immediately.
 ═══════════════════════════════════════════════════════════════ */
 async function initAuth() {
-  // --- DIAGNOSTIC BANNER (Catches hidden errors before they vanish) ---
-  const urlParams = new URLSearchParams(window.location.search);
-  const hashParams = new URLSearchParams(window.location.hash.substring(1));
-  const err = urlParams.get('error') || hashParams.get('error');
-  const errDesc = urlParams.get('error_description') || hashParams.get('error_description');
+  // onAuthStateChange fires reliably on every load including after
+  // Get session on load (handles OAuth redirect token in URL hash)
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session?.user) setUser(session.user);
+  });
 
-  if (err) {
-    const dbg = document.createElement('div');
-    dbg.style = "position:fixed;top:0;left:0;right:0;background:#E05C7A;color:#fff;padding:14px;z-index:9999;text-align:center;font-family:monospace;font-weight:bold;box-shadow:0 4px 12px rgba(0,0,0,0.5);";
-    dbg.innerHTML = `🚨 AUTH ERROR: ${err} <br> ${errDesc?.replace(/\+/g, ' ')}`;
-    document.body.appendChild(dbg);
-  }
-  // --------------------------------------------------------------------
-
-  // 1. Explicitly grab the session on load
-  const { data: { session }, error } = await sb.auth.getSession();
-  
-  if (error) {
-    const dbg = document.createElement('div');
-    dbg.style = "position:fixed;top:0;left:0;right:0;background:#E05C7A;color:#fff;padding:14px;z-index:9999;text-align:center;font-family:monospace;font-weight:bold;";
-    dbg.innerHTML = `🚨 SESSION ERROR: ${error.message}`;
-    document.body.appendChild(dbg);
-  } else if (session?.user) {
-    setUser(session.user);
-    // Clean up the URL only if login was successful
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
-
-  // 2. Listen for any future auth changes
+  // Watch for auth changes
   sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT') {
-      if (_explicitSignOut) {
-        _explicitSignOut = false;
-        clearUser();
-      }
-      return;
-    }
+    console.log('Auth event:', event, session?.user?.email);
     if (session?.user) {
       setUser(session.user);
-      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (event === 'SIGNED_OUT' && _explicitSignOut) {
+      _explicitSignOut = false;
+      clearUser();
     }
   });
-}
-
-// Hardcode the EXACT canonical URL to prevent Vercel from stripping tokens during a redirect
-async function signInGoogle() {
-  try {
-    const { data, error } = await sb.auth.signInWithOAuth({
-      provider: 'google',
-      options: { 
-        redirectTo: 'https://www.mindful-rhythm.com' 
-      }
-    });
-
-    if (error) {
-      alert("Supabase Error: " + error.message);
-    } 
-  } catch (err) {
-    alert("Code Crash: " + err.message);
-  }
 }
 
 let _currentUserId    = null;
@@ -1720,9 +1647,6 @@ function setUser(user) {
   const pe = document.getElementById('profile-email');
   if (pe) pe.textContent = user.email || '';
 
-  // Reveal app
-  showApp();
-
   // Sync + subscribe (non-blocking)
   loadUserData();
   subscribeRealtime();
@@ -1739,7 +1663,15 @@ function clearUser(reason) {
   if (desc) desc.innerHTML = reason === 'kicked'
     ? `📱 You were signed in on another device.<br>Sign in again to continue.`
     : `Track your fasting journey, own your time, build intentional habits. Sign in to begin.`;
-  showGate();
+}
+
+
+
+async function signInGoogle() {
+  await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: 'https://www.mindful-rhythm.com' }
+  });
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -3845,28 +3777,7 @@ function initQuotes() {
   setInterval(renderQuote, 8000);
 }
 
-function showApp() {
-  // Remove gate, reveal app
-  document.getElementById('auth-gate').classList.add('hidden');
-  document.getElementById('main').classList.remove('gated');
-  document.getElementById('nav').classList.remove('gated');
-  document.getElementById('topbar').classList.remove('gated');
-}
-
-function showGate() {
-  // Show gate, hide app
-  document.getElementById('auth-gate').classList.remove('hidden');
-  document.getElementById('main').classList.add('gated');
-  document.getElementById('nav').classList.add('gated');
-  document.getElementById('topbar').classList.add('gated');
-}
-
 function init() {
-  // Start gated — hide app until auth resolves
-  document.getElementById('main').classList.add('gated');
-  document.getElementById('nav').classList.add('gated');
-  document.getElementById('topbar').classList.add('gated');
-
   initAuth();
   if (!fastState.running) startFeedingTimer();
   startWasteful();
