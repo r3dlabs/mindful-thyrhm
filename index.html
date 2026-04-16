@@ -184,7 +184,7 @@
     .hero-duo {
       flex-direction: row;
       align-items: stretch;
-      gap: 0;
+      gap: 12px;
       padding: 16px 16px 0;
     }
     .hero-duo #fasting-hero,
@@ -192,23 +192,9 @@
       flex: 1;
       margin: 0;
       min-width: 0;
+      border-radius: var(--radius);
     }
-    .hero-duo #fasting-hero {
-      border-radius: var(--radius) 0 0 var(--radius);
-      border-right: none;
-    }
-    .hero-duo #moment-hero {
-      border-radius: 0 var(--radius) var(--radius) 0;
-    }
-    /* On wide screens, ring sizes can be slightly smaller to fit */
-    .hero-duo .ring-wrap,
-    .hero-duo #moment-ring-wrap {
-      width: 150px;
-      height: 150px;
-    }
-    .hero-duo #fast-hhmm,
-    .hero-duo #moment-hhmm { font-size: 30px; }
-    /* More vertical on tablet — stack ring above list */
+    /* On tablet — stack ring above list inside each card */
     .hero-duo .hero-row,
     .hero-duo .moment-row {
       flex-direction: column;
@@ -218,10 +204,18 @@
     .hero-duo .moment-state-list {
       width: 100%;
     }
+    .hero-duo .ring-wrap,
+    .hero-duo #moment-ring-wrap {
+      width: 150px;
+      height: 150px;
+    }
+    .hero-duo #fast-hhmm,
+    .hero-duo #moment-hhmm { font-size: 30px; }
   }
 
   @media (min-width: 1024px) {
-    /* On desktop keep ring + list side by side */
+    .hero-duo { gap: 16px; }
+    /* On desktop keep ring + list side by side inside each card */
     .hero-duo .hero-row,
     .hero-duo .moment-row {
       flex-direction: row;
@@ -801,6 +795,79 @@
   }
   .wday-fill { height: 100%; border-radius: 2px; background: var(--accent); }
 
+  /* ─── STATS SECTIONS ──────────────────────────────────── */
+  .stats-section {
+    padding: 0 16px; margin-top: 20px;
+  }
+  .stats-section-title {
+    font-family: var(--font-cond); font-size: 11px; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stats-section-title::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* ─── KPI ROW ─────────────────────────────────────────── */
+  .kpi-row {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 8px; margin-bottom: 8px;
+  }
+  .kpi-row.cols3 { grid-template-columns: repeat(3, 1fr); }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+  }
+  .kpi-lbl {
+    font-family: var(--font-cond); font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 4px;
+  }
+  .kpi-val {
+    font-family: var(--font-cond); font-weight: 700;
+    font-size: 22px; line-height: 1; color: var(--text);
+  }
+  .kpi-sub {
+    font-size: 11px; color: var(--text3); margin-top: 3px;
+  }
+  .kpi-card.accent-border { border-color: var(--accent); }
+  .kpi-card.danger-border { border-color: var(--danger); }
+
+  /* ─── STATE BAR LIST ──────────────────────────────────── */
+  .state-bar-list {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .sbl-row {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sbl-icon { font-size: 14px; flex-shrink: 0; width: 20px; text-align: center; }
+  .sbl-name {
+    font-family: var(--font-cond); font-size: 12px; font-weight: 600;
+    letter-spacing: .04em; color: var(--text2); flex-shrink: 0; width: 80px;
+  }
+  .sbl-bar-wrap {
+    flex: 1; height: 6px; border-radius: 3px;
+    background: var(--surface2); overflow: hidden;
+  }
+  .sbl-bar { height: 100%; border-radius: 3px; transition: width .6s ease; }
+  .sbl-time {
+    font-family: var(--font-cond); font-size: 11px; font-weight: 600;
+    color: var(--text3); flex-shrink: 0; min-width: 36px; text-align: right;
+  }
+  .sbl-pct {
+    font-family: var(--font-cond); font-size: 11px; font-weight: 700;
+    flex-shrink: 0; min-width: 30px; text-align: right;
+  }
+
+  /* ─── FAST LOG TABLE ──────────────────────────────────── */
+  .fast-log-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); overflow: hidden;
+  }
+
   .month-grid {
     display: grid; grid-template-columns: repeat(7,1fr);
     gap: 4px; padding: 0 16px;
@@ -1191,37 +1258,77 @@
       <button class="week-nav-btn" onclick="shiftWeek(1)">›</button>
     </div>
     <div class="week-grid" id="week-grid"></div>
-    <div class="spacer"></div>
-    <div class="stat-row">
-      <div class="stat-card">
-        <div class="stat-lbl">Longest Fast</div>
-        <div class="stat-num" id="wk-long-fast">—</div>
-        <div class="stat-sub">this week</div>
+
+    <!-- FASTING STATS -->
+    <div class="stats-section">
+      <div class="stats-section-title">Fasting</div>
+      <div class="kpi-row cols3">
+        <div class="kpi-card">
+          <div class="kpi-lbl">Fasts</div>
+          <div class="kpi-val" id="wk-fasts">—</div>
+          <div class="kpi-sub">completed</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Longest</div>
+          <div class="kpi-val" id="wk-long-fast">—</div>
+          <div class="kpi-sub">single fast</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Avg Daily</div>
+          <div class="kpi-val" id="wk-avg-fast">—</div>
+          <div class="kpi-sub">fasting hrs</div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-lbl">Fasts Done</div>
-        <div class="stat-num" id="wk-fasts">0</div>
-        <div class="stat-sub">completed</div>
+      <!-- Stage distribution bars -->
+      <div class="state-bar-list" id="wk-fast-bars"></div>
+    </div>
+
+    <!-- MOMENT STATS -->
+    <div class="stats-section">
+      <div class="stats-section-title">Moments</div>
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-lbl">Most Time</div>
+          <div class="kpi-val" id="wk-top-state">—</div>
+          <div class="kpi-sub">dominant state</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Purposeful</div>
+          <div class="kpi-val" id="wk-purpose">—</div>
+          <div class="kpi-sub">avg per day</div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-lbl">Purposeful</div>
-        <div class="stat-num" id="wk-purpose">0h</div>
-        <div class="stat-sub">focused time</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-lbl">Habit Score</div>
-        <div class="stat-num" id="wk-habit">—%</div>
-        <div class="stat-sub">completion</div>
+      <div class="state-bar-list" id="wk-moment-bars"></div>
+    </div>
+
+    <!-- HABITS -->
+    <div class="stats-section">
+      <div class="stats-section-title">Habits</div>
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-lbl">Completion</div>
+          <div class="kpi-val" id="wk-habit">—</div>
+          <div class="kpi-sub">today's habits</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Broken</div>
+          <div class="kpi-val" id="wk-broken">—</div>
+          <div class="kpi-sub">today</div>
+        </div>
       </div>
     </div>
-    <div class="spacer"></div>
-    <div class="section-pad"><div class="section-title">Fast Log</div></div>
-    <div style="padding:0 16px; overflow-x:auto;">
-      <table class="log-table">
-        <thead><tr><th>Date</th><th>Duration</th><th>Stage Reached</th></tr></thead>
-        <tbody id="fast-log-body"></tbody>
-      </table>
+
+    <!-- FAST LOG -->
+    <div class="stats-section">
+      <div class="stats-section-title">Fast Log</div>
+      <div class="fast-log-card">
+        <table class="log-table" style="width:100%">
+          <thead><tr><th>Date</th><th>Duration</th><th>Stage Reached</th></tr></thead>
+          <tbody id="fast-log-body"></tbody>
+        </table>
+      </div>
     </div>
+
     <div class="spacer"></div>
   </div>
 
@@ -1236,7 +1343,8 @@
       <div class="week-range" id="month-name-label">—</div>
       <button class="week-nav-btn" onclick="shiftMonth(1)">›</button>
     </div>
-    <div style="padding:0 16px; display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:8px;">
+    <!-- Day-of-week headers -->
+    <div style="padding:0 16px;display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;">
       <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">S</div>
       <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">M</div>
       <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">T</div>
@@ -1246,29 +1354,82 @@
       <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">S</div>
     </div>
     <div class="month-grid" id="month-grid"></div>
-    <div class="spacer"></div>
-    <div class="stat-row">
-      <div class="stat-card">
-        <div class="stat-lbl">Total Fasts</div>
-        <div class="stat-num" id="mo-fasts">0</div>
-        <div class="stat-sub">this month</div>
+
+    <!-- MONTHLY FASTING STATS -->
+    <div class="stats-section">
+      <div class="stats-section-title">Fasting</div>
+      <div class="kpi-row cols3">
+        <div class="kpi-card">
+          <div class="kpi-lbl">Total Fasts</div>
+          <div class="kpi-val" id="mo-fasts">—</div>
+          <div class="kpi-sub">this month</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Longest</div>
+          <div class="kpi-val" id="mo-long-fast">—</div>
+          <div class="kpi-sub">single fast</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Fast Days</div>
+          <div class="kpi-val" id="mo-fast-days">—</div>
+          <div class="kpi-sub">days with a fast</div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-lbl">Best Streak</div>
-        <div class="stat-num" id="mo-streak">0</div>
-        <div class="stat-sub">days</div>
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-lbl">Avg Duration</div>
+          <div class="kpi-val" id="mo-avg-fast">—</div>
+          <div class="kpi-sub">per fast</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Best Stage</div>
+          <div class="kpi-val" id="mo-best-stage">—</div>
+          <div class="kpi-sub">most reached</div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-lbl">Habit Avg</div>
-        <div class="stat-num" id="mo-habit">—%</div>
-        <div class="stat-sub">completion</div>
+      <div class="state-bar-list" id="mo-fast-bars"></div>
+    </div>
+
+    <!-- MONTHLY MOMENT STATS -->
+    <div class="stats-section">
+      <div class="stats-section-title">Moments</div>
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-lbl">Purposeful</div>
+          <div class="kpi-val" id="mo-focus">—</div>
+          <div class="kpi-sub">total hours</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Wasteful</div>
+          <div class="kpi-val" id="mo-wasteful">—</div>
+          <div class="kpi-sub">total hours</div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-lbl">Focus Hours</div>
-        <div class="stat-num" id="mo-focus">0h</div>
-        <div class="stat-sub">purposeful</div>
+      <div class="state-bar-list" id="mo-moment-bars"></div>
+    </div>
+
+    <!-- MONTHLY HABIT STATS -->
+    <div class="stats-section">
+      <div class="stats-section-title">Habits</div>
+      <div class="kpi-row cols3">
+        <div class="kpi-card">
+          <div class="kpi-lbl">Completion</div>
+          <div class="kpi-val" id="mo-habit">—</div>
+          <div class="kpi-sub">today's rate</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Best Streak</div>
+          <div class="kpi-val" id="mo-streak">—</div>
+          <div class="kpi-sub">days</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Breaks</div>
+          <div class="kpi-val" id="mo-breaks">—</div>
+          <div class="kpi-sub">conscious breaks</div>
+        </div>
       </div>
     </div>
+
     <div class="spacer"></div>
   </div>
 
@@ -2392,42 +2553,142 @@ function getWeekDates(offset) {
 
 function shiftWeek(dir) { weekOffset += dir; renderWeekly(); }
 
+/* ─── SHARED STAT HELPERS ─────────────────────────────────── */
+function fmtHrs(secs) {
+  const h = Math.floor(secs/3600), m = Math.floor((secs%3600)/60);
+  return h > 0 ? `${h}h ${String(m).padStart(2,'0')}m` : `${m}m`;
+}
+
+function buildStateBars(containerId, rows) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const max = Math.max(...rows.map(r => r.secs), 1);
+  el.innerHTML = '';
+  rows.forEach(r => {
+    const pct     = Math.round(r.secs / 86400 * 100);
+    const barPct  = Math.round(r.secs / max * 100);
+    const div = document.createElement('div');
+    div.className = 'sbl-row';
+    div.innerHTML = `
+      <span class="sbl-icon">${r.icon}</span>
+      <span class="sbl-name">${r.name}</span>
+      <div class="sbl-bar-wrap">
+        <div class="sbl-bar" style="width:${barPct}%;background:${r.color}"></div>
+      </div>
+      <span class="sbl-time">${r.secs > 0 ? fmtHHMM(r.secs) : '—'}</span>
+      <span class="sbl-pct" style="color:${r.color}">${r.secs > 0 ? pct+'%' : '—'}</span>`;
+    el.appendChild(div);
+  });
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
 function renderWeekly() {
-  const dates = getWeekDates(weekOffset);
-  const grid  = document.getElementById('week-grid');
-  grid.innerHTML = '';
+  const dates    = getWeekDates(weekOffset);
   const todayStr = today();
+  const fasts    = fastState.log || [];
+
+  // ── Week day grid ──────────────────────────────────────────
+  const grid = document.getElementById('week-grid');
+  grid.innerHTML = '';
   dates.forEach(d => {
-    const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const cell = document.createElement('div');
+    const ds    = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const hasFast = fasts.some(f => f.date === ds);
+    const cell  = document.createElement('div');
     cell.className = 'week-day';
     cell.innerHTML = `
       <div class="wday-label">${DSHRT[d.getDay()]}</div>
-      <div class="wday-num${ds===todayStr?' today':''}">${d.getDate()}</div>
-      <div class="wday-bar"><div class="wday-fill" style="width:${Math.random()>0.4?Math.round(Math.random()*100):0}%"></div></div>
-    `;
+      <div class="wday-num${ds===todayStr?' today':''}${hasFast?' has-fast':''}">${d.getDate()}</div>
+      <div class="wday-bar">
+        <div class="wday-fill" style="width:${hasFast?'100':ds===todayStr?'50':'0'}%;background:${hasFast?'var(--accent)':'var(--accent)'}"></div>
+      </div>`;
     grid.appendChild(cell);
   });
 
   const fmt = dt => dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-  document.getElementById('week-range').textContent = `${fmt(dates[0])} – ${fmt(dates[6])}`;
+  setText('week-range', `${fmt(dates[0])} – ${fmt(dates[6])}`);
 
-  // Fast log
+  // ── Fasting KPIs ───────────────────────────────────────────
+  const weekStart = dates[0]; weekStart.setHours(0,0,0,0);
+  const weekEnd   = dates[6]; weekEnd.setHours(23,59,59,999);
+  const weekFasts = fasts.filter(f => {
+    if (!f.endTs) return false;
+    return f.endTs >= weekStart.getTime() && f.endTs <= weekEnd.getTime();
+  });
+  // Fallback: match by date string if no endTs
+  const weekFastsFallback = weekFasts.length ? weekFasts : fasts.filter(f => {
+    return dates.some(d => {
+      const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      return f.date === ds;
+    });
+  });
+  const wf = weekFastsFallback;
+
+  const longest  = wf.reduce((a,b) => b.secs > a ? b.secs : a, 0);
+  const totalFastSecs = wf.reduce((a,b) => a + b.secs, 0);
+  const avgDaily = wf.length ? Math.round(totalFastSecs / 7) : 0;
+
+  setText('wk-fasts',     wf.length || '—');
+  setText('wk-long-fast', longest ? fmtHHMM(longest) : '—');
+  setText('wk-avg-fast',  avgDaily ? fmtHHMM(avgDaily) : '—');
+
+  // Fasting stage distribution bars (from today's data)
+  const fastStageSecs = new Array(STAGES.length).fill(0);
+  fastStageSecs[0] = getFeedingElapsed();
+  if (fastState.running) fastStageSecs[getCurrentStageIdx()] += getFastElapsed();
+  wf.forEach(entry => {
+    let rem = entry.secs;
+    const maxIdx = entry.stageIdx || STAGES.findIndex(s => s.name === entry.stage);
+    for (let i = 1; i <= maxIdx && i < STAGES.length; i++) {
+      const nxt = STAGES[i+1];
+      const cap = nxt ? (nxt.start - STAGES[i].start) * 3600 : rem;
+      const sp  = Math.min(rem, cap);
+      fastStageSecs[i] += sp; rem -= sp;
+      if (rem <= 0) break;
+    }
+  });
+  buildStateBars('wk-fast-bars', STAGES.map((s,i) => ({
+    icon: s.icon, name: s.name, color: s.color, secs: fastStageSecs[i]
+  })));
+
+  // ── Moment KPIs ────────────────────────────────────────────
+  const mSecs = {};
+  STATE_DEFS.forEach(sd => { mSecs[sd.key] = getStateElapsed(sd.key); });
+  const totalMoment  = Object.values(mSecs).reduce((a,b)=>a+b,0) || 1;
+  const topState     = STATE_DEFS.reduce((a,b) => mSecs[b.key]>mSecs[a.key]?b:a, STATE_DEFS[0]);
+  const purposeSecs  = mSecs['purposeful'] || 0;
+  const avgPurpose   = purposeSecs > 0 ? Math.round(purposeSecs / 7) : 0;
+
+  setText('wk-top-state', topState.icon + ' ' + topState.label);
+  setText('wk-purpose',   avgPurpose ? fmtHHMM(avgPurpose) : '—');
+
+  buildStateBars('wk-moment-bars', STATE_DEFS.map(sd => ({
+    icon: sd.icon, name: sd.label, color: sd.color, secs: mSecs[sd.key]
+  })));
+
+  // ── Habit KPIs ─────────────────────────────────────────────
+  const allH   = Object.values(habits).flat();
+  const doneH  = allH.filter(h => h.done).length;
+  const brokenH= allH.filter(h => h.broken === todayStr).length;
+  setText('wk-habit',  allH.length ? Math.round(doneH/allH.length*100)+'%' : '—');
+  setText('wk-broken', brokenH || '—');
+
+  // ── Fast log ───────────────────────────────────────────────
   const tbody = document.getElementById('fast-log-body');
-  const log   = (fastState.log||[]).slice(0,10);
-  tbody.innerHTML = log.length
-    ? log.map(l=>`<tr><td>${l.date}</td><td>${fmtHHMM(l.secs)}</td><td><span class="log-badge">${l.stage}</span></td></tr>`).join('')
-    : '<tr><td colspan="3" style="color:var(--text3);text-align:center;padding:20px">No fasts logged yet</td></tr>';
-
-  // Stats (demo values for now)
-  const fasts = fastState.log||[];
-  document.getElementById('wk-fasts').textContent = fasts.length;
-  const longest = fasts.reduce((a,b)=>b.secs>a?b.secs:a,0);
-  document.getElementById('wk-long-fast').textContent = longest ? fmtHHMM(longest) : '—';
-  document.getElementById('wk-purpose').textContent = Math.round(getStateElapsed('purposeful')/3600)+'h';
-  const allH = Object.values(habits).flat();
-  const pctH = allH.length ? Math.round(allH.filter(h=>h.done).length/allH.length*100) : 0;
-  document.getElementById('wk-habit').textContent = pctH+'%';
+  tbody.innerHTML = fasts.length
+    ? fasts.slice(0,12).map(l => {
+        const stageObj = STAGES.find(s => s.name === l.stage);
+        const color    = stageObj ? stageObj.color : 'var(--accent)';
+        return `<tr>
+          <td>${l.date}</td>
+          <td>${fmtHHMM(l.secs)}</td>
+          <td><span class="log-badge" style="color:${color}">${l.stage}</span></td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="3" style="color:var(--text3);text-align:center;padding:20px;font-family:var(--font-cond)">No fasts logged yet</td></tr>';
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2440,40 +2701,96 @@ function shiftMonth(dir) { monthOffset += dir; renderMonthly(); }
 function renderMonthly() {
   const now = new Date();
   const d   = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
-  const yr  = d.getFullYear(); const mo = d.getMonth();
-  document.getElementById('month-label').textContent = MONTHS[mo];
-  document.getElementById('month-year').textContent  = yr;
-  document.getElementById('month-name-label').textContent = `${MONTHS[mo]} ${yr}`;
-
-  const grid = document.getElementById('month-grid');
-  grid.innerHTML = '';
-
-  const firstDow = new Date(yr, mo, 1).getDay();
-  const daysInMo = new Date(yr, mo+1, 0).getDate();
+  const yr  = d.getFullYear();
+  const mo  = d.getMonth();
   const todayStr = today();
 
-  for (let i=0;i<firstDow;i++) {
-    const emp = document.createElement('div'); emp.className='mday empty'; grid.appendChild(emp);
+  setText('month-label',      MONTHS[mo]);
+  setText('month-year',       yr);
+  setText('month-name-label', `${MONTHS[mo]} ${yr}`);
+
+  // ── Calendar grid ──────────────────────────────────────────
+  const grid = document.getElementById('month-grid');
+  grid.innerHTML = '';
+  const firstDow = new Date(yr, mo, 1).getDay();
+  const daysInMo = new Date(yr, mo+1, 0).getDate();
+  const fasts    = fastState.log || [];
+
+  for (let i = 0; i < firstDow; i++) {
+    const emp = document.createElement('div'); emp.className = 'mday empty'; grid.appendChild(emp);
   }
-  for (let day=1;day<=daysInMo;day++) {
-    const ds = `${yr}-${String(mo+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-    const div = document.createElement('div');
+  for (let day = 1; day <= daysInMo; day++) {
+    const ds      = `${yr}-${String(mo+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
     const isToday = ds === todayStr;
-    const hasFast = (fastState.log||[]).some(l=>l.date===ds);
+    const dayFasts = fasts.filter(f => f.date === ds);
+    const hasFast  = dayFasts.length > 0;
+    const div = document.createElement('div');
     div.className = 'mday' + (isToday?' today':'') + (hasFast?' has-data':'');
     div.textContent = day;
+    if (hasFast && !isToday) {
+      // Tint by longest stage reached that day
+      const best = dayFasts.reduce((a,b) => (b.stageIdx||0) > (a.stageIdx||0) ? b : a, dayFasts[0]);
+      const stObj = STAGES[best.stageIdx || 0];
+      if (stObj) div.style.background = `color-mix(in srgb, ${stObj.color} 20%, var(--surface2))`;
+    }
     grid.appendChild(div);
   }
 
-  // Stats
-  const fasts = fastState.log||[];
-  document.getElementById('mo-fasts').textContent = fasts.length;
-  let best=0,cur=0; fasts.forEach(f=>{ cur++; best=Math.max(best,cur); });
-  document.getElementById('mo-streak').textContent = best;
-  const allH = Object.values(habits).flat();
-  const pctH = allH.length ? Math.round(allH.filter(h=>h.done).length/allH.length*100) : 0;
-  document.getElementById('mo-habit').textContent = pctH+'%';
-  document.getElementById('mo-focus').textContent = Math.round(getStateElapsed('purposeful')/3600)+'h';
+  // ── Monthly fasting KPIs ───────────────────────────────────
+  const moStr   = `${yr}-${String(mo+1).padStart(2,'0')}`;
+  const moFasts = fasts.filter(f => f.date && f.date.startsWith(moStr));
+  const uniqueDays = new Set(moFasts.map(f => f.date)).size;
+  const longest = moFasts.reduce((a,b) => b.secs > a ? b.secs : a, 0);
+  const avgDur  = moFasts.length ? Math.round(moFasts.reduce((a,b)=>a+b.secs,0) / moFasts.length) : 0;
+
+  // Most reached stage
+  const stageCounts = {};
+  moFasts.forEach(f => { stageCounts[f.stage] = (stageCounts[f.stage]||0)+1; });
+  const bestStage = Object.entries(stageCounts).sort((a,b)=>b[1]-a[1])[0];
+
+  setText('mo-fasts',      moFasts.length || '—');
+  setText('mo-long-fast',  longest ? fmtHHMM(longest) : '—');
+  setText('mo-fast-days',  uniqueDays || '—');
+  setText('mo-avg-fast',   avgDur ? fmtHHMM(avgDur) : '—');
+  setText('mo-best-stage', bestStage ? bestStage[0] : '—');
+
+  // Stage distribution bars (same as weekly, from today's local data)
+  const fastStageSecs = new Array(STAGES.length).fill(0);
+  fastStageSecs[0] = getFeedingElapsed();
+  if (fastState.running) fastStageSecs[getCurrentStageIdx()] += getFastElapsed();
+  moFasts.forEach(entry => {
+    let rem = entry.secs;
+    const maxIdx = entry.stageIdx || STAGES.findIndex(s => s.name === entry.stage);
+    for (let i = 1; i <= maxIdx && i < STAGES.length; i++) {
+      const nxt = STAGES[i+1];
+      const cap = nxt ? (nxt.start - STAGES[i].start) * 3600 : rem;
+      const sp  = Math.min(rem, cap); fastStageSecs[i] += sp; rem -= sp;
+      if (rem <= 0) break;
+    }
+  });
+  buildStateBars('mo-fast-bars', STAGES.map((s,i) => ({
+    icon: s.icon, name: s.name, color: s.color, secs: fastStageSecs[i]
+  })));
+
+  // ── Monthly moment KPIs ────────────────────────────────────
+  const purposeSecs  = getStateElapsed('purposeful');
+  const wastefulSecs = getStateElapsed('wasteful');
+  setText('mo-focus',    purposeSecs  > 0 ? fmtHrs(purposeSecs)  : '—');
+  setText('mo-wasteful', wastefulSecs > 0 ? fmtHrs(wastefulSecs) : '—');
+
+  buildStateBars('mo-moment-bars', STATE_DEFS.map(sd => ({
+    icon: sd.icon, name: sd.label, color: sd.color, secs: getStateElapsed(sd.key)
+  })));
+
+  // ── Monthly habit KPIs ─────────────────────────────────────
+  const allH    = Object.values(habits).flat();
+  const doneH   = allH.filter(h => h.done).length;
+  const brokenH = allH.filter(h => h.broken).length;
+  // Best streak across all habits
+  const bestStreak = allH.reduce((a,h) => Math.max(a, h.streak||0), 0);
+  setText('mo-habit',   allH.length ? Math.round(doneH/allH.length*100)+'%' : '—');
+  setText('mo-streak',  bestStreak || '—');
+  setText('mo-breaks',  brokenH || '—');
 }
 
 /* ═══════════════════════════════════════════════════════════════
