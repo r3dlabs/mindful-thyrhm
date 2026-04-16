@@ -3626,33 +3626,40 @@ async function refreshDiag() {
   if (!el) return;
 
   const rows = [];
-  const r = (k, v, cls) => rows.push({ k, v: String(v), cls });
-  const sep = (s) => rows.push({ sep: s });
+  const r = function(k, v, cls) { rows.push({ k: k, v: String(v), cls: cls }); };
+  const sep = function(s) { rows.push({ sep: s }); };
 
+  // ── URL ────────────────────────────────────────────────────
   sep('URL');
   r('href', window.location.href);
   r('hash', window.location.hash || '(empty)', window.location.hash ? 'ok' : 'warn');
-  r('hash has token', window.location.hash.includes('access_token') ? 'YES ✓' : 'NO',
-    window.location.hash.includes('access_token') ? 'ok' : 'warn');
+  r('hash has token', window.location.hash.indexOf('access_token') >= 0 ? 'YES' : 'NO',
+    window.location.hash.indexOf('access_token') >= 0 ? 'ok' : 'warn');
 
-  sep('Supabase');
-  r('sb defined', typeof sb !== 'undefined' ? 'YES ✓' : 'NO ✗',
+  // ── Supabase client ────────────────────────────────────────
+  sep('Supabase Client');
+  r('sb defined', typeof sb !== 'undefined' ? 'YES' : 'NO',
     typeof sb !== 'undefined' ? 'ok' : 'err');
+  r('sb.auth', typeof sb !== 'undefined' && sb.auth ? 'YES' : 'NO',
+    typeof sb !== 'undefined' && sb.auth ? 'ok' : 'err');
 
+  // ── getSession() ───────────────────────────────────────────
   sep('getSession()');
+  var gsSession = null;
   try {
-    const res = await sb.auth.getSession();
-    const session = res?.data?.session;
-    const err = res?.error;
-    if (err) {
-      r('error', err.message, 'err');
-    } else if (session?.user) {
-      r('status', 'LOGGED IN ✓', 'ok');
-      r('email', session.user.email, 'ok');
-      r('user.id', session.user.id.slice(0,12)+'...', 'ok');
-      r('provider', session.user.app_metadata?.provider || '?');
-      r('expires', new Date((session.expires_at||0)*1000).toLocaleTimeString());
-      r('token', session.access_token ? session.access_token.slice(0,16)+'...' : 'none');
+    var gsRes = await sb.auth.getSession();
+    gsSession = gsRes && gsRes.data && gsRes.data.session;
+    var gsErr = gsRes && gsRes.error;
+    if (gsErr) {
+      r('error', gsErr.message, 'err');
+    } else if (gsSession && gsSession.user) {
+      r('status', 'LOGGED IN', 'ok');
+      r('email', gsSession.user.email || 'N/A', 'ok');
+      r('user.id', gsSession.user.id ? gsSession.user.id.slice(0,14)+'...' : 'N/A', 'ok');
+      r('provider', (gsSession.user.app_metadata && gsSession.user.app_metadata.provider) || '?');
+      r('token expires', new Date((gsSession.expires_at || 0) * 1000).toLocaleTimeString());
+      r('access_token', gsSession.access_token ? gsSession.access_token.slice(0,18)+'...' : 'NONE',
+        gsSession.access_token ? 'ok' : 'err');
     } else {
       r('status', 'NO SESSION', 'warn');
     }
@@ -3660,38 +3667,73 @@ async function refreshDiag() {
     r('exception', e.message, 'err');
   }
 
-  sep('App');
+  // ── initAuth state ─────────────────────────────────────────
+  sep('initAuth check');
+  // Try calling getSession directly — same path initAuth uses
+  try {
+    var iaRes = await sb.auth.getSession();
+    var iaSession = iaRes && iaRes.data && iaRes.data.session;
+    r('getSession user', iaSession && iaSession.user ? iaSession.user.email : 'null',
+      iaSession && iaSession.user ? 'ok' : 'warn');
+    // Manually simulate what setUser would do
+    r('setUser would run', iaSession && iaSession.user ? 'YES' : 'NO',
+      iaSession && iaSession.user ? 'ok' : 'warn');
+  } catch(e) {
+    r('initAuth exception', e.message, 'err');
+  }
+
+  // ── App state ──────────────────────────────────────────────
+  sep('App State');
   r('currentUser', currentUser ? currentUser.email : 'null',
     currentUser ? 'ok' : 'warn');
+  r('auth-area HTML', (function() {
+    var a = document.getElementById('auth-area');
+    return a ? a.innerHTML.slice(0,40) : 'NOT FOUND';
+  })());
 
+  // ── onAuthStateChange test ─────────────────────────────────
+  sep('Auth Listener');
+  r('listener registered', typeof sb !== 'undefined' ? 'YES (check console)' : 'NO', 'ok');
+
+  // ── localStorage ───────────────────────────────────────────
   sep('localStorage');
   try {
-    const sbKey = Object.keys(localStorage).find(k =>
-      k.includes('supabase') || k.startsWith('sb-'));
-    r('sb key', sbKey ? sbKey.slice(0,36)+'...' : 'NOT FOUND',
-      sbKey ? 'ok' : 'err');
+    var lsKeys = Object.keys(localStorage);
+    var sbKey = lsKeys.find(function(k) {
+      return k.indexOf('supabase') >= 0 || k.indexOf('sb-') === 0;
+    });
+    r('sb key found', sbKey ? sbKey.slice(0,40) : 'NOT FOUND', sbKey ? 'ok' : 'err');
+    r('total ls keys', lsKeys.length);
     if (sbKey) {
-      const val = JSON.parse(localStorage.getItem(sbKey) || '{}');
-      r('stored token', val?.access_token ? 'EXISTS ✓' : 'NONE',
-        val?.access_token ? 'ok' : 'warn');
+      try {
+        var val = JSON.parse(localStorage.getItem(sbKey) || '{}');
+        r('stored access_token', val.access_token ? val.access_token.slice(0,16)+'...' : 'NONE',
+          val.access_token ? 'ok' : 'warn');
+        r('stored user email', (val.user && val.user.email) ? val.user.email : 'none');
+      } catch(pe) {
+        r('parse error', pe.message, 'err');
+      }
     }
   } catch(e) {
     r('ls error', e.message, 'err');
   }
 
-  el.innerHTML = rows.map(row => {
-    if (row.sep) return `
-      <div class="diag-sep"></div>
-      <div style="color:var(--accent);font-size:10px;letter-spacing:.1em;
-        text-transform:uppercase;margin-bottom:4px">${row.sep}</div>`;
-    return `<div class="diag-row">
-      <span class="diag-key">${row.k}</span>
-      <span class="diag-val ${row.cls||''}">${row.v}</span>
-    </div>`;
+  // ── Render ─────────────────────────────────────────────────
+  el.innerHTML = rows.map(function(row) {
+    if (row.sep) {
+      return '<div class="diag-sep"></div>' +
+        '<div style="color:var(--accent);font-size:10px;letter-spacing:.1em;' +
+        'text-transform:uppercase;margin-bottom:4px;margin-top:2px">' + row.sep + '</div>';
+    }
+    return '<div class="diag-row">' +
+      '<span class="diag-key">' + row.k + '</span>' +
+      '<span class="diag-val ' + (row.cls || '') + '">' + row.v + '</span>' +
+      '</div>';
   }).join('');
 
   // Re-poll every 2s while open
-  if (!document.getElementById('diag-card').classList.contains('hidden')) {
+  var card = document.getElementById('diag-card');
+  if (card && !card.classList.contains('hidden')) {
     setTimeout(refreshDiag, 2000);
   }
 }
