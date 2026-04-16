@@ -1632,22 +1632,30 @@ let currentUser = null;
    On receiving a SIGNED_OUT event: show sign-in UI immediately.
 ═══════════════════════════════════════════════════════════════ */
 async function initAuth() {
+  // 1. Catch silent errors in the URL from Supabase
+  const params = new URLSearchParams(window.location.search);
+  const hashParams = new URLSearchParams(window.location.hash.substring(1));
+  const errMsg = params.get('error_description') || hashParams.get('error_description');
+  
+  if (errMsg) {
+    alert('Supabase Auth Error: ' + errMsg.replace(/\+/g, ' '));
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  // 2. Explicitly grab the session
   const { data: { session }, error } = await sb.auth.getSession();
   
   if (error) {
-    console.error("Auth initialization error:", error.message);
+    alert("Session Error: " + error.message);
   } else if (session?.user) {
     setUser(session.user);
+    // Clean up the ?code= from the URL for a clean look
+    window.history.replaceState({}, document.title, window.location.pathname);
   }
 
-  // onAuthStateChange fires reliably on every load including after
-  // onAuthStateChange is the single source of truth.
-  // On OAuth redirect: fires SIGNED_IN with the new session.
-  // On page reload with existing session: fires INITIAL_SESSION.
-  // On explicit sign out: fires SIGNED_OUT.
+  // 3. Listen for changes
   sb.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_OUT') {
-      // Only show gate on explicit SIGNED_OUT — not on token refresh
       if (_explicitSignOut) {
         _explicitSignOut = false;
         clearUser();
@@ -1656,6 +1664,17 @@ async function initAuth() {
     }
     if (session?.user) {
       setUser(session.user);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  });
+}
+
+async function signInGoogle() {
+  await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { 
+      // Forces the redirect to match exactly the domain you are currently viewing
+      redirectTo: window.location.origin 
     }
   });
 }
