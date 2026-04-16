@@ -465,10 +465,30 @@
   .ltm-header {
     font-family: var(--font-cond); font-weight: 800;
     font-size: 13px; letter-spacing: .18em;
-    margin-bottom: 16px; text-align: center; width: 100%;
+    margin-bottom: 4px; text-align: center; width: 100%;
   }
   .ltm-live   { color: var(--text3); }
   .ltm-moment { color: var(--accent); }
+
+  /* ── Quote scroller ───────────────────────────────────── */
+  .quote-scroller {
+    width: 100%; text-align: center;
+    min-height: 36px; margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .quote-text {
+    font-size: 11px; color: var(--text3); line-height: 1.5;
+    font-style: italic; max-width: 280px;
+    position: absolute;
+    opacity: 0; transition: opacity .6s ease, transform .6s ease;
+    transform: translateY(8px);
+  }
+  .quote-text.active {
+    opacity: 1; transform: translateY(0);
+    position: relative;
+  }
+
 
   /* ── Two-col layout: states left, ring right ──────────── */
   .moment-row {
@@ -481,26 +501,40 @@
     gap: 7px; min-width: 0;
   }
   .mst-row {
-    display: flex; align-items: center; gap: 8px;
+    display: flex; align-items: center; gap: 6px;
     cursor: pointer; border-radius: 8px;
-    padding: 5px 8px; transition: background .15s;
+    padding: 4px 6px; transition: background .15s;
   }
   .mst-row:hover { background: var(--surface2); }
   .mst-row.active { background: color-mix(in srgb, var(--mst-color) 10%, transparent); }
-  .mst-icon { font-size: 14px; flex-shrink: 0; width: 20px; text-align: center; }
+  .mst-icon { font-size: 14px; flex-shrink: 0; width: 18px; text-align: center; }
   .mst-name {
     flex: 1; font-family: var(--font-cond); font-size: 12px;
     font-weight: 600; letter-spacing: .04em; color: var(--text2);
-    white-space: nowrap;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    min-width: 0;
   }
   .mst-row.active .mst-name { color: var(--mst-color); }
   .mst-time {
-    font-family: var(--font-cond); font-size: 12px; font-weight: 600;
-    color: var(--text3); flex-shrink: 0; min-width: 36px; text-align: right;
+    font-family: var(--font-cond); font-size: 11px; font-weight: 600;
+    color: var(--text3); flex-shrink: 0; min-width: 34px; text-align: right;
   }
   .mst-pct {
-    font-family: var(--font-cond); font-size: 12px; font-weight: 700;
-    flex-shrink: 0; min-width: 30px; text-align: right;
+    font-family: var(--font-cond); font-size: 11px; font-weight: 700;
+    flex-shrink: 0; min-width: 26px; text-align: right;
+  }
+
+  /* Narrow screens: hide state names, icon + time + pct only */
+  @media (max-width: 380px) {
+    .mst-name { display: none; }
+    .mst-row  { gap: 4px; padding: 4px 4px; }
+    .mst-icon { font-size: 16px; width: 20px; }
+    .mst-time { font-size: 11px; min-width: 32px; }
+    .mst-pct  { font-size: 11px; min-width: 24px; }
+    #moment-ring-wrap { width: 150px; height: 150px; }
+    #moment-hhmm { font-size: 28px; }
+    /* Also hide state names on fasting day tracker */
+    .dst-name { display: none; }
   }
 
   /* ── Ring (right) ─────────────────────────────────────── */
@@ -917,6 +951,9 @@
       <!-- Live the moment header -->
       <div class="ltm-header">
         <span class="ltm-live">LIVE THE </span><span class="ltm-moment">MOMENT</span>
+      </div>
+      <div class="quote-scroller">
+        <div class="quote-text active" id="quote-display"></div>
       </div>
 
       <!-- States left · Ring right -->
@@ -2128,14 +2165,46 @@ function tick() {
 let distTick = 0;
 function tickSlow() { distTick++; }
 
+/* ─── QUOTE SCROLLER ─────────────────────────────────────── */
+const QUOTES = [
+  "You must be present to win.",
+  "Yesterday is history. Tomorrow is a mystery. Today is a gift.",
+  "How you spend your days is how you spend your life.",
+  "Distraction is the enemy of depth.",
+  "Where your attention goes, your life goes.",
+  "Time is the one thing you can't get back. Spend it like it matters.",
+  "Eat with intention. Fast with purpose. Live with presence.",
+  "The moment you notice distraction is the moment you reclaim focus.",
+];
+
+let quoteIdx = 0;
+
+function renderQuote() {
+  const el = document.getElementById('quote-display');
+  if (!el) return;
+  el.classList.remove('active');
+  setTimeout(() => {
+    el.textContent = `"${QUOTES[quoteIdx]}"`;
+    el.classList.add('active');
+  }, 650);
+  quoteIdx = (quoteIdx + 1) % QUOTES.length;
+}
+
+function initQuotes() {
+  const el = document.getElementById('quote-display');
+  if (!el) return;
+  el.textContent = `"${QUOTES[0]}"`;
+  quoteIdx = 1;
+  setInterval(renderQuote, 8000);
+}
+
 function init() {
   initAuth();
-  // Start feeding timer if not fasting
   if (!fastState.running) startFeedingTimer();
-  // Time is always moving — default to Wasteful if no state active
   startWasteful();
   renderHabitTabs();
   renderHabitList();
+  initQuotes();
   tick();
   setInterval(tick, 1000);
   setInterval(tickSlow, 1000);
