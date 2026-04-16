@@ -1632,19 +1632,18 @@ let currentUser = null;
    On receiving a SIGNED_OUT event: show sign-in UI immediately.
 ═══════════════════════════════════════════════════════════════ */
 async function initAuth() {
-  // 1. Explicitly grab the session on load. 
-  // If Supabase already processed the login, this catches it immediately.
+  // 1. Force Supabase to check the URL for tokens immediately on load
   const { data: { session }, error } = await sb.auth.getSession();
   
   if (error) {
     console.error("Auth error:", error.message);
   } else if (session?.user) {
     setUser(session.user);
-    // Clean the trailing /# from the URL
+    // Clean up the URL so it looks nice
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 
-  // 2. Set up the listener for future changes (like logging out)
+  // 2. Listen for any future auth changes
   sb.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_OUT') {
       if (_explicitSignOut) {
@@ -1664,7 +1663,7 @@ async function signInGoogle() {
   await sb.auth.signInWithOAuth({
     provider: 'google',
     options: { 
-      // Dynamically redirects to whichever domain version you are currently on
+      // This tells it to redirect to whichever domain version you are currently using!
       redirectTo: window.location.origin 
     }
   });
