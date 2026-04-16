@@ -70,6 +70,48 @@
   button { font-family: var(--font-body); cursor: pointer; border: none; background: none; }
   input, textarea { font-family: var(--font-body); }
 
+  /* ─── DIAGNOSTICS CARD ────────────────────────────────────── */
+  #diag-card {
+    position: fixed; bottom: 90px; left: 12px; right: 12px; z-index: 400;
+    background: var(--surface);
+    border: 1.5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-family: var(--font-mono, monospace);
+    font-size: 11px; line-height: 1.7;
+    box-shadow: var(--shadow-lg);
+    max-height: 60vh; overflow-y: auto;
+  }
+  #diag-card.hidden { display: none; }
+  .diag-title {
+    font-family: var(--font-cond); font-size: 11px; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .diag-close {
+    cursor: pointer; color: var(--text3); font-size: 14px; line-height: 1;
+  }
+  .diag-row {
+    display: flex; gap: 8px; margin-bottom: 2px;
+  }
+  .diag-key { color: var(--text3); flex-shrink: 0; min-width: 130px; }
+  .diag-val { color: var(--text); word-break: break-all; }
+  .diag-val.ok   { color: #22C55E; }
+  .diag-val.warn { color: #F59E0B; }
+  .diag-val.err  { color: #EF4444; }
+  .diag-sep {
+    height: 1px; background: var(--border); margin: 8px 0;
+  }
+  #diag-toggle {
+    position: fixed; bottom: 94px; right: 12px; z-index: 401;
+    padding: 6px 12px; border-radius: 20px;
+    background: var(--accent); color: #fff;
+    font-family: var(--font-cond); font-size: 11px; font-weight: 700;
+    letter-spacing: .06em; cursor: pointer; opacity: .85;
+    box-shadow: var(--shadow);
+  }
+
   /* ─── SCROLLBAR ───────────────────────────────────────────── */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -1525,6 +1567,16 @@
       <button class="modal-cancel" onclick="closeModal()">Keep Going 💪</button>
     </div>
   </div>
+</div>
+
+<!-- DIAGNOSTICS CARD -->
+<button id="diag-toggle" onclick="toggleDiag()">🔍 Diagnostics</button>
+<div id="diag-card" class="hidden">
+  <div class="diag-title">
+    🔍 Auth Diagnostics
+    <span class="diag-close" onclick="toggleDiag()">✕</span>
+  </div>
+  <div id="diag-content">Loading...</div>
 </div>
 
 <!-- BREAK HABIT MODAL -->
@@ -3546,6 +3598,94 @@ function saveToSupabase(table, data) {
   if (table === 'habits')       return; // handled by pushHabit
   if (table === 'habit_breaks') return; // handled by pushHabitBreak
   enqueue(table, data);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DIAGNOSTICS
+═══════════════════════════════════════════════════════════════ */
+function toggleDiag() {
+  const card = document.getElementById('diag-card');
+  if (card.classList.contains('hidden')) {
+    refreshDiag();
+    card.classList.remove('hidden');
+  } else {
+    card.classList.add('hidden');
+  }
+}
+
+async function refreshDiag() {
+  const el = document.getElementById('diag-content');
+  if (!el) return;
+
+  const rows = [];
+
+  // ── URL & Hash ─────────────────────────────────────────────
+  rows.push({ sep: 'URL' });
+  rows.push({ k: 'window.location.href',   v: window.location.href });
+  rows.push({ k: 'window.location.hash',   v: window.location.hash || '(empty)',
+    cls: window.location.hash ? 'ok' : 'warn' });
+  rows.push({ k: 'hash contains tokens',
+    v: window.location.hash.includes('access_token') ? 'YES ✓' : 'NO',
+    cls: window.location.hash.includes('access_token') ? 'ok' : 'warn' });
+
+  // ── Supabase client ────────────────────────────────────────
+  rows.push({ sep: 'Supabase Client' });
+  rows.push({ k: 'sb defined',    v: typeof sb !== 'undefined' ? 'YES ✓' : 'NO ✗',
+    cls: typeof sb !== 'undefined' ? 'ok' : 'err' });
+  rows.push({ k: 'sb.auth',       v: typeof sb?.auth !== 'undefined' ? 'YES ✓' : 'NO ✗',
+    cls: typeof sb?.auth !== 'undefined' ? 'ok' : 'err' });
+
+  // ── getSession result ──────────────────────────────────────
+  rows.push({ sep: 'getSession()' });
+  try {
+    const { data: { session }, error } = await sb.auth.getSession();
+    if (error) {
+      rows.push({ k: 'error', v: error.message, cls: 'err' });
+    } else if (session) {
+      rows.push({ k: 'session',      v: 'EXISTS ✓', cls: 'ok' });
+      rows.push({ k: 'user.email',   v: session.user?.email || 'N/A', cls: 'ok' });
+      rows.push({ k: 'user.id',      v: session.user?.id?.slice(0,8)+'...', cls: 'ok' });
+      rows.push({ k: 'provider',     v: session.user?.app_metadata?.provider || 'N/A' });
+      rows.push({ k: 'expires_at',   v: new Date(session.expires_at * 1000).toLocaleTimeString() });
+      rows.push({ k: 'access_token', v: session.access_token?.slice(0,20)+'...' });
+    } else {
+      rows.push({ k: 'session', v: 'NULL — not logged in', cls: 'warn' });
+    }
+  } catch(e) {
+    rows.push({ k: 'exception', v: e.message, cls: 'err' });
+  }
+
+  // ── currentUser (app state) ────────────────────────────────
+  rows.push({ sep: 'App State' });
+  rows.push({ k: 'currentUser',    v: currentUser ? currentUser.email : 'null',
+    cls: currentUser ? 'ok' : 'warn' });
+  rows.push({ k: '_currentUserId', v: _currentUserId ? _currentUserId.slice(0,8)+'...' : 'null' });
+
+  // ── localStorage ───────────────────────────────────────────
+  rows.push({ sep: 'localStorage' });
+  const sbKey = Object.keys(localStorage).find(k => k.includes('supabase') || k.includes('sb-'));
+  rows.push({ k: 'supabase key',   v: sbKey ? sbKey.slice(0,40) : 'NOT FOUND',
+    cls: sbKey ? 'ok' : 'err' });
+  if (sbKey) {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(sbKey));
+      rows.push({ k: 'stored session',
+        v: parsed?.access_token ? 'HAS TOKEN ✓' : 'NO TOKEN',
+        cls: parsed?.access_token ? 'ok' : 'warn' });
+    } catch(e) {}
+  }
+
+  // ── Render ─────────────────────────────────────────────────
+  el.innerHTML = rows.map(r => {
+    if (r.sep) return `<div class="diag-sep"></div><div style="color:var(--accent);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">${r.sep}</div>`;
+    return `<div class="diag-row"><span class="diag-key">${r.k}</span><span class="diag-val ${r.cls||''}">${r.v}</span></div>`;
+  }).join('');
+
+  // Auto-refresh every 2s while open
+  const card = document.getElementById('diag-card');
+  if (!card.classList.contains('hidden')) {
+    setTimeout(refreshDiag, 2000);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
