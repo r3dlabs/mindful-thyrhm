@@ -1676,27 +1676,30 @@ let currentUser = null;
 ═══════════════════════════════════════════════════════════════ */
 async function initAuth() {
   // onAuthStateChange fires reliably on every load including after
-  // OAuth redirects — let it be the single source of truth.
-  // We do NOT call getSession() first to avoid a race where the
-  // session hasn't been set from the URL hash yet.
-  sb.auth.onAuthStateChange(async (event, session) => {
-    if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
-      // OAuth redirect lands here as SIGNED_IN
-      // Existing session restore lands here as INITIAL_SESSION
+  // onAuthStateChange is the single source of truth.
+  // On OAuth redirect: fires SIGNED_IN with the new session.
+  // On page reload with existing session: fires INITIAL_SESSION.
+  // On explicit sign out: fires SIGNED_OUT.
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT') {
+      // Only show gate on explicit SIGNED_OUT — not on token refresh
+      if (_explicitSignOut) {
+        _explicitSignOut = false;
+        clearUser();
+      }
+      return;
+    }
+    if (session?.user) {
       setUser(session.user);
-    } else if (event === 'SIGNED_OUT') {
-      clearUser();
-    } else if (event === 'USER_DELETED') {
-      clearUser();
     }
   });
 }
 
-// Track if we already set up this user to avoid double-init
-let _currentUserId = null;
+let _currentUserId    = null;
+let _explicitSignOut  = false;
 
-async function setUser(user) {
-  // Avoid double-init on duplicate events
+function setUser(user) {
+  // Deduplicate — same user, same session, no re-init
   if (_currentUserId === user.id) return;
   _currentUserId = user.id;
   currentUser    = user;
@@ -1718,21 +1721,11 @@ async function setUser(user) {
   const pe = document.getElementById('profile-email');
   if (pe) pe.textContent = user.email || '';
 
-  // Reveal app immediately — don't wait for sync
+  // Reveal app
   showApp();
 
-  // Kill all OTHER sessions (not this one) after a short delay
-  // so this session is fully established first
-  setTimeout(async () => {
-    try {
-      await sb.auth.signOut({ scope: 'others' });
-    } catch(e) {
-      console.warn('signOut others:', e.message);
-    }
-  }, 1500);
-
-  // Sync, subscribe, drain
-  await loadUserData();
+  // Sync + subscribe (non-blocking)
+  loadUserData();
   subscribeRealtime();
   drainQueue();
 }
@@ -1743,7 +1736,6 @@ function clearUser(reason) {
   unsubscribeRealtime();
   const area = document.getElementById('auth-area');
   area.innerHTML = `<button id="login-btn" onclick="signInGoogle()">Sign In</button>`;
-  // Reset gate message
   const desc = document.querySelector('.gate-desc');
   if (desc) desc.innerHTML = reason === 'kicked'
     ? `📱 You were signed in on another device.<br>Sign in again to continue.`
@@ -3672,13 +3664,16 @@ function toggleThemeFromMenu() {
 
 async function signOutUser() {
   document.getElementById('profile-dropdown').classList.remove('open');
-  await sb.auth.signOut();
-  // Clear local state
+  // Clear local state first
   LS.set('fast',    null);
   LS.set('feeding', null);
   LS.set('moment',  null);
   LS.set('habits',  null);
-  toast('Signed out. See you soon 👋');
+  // Flag so onAuthStateChange knows this is intentional
+  _explicitSignOut = true;
+  await sb.auth.signOut();
+  // Fallback — ensure gate shows even if event is slow
+  clearUser();
 }
 
 // Close dropdown on outside click
