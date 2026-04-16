@@ -448,82 +448,95 @@
   /* ════════════════════════════════════════════════════════════
      MOMENT STATES
   ════════════════════════════════════════════════════════════ */
-  .state-grid {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 10px; padding: 0 16px;
+
+  /* ── Moment hero card ─────────────────────────────────── */
+  #moment-hero {
+    margin: 12px 16px 0;
+    padding: 20px 20px 20px;
+    display: flex; flex-direction: column; align-items: center;
+    position: relative; overflow: hidden;
   }
-  .state-btn {
-    padding: 18px 14px;
-    border-radius: var(--radius-sm);
-    border: 2px solid var(--border);
-    background: var(--surface);
-    display: flex; flex-direction: column; gap: 6px;
-    align-items: flex-start;
-    transition: all .2s; position: relative;
-    overflow: hidden;
-  }
-  .state-btn::before {
+  #moment-hero::before {
     content: '';
     position: absolute; inset: 0;
-    opacity: 0; transition: opacity .3s;
+    background: radial-gradient(ellipse at 50% 100%, var(--moment-glow, rgba(224,92,122,0.12)) 0%, transparent 70%);
+    pointer-events: none; transition: background .8s ease;
   }
-  .state-btn.purposeful { --sc: var(--purposeful); }
-  .state-btn.wasteful   { --sc: var(--wasteful); }
-  .state-btn.nourishing { --sc: var(--nourishing); }
-  .state-btn.training   { --sc: var(--training); }
-  .state-btn.recovering { --sc: var(--recovering); grid-column: span 2; }
-  .state-btn.active {
-    border-color: var(--sc);
-    background: var(--surface);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--sc) 15%, transparent);
+  .ltm-header {
+    font-family: var(--font-cond); font-weight: 800;
+    font-size: 13px; letter-spacing: .18em;
+    margin-bottom: 16px; text-align: center; width: 100%;
   }
-  .state-btn.active::before { opacity: 1; background: color-mix(in srgb, var(--sc) 8%, transparent); }
-  .state-icon { font-size: 22px; }
-  .state-name {
-    font-family: var(--font-cond); font-weight: 700;
-    font-size: 15px; letter-spacing: .04em; color: var(--text);
-  }
-  .state-timer {
-    font-family: var(--font-cond); font-size: 13px;
-    color: var(--text3); font-weight: 500;
-  }
-  .state-btn.active .state-timer { color: var(--sc); }
-  .pulse-ring {
-    position: absolute; top: 10px; right: 10px;
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--sc);
-    display: none;
-  }
-  .state-btn.active .pulse-ring {
-    display: block;
-    animation: pulse 1.4s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%,100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--sc) 60%, transparent); }
-    50% { transform: scale(1.1); box-shadow: 0 0 0 6px transparent; }
+  .ltm-live   { color: var(--text3); }
+  .ltm-moment { color: var(--accent); }
+
+  /* ── Two-col layout: states left, ring right ──────────── */
+  .moment-row {
+    display: flex; align-items: center; gap: 16px; width: 100%;
   }
 
-  /* Donut wrap */
-  #donut-wrap {
-    margin: 12px 16px 0;
-    padding: 20px 16px;
+  /* ── State list (left) ────────────────────────────────── */
+  .moment-state-list {
+    flex: 1; display: flex; flex-direction: column;
+    gap: 7px; min-width: 0;
   }
-  #donut-wrap canvas { max-height: 200px; }
-  .donut-legend {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 6px; margin-top: 14px;
+  .mst-row {
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer; border-radius: 8px;
+    padding: 5px 8px; transition: background .15s;
   }
-  .legend-row {
-    display: flex; align-items: center; gap: 7px;
-    font-size: 13px; color: var(--text2);
+  .mst-row:hover { background: var(--surface2); }
+  .mst-row.active { background: color-mix(in srgb, var(--mst-color) 10%, transparent); }
+  .mst-icon { font-size: 14px; flex-shrink: 0; width: 20px; text-align: center; }
+  .mst-name {
+    flex: 1; font-family: var(--font-cond); font-size: 12px;
+    font-weight: 600; letter-spacing: .04em; color: var(--text2);
+    white-space: nowrap;
   }
-  .legend-dot {
-    width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0;
+  .mst-row.active .mst-name { color: var(--mst-color); }
+  .mst-time {
+    font-family: var(--font-cond); font-size: 12px; font-weight: 600;
+    color: var(--text3); flex-shrink: 0; min-width: 36px; text-align: right;
   }
-  .legend-val {
-    margin-left: auto;
-    font-family: var(--font-cond); font-weight: 600; font-size: 13px;
-    color: var(--text);
+  .mst-pct {
+    font-family: var(--font-cond); font-size: 12px; font-weight: 700;
+    flex-shrink: 0; min-width: 30px; text-align: right;
+  }
+
+  /* ── Ring (right) ─────────────────────────────────────── */
+  #moment-ring-wrap {
+    position: relative;
+    width: 170px; height: 170px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  #moment-ring-svg {
+    position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible;
+  }
+  .moment-ring-track { fill: none; stroke: var(--ring-bg); stroke-width: 18; }
+  .moment-ring-live  {
+    fill: none; stroke-width: 18; stroke-linecap: round;
+    transition: stroke 1s ease;
+    animation: ring-pulse 2.8s ease-in-out infinite;
+  }
+  #moment-ring-center {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 0;
+  }
+  #moment-state-emoji { font-size: 26px; line-height: 1; margin-bottom: 5px; }
+  #moment-state-label {
+    font-family: var(--font-cond); font-weight: 700; font-size: 11px;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--text3);
+    margin-bottom: 6px; transition: color .6s;
+  }
+  #moment-hhmm {
+    font-family: var(--font-cond); font-weight: 700; font-size: 34px;
+    line-height: 1; color: var(--text); letter-spacing: -.02em;
+  }
+  #moment-ss {
+    font-family: var(--font-cond); font-size: 14px; font-weight: 500;
+    color: var(--text3); margin-top: 3px; letter-spacing: .06em;
   }
 
   /* ════════════════════════════════════════════════════════════
@@ -810,10 +823,7 @@
   }
 
   /* ─── RESPONSIVE ──────────────────────────────────────────── */
-  @media (min-width: 480px) {
-    .state-grid { grid-template-columns: repeat(3, 1fr); }
-    .state-btn.recovering { grid-column: span 1; }
-  }
+
 </style>
 </head>
 <body>
@@ -901,48 +911,39 @@
       </div>
     </div>
 
-    <!-- MOMENT STATES -->
-    <div class="section-pad">
-      <div class="section-title">Moment State</div>
-    </div>
-    <div class="state-grid" id="state-grid">
-      <button class="state-btn purposeful" data-state="purposeful" onclick="toggleState(this)">
-        <div class="pulse-ring"></div>
-        <div class="state-icon">🎯</div>
-        <div class="state-name">Purposeful</div>
-        <div class="state-timer" id="timer-purposeful">0:00:00</div>
-      </button>
-      <button class="state-btn wasteful" data-state="wasteful" onclick="toggleState(this)">
-        <div class="pulse-ring"></div>
-        <div class="state-icon">📱</div>
-        <div class="state-name">Wasteful</div>
-        <div class="state-timer" id="timer-wasteful">0:00:00</div>
-      </button>
-      <button class="state-btn nourishing" data-state="nourishing" onclick="toggleState(this)">
-        <div class="pulse-ring"></div>
-        <div class="state-icon">🥗</div>
-        <div class="state-name">Nourishing</div>
-        <div class="state-timer" id="timer-nourishing">0:00:00</div>
-      </button>
-      <button class="state-btn training" data-state="training" onclick="toggleState(this)">
-        <div class="pulse-ring"></div>
-        <div class="state-icon">💪</div>
-        <div class="state-name">Training</div>
-        <div class="state-timer" id="timer-training">0:00:00</div>
-      </button>
-      <button class="state-btn recovering" data-state="recovering" onclick="toggleState(this)">
-        <div class="pulse-ring"></div>
-        <div class="state-icon">🛌</div>
-        <div class="state-name">Recovering</div>
-        <div class="state-timer" id="timer-recovering">0:00:00</div>
-      </button>
-    </div>
+    <!-- MOMENT HERO -->
+    <div class="card" id="moment-hero">
 
-    <!-- Donut chart -->
-    <div class="card" id="donut-wrap">
-      <div class="section-title" style="margin-bottom:0">Time Distribution</div>
-      <canvas id="donut-chart"></canvas>
-      <div class="donut-legend" id="donut-legend"></div>
+      <!-- Live the moment header -->
+      <div class="ltm-header">
+        <span class="ltm-live">LIVE THE </span><span class="ltm-moment">MOMENT</span>
+      </div>
+
+      <!-- States left · Ring right -->
+      <div class="moment-row">
+
+        <!-- State list -->
+        <div class="moment-state-list" id="moment-state-list"></div>
+
+        <!-- Ring timer -->
+        <div id="moment-ring-wrap">
+          <svg id="moment-ring-svg" viewBox="0 0 170 170">
+            <circle class="moment-ring-track" cx="85" cy="85" r="74"/>
+            <circle class="moment-ring-live" id="moment-ring-circle"
+              cx="85" cy="85" r="74"
+              stroke="rgba(224,92,122,0.85)"
+              transform="rotate(-90 85 85)"/>
+          </svg>
+          <div id="moment-ring-center">
+            <div id="moment-state-emoji">📱</div>
+            <div id="moment-state-label">Wasteful</div>
+            <div id="moment-hhmm">00:00</div>
+            <div id="moment-ss">00</div>
+          </div>
+        </div>
+
+      </div>
+
     </div>
 
 
@@ -1614,16 +1615,10 @@ function closeModal() {
 /* ═══════════════════════════════════════════════════════════════
    MOMENT STATES ENGINE
 ═══════════════════════════════════════════════════════════════ */
-const STATE_COLORS = {
-  purposeful: '#7C3AED',
-  wasteful:   '#E05C7A',
-  nourishing: '#34C98A',
-  training:   '#E8A838',
-  recovering: '#5B9CF6',
-};
 const STATE_LABELS = { purposeful:'Purposeful', wasteful:'Wasteful', nourishing:'Nourishing', training:'Training', recovering:'Recovering' };
 
-let momentState = LS.get('moment') || { active:null, timers:{ purposeful:0, wasteful:0, nourishing:0, training:0, recovering:0 }, startTs:null };
+// Time is always moving — default active state is wasteful
+let momentState = LS.get('moment') || { active:'wasteful', timers:{ purposeful:0, wasteful:0, nourishing:0, training:0, recovering:0 }, startTs: Date.now() };
 let activeAudio = null;
 
 function getStateElapsed(s) {
@@ -1634,41 +1629,104 @@ function getStateElapsed(s) {
   return t;
 }
 
-function toggleState(btn) {
-  const s = btn.dataset.state;
-  if (momentState.active === s) {
-    // Stop
-    momentState.timers[s] = getStateElapsed(s);
-    momentState.active = null;
-    momentState.startTs = null;
-    stopAudio();
-  } else {
-    // Stop previous
-    if (momentState.active) {
-      momentState.timers[momentState.active] = getStateElapsed(momentState.active);
-    }
-    momentState.active = s;
-    momentState.startTs = Date.now();
-    stopAudio();
-    playAudio(s);
+function switchState(s) {
+  // Time is always moving — you can only redirect it, never stop it.
+  // Tapping the already-active state does nothing.
+  if (momentState.active === s) return;
+
+  // Snapshot current state's elapsed before switching
+  if (momentState.active) {
+    momentState.timers[momentState.active] = getStateElapsed(momentState.active);
   }
+
+  momentState.active  = s;
+  momentState.startTs = Date.now();
   LS.set('moment', momentState);
-  saveToSupabase('moments', { date: today(), state: s, secs: momentState.timers[s] });
+  stopAudio();
+  playAudio(s);
+  saveToSupabase('moments', { date: today(), state: s });
 }
 
+function toggleState(btn) {
+  switchState(btn.dataset.state);
+}
+
+function startWasteful() {
+  if (!momentState.active) {
+    momentState.active  = 'wasteful';
+    momentState.startTs = Date.now();
+    LS.set('moment', momentState);
+  }
+}
+
+const STATE_DEFS = [
+  { key:'purposeful', icon:'🎯', label:'Purposeful', color:'#7C3AED', rgb:'124,58,237'  },
+  { key:'wasteful',   icon:'📱', label:'Wasteful',   color:'#E05C7A', rgb:'224,92,122'  },
+  { key:'nourishing', icon:'🥗', label:'Nourishing', color:'#34C98A', rgb:'52,201,138'  },
+  { key:'training',   icon:'💪', label:'Training',   color:'#E8A838', rgb:'232,168,56'  },
+  { key:'recovering', icon:'🛌', label:'Recovering', color:'#5B9CF6', rgb:'91,156,246'  },
+];
+
 function updateStateUI() {
-  const states = ['purposeful','wasteful','nourishing','training','recovering'];
-  states.forEach(s => {
-    const btn   = document.querySelector(`.state-btn.${s}`);
-    const timer = document.getElementById('timer-'+s);
-    const secs  = getStateElapsed(s);
-    timer.textContent = fmtDur(secs);
-    if (momentState.active === s) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
+  const active  = momentState.active;
+  const listEl  = document.getElementById('moment-state-list');
+  if (!listEl) return;
+
+  const DAY_SECS = 86400;
+
+  // Build rows if empty
+  if (!listEl.children.length) {
+    STATE_DEFS.forEach(sd => {
+      const row = document.createElement('div');
+      row.className = 'mst-row';
+      row.dataset.state = sd.key;
+      row.style.setProperty('--mst-color', sd.color);
+      row.innerHTML = `
+        <span class="mst-icon">${sd.icon}</span>
+        <span class="mst-name">${sd.label}</span>
+        <span class="mst-time" id="mst-time-${sd.key}">00:00</span>
+        <span class="mst-pct"  id="mst-pct-${sd.key}" style="color:${sd.color}">0%</span>`;
+      row.onclick = () => switchState(sd.key);
+      listEl.appendChild(row);
+    });
+  }
+
+  // Update each row
+  STATE_DEFS.forEach(sd => {
+    const row    = listEl.querySelector(`[data-state="${sd.key}"]`);
+    const secs   = getStateElapsed(sd.key);
+    const pct    = Math.min(Math.round(secs / DAY_SECS * 100), 100);
+    const timeEl = document.getElementById('mst-time-'+sd.key);
+    const pctEl  = document.getElementById('mst-pct-'+sd.key);
+    if (timeEl) timeEl.textContent = secs > 0 ? fmtHHMM(secs) : '—';
+    if (pctEl)  pctEl.textContent  = secs > 0 ? pct+'%' : '—';
+    if (row) {
+      row.classList.toggle('active', active === sd.key);
+      row.style.opacity = secs > 0 || active === sd.key ? '1' : '0.35';
     }
   });
+
+  // Update ring
+  const activeDef  = STATE_DEFS.find(s => s.key === active) || STATE_DEFS[1]; // fallback wasteful
+  const secs       = getStateElapsed(activeDef.key);
+  const ringCircle = document.getElementById('moment-ring-circle');
+  const heroEl     = document.getElementById('moment-hero');
+
+  if (ringCircle) {
+    ringCircle.setAttribute('stroke', `rgba(${activeDef.rgb},0.85)`);
+    document.getElementById('moment-ring-svg')?.style.setProperty('--rc', `rgba(${activeDef.rgb},0.7)`);
+  }
+  if (heroEl) heroEl.style.setProperty('--moment-glow', `rgba(${activeDef.rgb},0.14)`);
+
+  const ringEmoji = document.getElementById('moment-state-emoji');
+  const ringLabel = document.getElementById('moment-state-label');
+  const ringHHMM  = document.getElementById('moment-hhmm');
+  const ringSS    = document.getElementById('moment-ss');
+
+  if (ringEmoji) ringEmoji.textContent = activeDef.icon;
+  if (ringLabel) { ringLabel.textContent = activeDef.label.toUpperCase(); ringLabel.style.color = activeDef.color; }
+  if (ringHHMM)  ringHHMM.textContent = fmtHHMM(secs);
+  if (ringSS)    ringSS.textContent   = String(secs % 60).padStart(2,'0');
 }
 
 /* ─── AUDIO ─────────────────────────────────────────────────── */
@@ -1685,38 +1743,6 @@ function stopAudio() {
   if (activeAudio) { try { activeAudio.pause(); activeAudio = null; } catch(e){} }
 }
 
-/* ─── DONUT CHART ─────────────────────────────────────────────*/
-let donutChart = null;
-
-function buildDonut() {
-  const states = ['purposeful','wasteful','nourishing','training','recovering'];
-  const data   = states.map(s => getStateElapsed(s));
-  const total  = data.reduce((a,b)=>a+b,0) || 1;
-  const colors = states.map(s => STATE_COLORS[s]);
-
-  if (donutChart) {
-    donutChart.data.datasets[0].data = data;
-    donutChart.update('none');
-  } else {
-    const ctx = document.getElementById('donut-chart').getContext('2d');
-    donutChart = new Chart(ctx, {
-      type: 'doughnut',
-      data: { labels: states.map(s=>STATE_LABELS[s]), datasets: [{ data, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] },
-      options: {
-        cutout: '70%', responsive: true, maintainAspectRatio: true,
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${fmtDur(ctx.raw)}` } } }
-      }
-    });
-  }
-
-  // Legend
-  const leg = document.getElementById('donut-legend');
-  leg.innerHTML = '';
-  states.forEach((s, i) => {
-    const pct = Math.round(data[i]/total*100);
-    leg.innerHTML += `<div class="legend-row"><div class="legend-dot" style="background:${colors[i]}"></div>${STATE_LABELS[s]}<span class="legend-val">${pct}%</span></div>`;
-  });
-}
 
 /* ─── DAY STATE LIST ─────────────────────────────────────── */
 /* ─── helpers ────────────────────────────────────────────────
@@ -2095,7 +2121,6 @@ function toast(msg) {
 function tick() {
   updateFastUI();
   updateStateUI();
-  buildDonut();
   buildDayTracker();
 }
 
@@ -2107,6 +2132,8 @@ function init() {
   initAuth();
   // Start feeding timer if not fasting
   if (!fastState.running) startFeedingTimer();
+  // Time is always moving — default to Wasteful if no state active
+  startWasteful();
   renderHabitTabs();
   renderHabitList();
   tick();
