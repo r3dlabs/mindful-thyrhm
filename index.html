@@ -1632,28 +1632,19 @@ let currentUser = null;
    On receiving a SIGNED_OUT event: show sign-in UI immediately.
 ═══════════════════════════════════════════════════════════════ */
 async function initAuth() {
-  // 1. Catch silent errors in the URL from Supabase
-  const params = new URLSearchParams(window.location.search);
-  const hashParams = new URLSearchParams(window.location.hash.substring(1));
-  const errMsg = params.get('error_description') || hashParams.get('error_description');
-  
-  if (errMsg) {
-    alert('Supabase Auth Error: ' + errMsg.replace(/\+/g, ' '));
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
-
-  // 2. Explicitly grab the session
+  // 1. Explicitly grab the session on load. 
+  // If Supabase already processed the login, this catches it immediately.
   const { data: { session }, error } = await sb.auth.getSession();
   
   if (error) {
-    alert("Session Error: " + error.message);
+    console.error("Auth error:", error.message);
   } else if (session?.user) {
     setUser(session.user);
-    // Clean up the ?code= from the URL for a clean look
+    // Clean the trailing /# from the URL
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 
-  // 3. Listen for changes
+  // 2. Set up the listener for future changes (like logging out)
   sb.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_OUT') {
       if (_explicitSignOut) {
@@ -1673,7 +1664,7 @@ async function signInGoogle() {
   await sb.auth.signInWithOAuth({
     provider: 'google',
     options: { 
-      // Forces the redirect to match exactly the domain you are currently viewing
+      // Dynamically redirects to whichever domain version you are currently on
       redirectTo: window.location.origin 
     }
   });
