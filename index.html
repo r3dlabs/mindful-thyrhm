@@ -1603,66 +1603,65 @@ let currentUser = null;
    On receiving a SIGNED_OUT event: show sign-in UI immediately.
 ═══════════════════════════════════════════════════════════════ */
 async function initAuth() {
-  // onAuthStateChange fires reliably on every load including after
-  // Get session on load (handles OAuth redirect token in URL hash)
-  sb.auth.getSession().then(({ data: { session } }) => {
-    if (session?.user) setUser(session.user);
-  });
+  // STEP 1: check for existing session (also catches OAuth redirect)
+  const { data: { session } } = await sb.auth.getSession();
+  console.log('[Auth] getSession:', session?.user?.email || 'no session');
+  if (session?.user) {
+    setUser(session.user);
+    return; // session found — onAuthStateChange will handle future changes
+  }
 
-  // Watch for auth changes
+  // STEP 2: no session yet — watch for sign-in
   sb.auth.onAuthStateChange((event, session) => {
-    console.log('Auth event:', event, session?.user?.email);
+    console.log('[Auth] event:', event, session?.user?.email || 'no user');
     if (session?.user) {
       setUser(session.user);
-    } else if (event === 'SIGNED_OUT' && _explicitSignOut) {
-      _explicitSignOut = false;
+    } else if (event === 'SIGNED_OUT') {
       clearUser();
     }
   });
 }
 
-let _currentUserId    = null;
-let _explicitSignOut  = false;
+let _currentUserId   = null;
+let _explicitSignOut = false;
 
 function setUser(user) {
-  // Deduplicate — same user, same session, no re-init
   if (_currentUserId === user.id) return;
   _currentUserId = user.id;
   currentUser    = user;
 
-  // Update avatar
+  // Update avatar in topbar
   const area = document.getElementById('auth-area');
   const meta = user.user_metadata || {};
-  const name = meta.full_name || meta.name || user.email || 'U';
+  const name = meta.full_name || meta.name || user.email || 'User';
   const av   = meta.avatar_url;
   area.innerHTML = `<div class="user-avatar" title="${name}" onclick="toggleProfileDropdown()">${
     av ? `<img src="${av}" referrerpolicy="no-referrer">` : name[0].toUpperCase()
   }</div>`;
 
-  // Populate dropdown
+  // Populate profile dropdown
   const sm = document.getElementById('profile-avatar-sm');
   if (sm) sm.innerHTML = av ? `<img src="${av}" referrerpolicy="no-referrer">` : name[0].toUpperCase();
   const pn = document.getElementById('profile-name');
-  if (pn) pn.textContent = meta.full_name || meta.name || 'User';
+  if (pn) pn.textContent = name;
   const pe = document.getElementById('profile-email');
   if (pe) pe.textContent = user.email || '';
 
-  // Sync + subscribe (non-blocking)
+  console.log('[Auth] User set:', user.email);
+
+  // Non-blocking — don't await these
   loadUserData();
   subscribeRealtime();
   drainQueue();
 }
 
-function clearUser(reason) {
+function clearUser() {
   currentUser    = null;
   _currentUserId = null;
   unsubscribeRealtime();
   const area = document.getElementById('auth-area');
-  area.innerHTML = `<button id="login-btn" onclick="signInGoogle()">Sign In</button>`;
-  const desc = document.querySelector('.gate-desc');
-  if (desc) desc.innerHTML = reason === 'kicked'
-    ? `📱 You were signed in on another device.<br>Sign in again to continue.`
-    : `Track your fasting journey, own your time, build intentional habits. Sign in to begin.`;
+  if (area) area.innerHTML = `<button id="login-btn" onclick="signInGoogle()">Sign In</button>`;
+  console.log('[Auth] User cleared');
 }
 
 
@@ -3586,16 +3585,13 @@ function toggleThemeFromMenu() {
 
 async function signOutUser() {
   document.getElementById('profile-dropdown').classList.remove('open');
-  // Clear local state first
   LS.set('fast',    null);
   LS.set('feeding', null);
   LS.set('moment',  null);
   LS.set('habits',  null);
-  // Flag so onAuthStateChange knows this is intentional
-  _explicitSignOut = true;
   await sb.auth.signOut();
-  // Fallback — ensure gate shows even if event is slow
   clearUser();
+  toast('Signed out. See you soon 👋');
 }
 
 // Close dropdown on outside click
