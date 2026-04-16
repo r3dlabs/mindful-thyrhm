@@ -1530,35 +1530,112 @@ const sb = createClient(
 
 let currentUser = null;
 
+/* ═══════════════════════════════════════════════════════════════
+   AUTH — Single active session per account.
+   On fresh sign-in: all other sessions for this user are killed.
+   On existing session restore (same browser/tab): no kill fired,
+   so reopening the app on the same device works seamlessly.
+   On receiving a SIGNED_OUT event: show sign-in UI immediately.
+═══════════════════════════════════════════════════════════════ */
+let _isNewSignIn = false; // true only on a fresh OAuth sign-in
+
 async function initAuth() {
   const { data: { session } } = await sb.auth.getSession();
-  if (session?.user) setUser(session.user);
-  sb.auth.onAuthStateChange((_, session) => {
-    if (session?.user) setUser(session.user);
-    else clearUser();
+  if (session?.user) {
+    // Restored existing session — no kill needed
+    setUser(session.user, false);
+  }
+
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session?.user) {
+      const isNew = _isNewSignIn;
+      _isNewSignIn = false;
+      setUser(session.user, isNew);
+    } else if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
+      clearUser('session_expired');
+    } else if (!session) {
+      clearUser();
+    }
   });
 }
 
-function setUser(user) {
+async function setUser(user, killOthers = false) {
   currentUser = user;
+
+  // Kill all other active sessions if this is a fresh sign-in
+  if (killOthers) {
+    try {
+      // Sign out all other sessions for this user
+      await sb.auth.signOut({ scope: 'others' });
+    } catch(e) {
+      console.warn('signOut others:', e.message);
+    }
+  }
+
+  // Update avatar
   const area = document.getElementById('auth-area');
   const meta = user.user_metadata || {};
   const name = meta.full_name || meta.name || user.email || 'U';
-  const av = meta.avatar_url;
-  area.innerHTML = `<div class="user-avatar" title="${name}">${av ? `<img src="${av}" referrerpolicy="no-referrer">` : name[0].toUpperCase()}</div>`;
-  loadUserData();
+  const av   = meta.avatar_url;
+  area.innerHTML = `<div class="user-avatar" title="${name}">${
+    av ? `<img src="${av}" referrerpolicy="no-referrer">` : name[0].toUpperCase()
+  }</div>`;
+
+  // Sync, subscribe, drain
+  await loadUserData();
   subscribeRealtime();
-  // Drain any queued offline ops
   drainQueue();
 }
-function clearUser() {
+
+function clearUser(reason) {
   currentUser = null;
   unsubscribeRealtime();
-  document.getElementById('auth-area').innerHTML = `<button id="login-btn" onclick="signInGoogle()">Sign In</button>`;
+  const area = document.getElementById('auth-area');
+  area.innerHTML = `<button id="login-btn" onclick="signInGoogle()">Sign In</button>`;
+  if (reason === 'session_expired') {
+    showSessionExpiredBanner();
+  }
+}
+
+function showSessionExpiredBanner() {
+  // Remove existing banner if any
+  const existing = document.getElementById('session-banner');
+  if (existing) existing.remove();
+
+  const banner = document.createElement('div');
+  banner.id = 'session-banner';
+  banner.style.cssText = `
+    position:fixed; top:56px; left:0; right:0; z-index:150;
+    background:var(--surface); border-bottom:1px solid var(--border);
+    padding:10px 20px; display:flex; align-items:center; gap:12px;
+    font-family:var(--font-cond); font-size:13px; color:var(--text2);
+    box-shadow:var(--shadow);
+  `;
+  banner.innerHTML = `
+    <span>📱 Signed in on another device.</span>
+    <button onclick="signInGoogle()" style="
+      padding:6px 14px; border-radius:6px;
+      background:var(--accent); color:#fff;
+      font-family:var(--font-cond); font-weight:700; font-size:12px;
+      letter-spacing:.06em; cursor:pointer;
+    ">Sign Back In</button>
+    <button onclick="this.parentElement.remove()" style="
+      margin-left:auto; color:var(--text3);
+      font-family:var(--font-cond); font-size:12px; cursor:pointer;
+    ">✕</button>
+  `;
+  document.body.appendChild(banner);
+
+  // Auto-remove after 10s
+  setTimeout(() => banner.remove(), 10000);
 }
 
 async function signInGoogle() {
-  await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.href } });
+  _isNewSignIn = true; // flag so setUser knows to kill others
+  await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: location.href }
+  });
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -3164,17 +3241,20 @@ window.addEventListener('offline', () => { /* writes still go to LS */ });
 /* ── Push state to Supabase ────────────────────────────────── */
 function pushAppState() {
   if (!currentUser) return;
+  // Store moment_timers WITHOUT the live session baked in.
+  // getStateElapsed adds live on top — so we just store the frozen totals.
+  // On any device: elapsed = timers[s] + (active===s ? Date.now()-startTs : 0)
   const payload = {
     fast_running:       fastState.running,
     fast_start_ts:      fastState.startTs,
     fast_original_ts:   fastState.originalStartTs,
     fast_total_secs:    fastState.totalSecs || 0,
     feeding_start_ts:   feedingState.startTs,
-    feeding_total_secs: feedingState.totalSecs || 0,
+    feeding_total_secs: feedingState.totalSecs || 0,  // frozen total only
     feeding_last_date:  feedingState.lastDate,
     moment_active:      momentState.active,
     moment_start_ts:    momentState.startTs,
-    moment_timers:      momentState.timers,
+    moment_timers:      momentState.timers,            // frozen totals only
   };
   enqueue('app_state', payload);
 }
@@ -3198,12 +3278,16 @@ function pushMoment(state, secs, startTs, endTs) {
 }
 
 function pushHabit(h, cat) {
-  enqueue('habits', {
-    cat, name: h.name, streak: h.streak,
+  const payload = {
+    cat, name: h.name, streak: h.streak || 0,
     done_date:   h.done   ? today() : null,
     broken_date: h.broken || null,
     sort_order:  0,
-  });
+  };
+  // If we have a Supabase UUID from pullHabits, include it for clean upsert
+  // Otherwise the unique(user_id, cat, name) constraint handles dedup
+  if (h.id && h.id.length > 8) payload.id = h.id;
+  enqueue('habits', payload);
 }
 
 function pushHabitBreak(h, cat, reason, prevStreak) {
@@ -3259,17 +3343,26 @@ async function pullAppState() {
     };
     LS.set('fast', fastState);
 
-    // Restore feeding
+    // Restore feeding — use remote startTs exactly so both devices compute same elapsed
     const td = today();
-    feedingState = {
-      startTs:    data.feeding_start_ts,
-      totalSecs:  data.feeding_total_secs || 0,
-      lastDate:   data.feeding_last_date || td,
-      _savedAt:   remoteTs,
-    };
-    // If feeding date differs from today, reset
-    if (feedingState.lastDate !== td) {
-      feedingState = { startTs: fastState.running ? null : Date.now(), totalSecs: secsSinceMidnight(), lastDate: td };
+    if (data.feeding_last_date === td) {
+      feedingState = {
+        startTs:   data.feeding_start_ts,
+        totalSecs: data.feeding_total_secs || 0,
+        lastDate:  td,
+        _savedAt:  remoteTs,
+      };
+      // If feeding was paused (fast running then) but we're now not fasting, resume
+      if (!fastState.running && !feedingState.startTs) {
+        feedingState.startTs = Date.now();
+      }
+    } else {
+      // Different day — reset with today's preload
+      feedingState = {
+        startTs:   fastState.running ? null : Date.now(),
+        totalSecs: fastState.running ? 0 : secsSinceMidnight(),
+        lastDate:  td,
+      };
     }
     LS.set('feeding', feedingState);
 
@@ -3312,33 +3405,51 @@ async function pullFasts() {
 }
 
 async function pullHabits() {
-  const { data, error } = await sb
-    .from('habits')
-    .select('*')
-    .eq('user_id', currentUser.id)
-    .order('sort_order');
+  // Pull habits and break log in parallel
+  const [habitsRes, breaksRes] = await Promise.all([
+    sb.from('habits')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('sort_order'),
+    sb.from('habit_breaks')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false })
+      .limit(200),
+  ]);
 
-  if (error || !data || !data.length) return;
+  if (habitsRes.error || !habitsRes.data?.length) return;
 
-  // Rebuild habits object from remote rows
-  const rebuilt = { purposeful:[], nourishing:[], training:[], recovering:[], wasteful:[] };
   const td = today();
+  const breaks = breaksRes.data || [];
 
-  data.forEach(r => {
+  // Build break log per habit name+cat from Supabase
+  const breakLogMap = {};
+  breaks.forEach(b => {
+    const key = `${b.cat}::${b.name}`;
+    if (!breakLogMap[key]) breakLogMap[key] = [];
+    breakLogMap[key].push({
+      date:       b.date,
+      reason:     b.reason,
+      prevStreak: b.prev_streak,
+    });
+  });
+
+  // Rebuild habits object
+  const rebuilt = { purposeful:[], nourishing:[], training:[], recovering:[], wasteful:[] };
+  habitsRes.data.forEach(r => {
     if (!rebuilt[r.cat]) return;
-    // Merge break log from local (not yet in Supabase habit row)
-    const local = (habits[r.cat]||[]).find(h=>h.name===r.name);
+    const key = `${r.cat}::${r.name}`;
     rebuilt[r.cat].push({
       id:       r.id,
       name:     r.name,
       streak:   r.streak || 0,
       done:     r.done_date   === td,
       broken:   r.broken_date === td ? td : null,
-      breakLog: local?.breakLog || [],
+      breakLog: breakLogMap[key] || [],
     });
   });
 
-  // Only replace if remote has habits (don't wipe local-only new habits)
   const hasRemote = Object.values(rebuilt).some(a=>a.length>0);
   if (hasRemote) {
     habits = rebuilt;
@@ -3443,12 +3554,9 @@ function tick() {
   buildDayTracker();
 }
 
-// Push app state every 60s as heartbeat
+// Slow tick — reserved for future use
 let distTick = 0;
-function tickSlow() {
-  distTick++;
-  if (distTick % 60 === 0) pushAppState();
-}
+function tickSlow() { distTick++; }
 
 /* ─── STAGE DESCRIPTION SCROLLER ────────────────────────── */
 // Builds a rotation: current state desc first, then upcoming states in order
