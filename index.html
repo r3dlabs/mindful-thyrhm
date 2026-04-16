@@ -175,9 +175,13 @@
   ════════════════════════════════════════════════════════════ */
   #fasting-hero {
     margin: 16px 16px 0;
-    padding: 28px 20px 24px;
+    padding: 20px 20px 20px;
     display: flex; flex-direction: column; align-items: center;
     position: relative; overflow: hidden;
+  }
+  .hero-row {
+    display: flex; align-items: center; gap: 16px;
+    width: 100%;
   }
   #fasting-hero::before {
     content: '';
@@ -187,21 +191,36 @@
   }
   .ring-wrap {
     position: relative;
-    width: 210px; height: 210px;
-    margin-bottom: 16px;
-    display: flex; align-items: center; justify-content: center;
+    width: 170px; height: 170px;
     flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
   }
-  .ring-glow {
-    position: absolute; inset: 0; border-radius: 50%;
-    background: radial-gradient(ellipse at center, var(--glow-color, rgba(124,58,237,0.18)) 0%, transparent 70%);
-    transition: background .8s ease;
-    pointer-events: none;
+  #ring-svg-glow {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    overflow: visible;
   }
-  .ring-outer {
-    position: absolute; inset: 0; border-radius: 50%;
-    border: 1.5px solid var(--glow-color, rgba(124,58,237,0.25));
-    transition: border-color .8s ease;
+  .ring-track-bg {
+    fill: none;
+    stroke: var(--ring-bg);
+    stroke-width: 18;
+  }
+  .ring-live {
+    fill: none;
+    stroke-width: 18;
+    stroke-linecap: round;
+    /* color set via JS */
+    transition: stroke 1s ease;
+    /* Always full circle — glow effect only */
+    stroke-dasharray: none;
+  }
+  @keyframes ring-pulse {
+    0%   { opacity: 1;   filter: drop-shadow(0 0  6px var(--rc, rgba(124,58,237,0.6))); }
+    50%  { opacity: 0.7; filter: drop-shadow(0 0 22px var(--rc, rgba(124,58,237,0.9))); }
+    100% { opacity: 1;   filter: drop-shadow(0 0  6px var(--rc, rgba(124,58,237,0.6))); }
+  }
+  .ring-live {
+    animation: ring-pulse 2.8s ease-in-out infinite;
   }
   .ring-center {
     position: relative; z-index: 1;
@@ -221,7 +240,7 @@
   }
   #fast-hhmm {
     font-family: var(--font-cond); font-weight: 700;
-    font-size: 44px; line-height: 1;
+    font-size: 34px; line-height: 1;
     color: var(--text); letter-spacing: -.02em;
   }
   #fast-seconds {
@@ -229,7 +248,43 @@
     color: var(--text3); font-weight: 500; margin-top: 3px;
     letter-spacing: .06em;
   }
-  .fast-btns { display: flex; gap: 12px; width: 100%; }
+  .fast-btns { display: flex; gap: 10px; width: 100%; }
+  .btn-dev {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border);
+    background: transparent;
+    color: var(--text3);
+    font-family: var(--font-cond); font-weight: 600;
+    font-size: 12px; letter-spacing: .04em;
+    flex-shrink: 0;
+    transition: all .2s;
+  }
+  .btn-dev:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-dev:active { transform: scale(.97); }
+
+  /* ─── DAY STATE LIST ──────────────────────────────────── */
+  .day-tracker {
+    flex: 1; display: flex; flex-direction: column;
+    justify-content: center; gap: 6px; min-width: 0;
+  }
+  .dst-row {
+    display: flex; align-items: center; gap: 7px;
+  }
+  .dst-icon { font-size: 14px; flex-shrink: 0; width: 20px; text-align: center; line-height: 1; }
+  .dst-name {
+    flex: 1; font-family: var(--font-cond); font-size: 12px;
+    font-weight: 600; letter-spacing: .04em; color: var(--text2);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .dst-time {
+    font-family: var(--font-cond); font-size: 12px; font-weight: 600;
+    color: var(--text3); flex-shrink: 0; min-width: 38px; text-align: right;
+  }
+  .dst-pct {
+    font-family: var(--font-cond); font-size: 12px; font-weight: 700;
+    flex-shrink: 0; min-width: 30px; text-align: right;
+  }
   .btn-start {
     flex: 1; padding: 14px;
     border-radius: var(--radius-sm);
@@ -632,7 +687,7 @@
 <div id="topbar">
   <div class="brand">MINDFUL <span>RHYTHM</span></div>
   <div class="topbar-right">
-    <button id="theme-btn" title="Toggle theme">☀</button>
+    <button id="theme-btn" title="Toggle theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg></button>
     <div id="auth-area">
       <button id="login-btn" onclick="signInGoogle()">Sign In</button>
     </div>
@@ -653,29 +708,41 @@
 
     <!-- FASTING HERO -->
     <div class="card" id="fasting-hero">
-      <div class="ring-wrap" id="ring-wrap">
-        <div class="ring-glow" id="ring-glow"></div>
-        <div class="ring-outer" id="ring-outer"></div>
-        <div class="ring-center">
-          <div id="fast-stage-emoji">🍽️</div>
-          <div id="fast-stage-ring">Fed</div>
-          <div id="fast-hhmm">00:00</div>
-          <div id="fast-seconds">00</div>
+      <!-- Ring + Day Tracker side by side -->
+      <div class="hero-row">
+        <div class="ring-wrap" id="ring-wrap">
+          <svg id="ring-svg-glow" viewBox="0 0 170 170">
+            <circle class="ring-track-bg" cx="85" cy="85" r="74"/>
+            <circle class="ring-live" id="ring-live-circle"
+              cx="85" cy="85" r="74"
+              stroke="rgba(124,58,237,0.85)"
+              transform="rotate(-90 85 85)"/>
+          </svg>
+          <div class="ring-center">
+            <div id="fast-stage-emoji">🍴</div>
+            <div id="fast-stage-ring">Feeding</div>
+            <div id="fast-hhmm">00:00</div>
+            <div id="fast-seconds">00</div>
+          </div>
         </div>
+
+        <!-- Day State List -->
+        <div class="day-tracker" id="day-state-list"></div>
       </div>
 
       <!-- Stage description -->
       <div class="stage-desc-block">
-        <div id="stage-desc-text">Your body is digesting and absorbing nutrients.</div>
+        <div id="stage-desc-text">You are in your eating window. Enjoy nourishing meals.</div>
         <div class="stage-next-line">
-          <span id="stage-next-label">Next: Early Fasting</span>
-          <span id="stage-next-eta" class="stage-next-eta">—</span>
+          <span id="stage-next-label">Next: Fed (start fast)</span>
+          <span id="stage-next-eta" class="stage-next-eta"></span>
         </div>
       </div>
 
       <!-- CTA -->
       <div class="fast-btns">
         <button class="btn-start" id="fast-btn" onclick="handleFastBtn()">Start Fast</button>
+        <button class="btn-dev" id="ffwd-btn" onclick="ffwdStep()" title="DEV: skip to next stage">⏭ +4h</button>
       </div>
     </div>
 
@@ -858,7 +925,7 @@
     <div class="modal-handle"></div>
     <div class="modal-title">End Fast?</div>
     <div class="modal-body" id="modal-body">
-      You've been fasting for <strong id="modal-time">—</strong> and reached the <strong id="modal-stage">—</strong> stage. Ending now will reset your progress.
+      You've been fasting for <strong id="modal-time">—</strong> and reached <strong id="modal-stage">—</strong>. Ending will return you to your feeding window.
     </div>
     <div class="modal-btns">
       <button class="modal-confirm" onclick="confirmEndFast()">Yes, End Fast</button>
@@ -923,7 +990,7 @@ const LS = {
 let darkMode = LS.get('dark') !== false;
 function applyTheme() {
   document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
-  document.getElementById('theme-btn').textContent = darkMode ? '☀' : '🌙';
+  document.getElementById('theme-btn').innerHTML = darkMode ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg>` : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
 }
 document.getElementById('theme-btn').addEventListener('click', () => {
   darkMode = !darkMode; LS.set('dark', darkMode); applyTheme();
@@ -970,160 +1037,280 @@ initDateHeader();
 
 /* ═══════════════════════════════════════════════════════════════
    FASTING ENGINE
+   Full biological cycle:
+   FEEDING → [Start Fast] → FED → EARLY FASTING → KETOSIS →
+   AUTOPHAGY → DEEP FASTING → IMMUNE REGEN → [End Fast] → FEEDING
 ═══════════════════════════════════════════════════════════════ */
+
+// Index 0 = FEEDING (eating window), index 1+ = fasting stages
 const STAGES = [
-  { name:'Fed',              icon:'🍽️', start:0,    end:4,    color:'#9E95B8', desc:'Your body is digesting and absorbing nutrients. Insulin is elevated, storing energy from your recent meal.' },
-  { name:'Early Fasting',    icon:'⏳', start:4,    end:8,    color:'#7C6FC7', desc:'Glycogen stores are depleting. Your body begins burning fat for energy. Blood sugar and insulin levels drop.' },
-  { name:'Ketosis',          icon:'🔥', start:8,    end:16,   color:'#E8A838', desc:'Fat burning accelerates. Your liver produces ketone bodies as an alternative fuel source for the brain.' },
-  { name:'Autophagy',        icon:'♻️', start:16,   end:24,   color:'#34C98A', desc:'Cellular cleanup begins. Damaged proteins and organelles are recycled. This is where the deep healing happens.' },
-  { name:'Deep Fasting',     icon:'🧬', start:24,   end:48,   color:'#7C3AED', desc:'Growth hormone surges. Cellular repair intensifies. Metabolic adaptation reaches peak efficiency.' },
-  { name:'Immune Regen.',    icon:'🛡️', start:48,   end:9999, color:'#E05C7A', desc:'Immune system regeneration may begin. Old immune cells are recycled and new ones produced.' },
+  {
+    name: 'Feeding',
+    icon: '🍴',
+    color: '#E8A838',
+    rgb: '232,168,56',
+    fasting: false,
+    desc: 'You are in your eating window. Enjoy nourishing, intentional meals. Your body is fuelling up for the fast ahead.',
+    next: 'Fed'
+  },
+  {
+    name: 'Fed',
+    icon: '⏸️',
+    color: '#9E95B8',
+    rgb: '158,149,184',
+    fasting: true,
+    start: 0, end: 4,
+    desc: 'Eating has stopped. Your body is digesting and absorbing nutrients. Insulin is elevated, energy is being stored.',
+    next: 'Early Fasting'
+  },
+  {
+    name: 'Early Fasting',
+    icon: '⏳',
+    color: '#5B9CF6',
+    rgb: '91,156,246',
+    fasting: true,
+    start: 4, end: 8,
+    desc: 'Glycogen stores are depleting. Your body begins shifting to fat for energy. Blood sugar and insulin levels drop steadily.',
+    next: 'Ketosis'
+  },
+  {
+    name: 'Ketosis',
+    icon: '🔥',
+    color: '#F97316',
+    rgb: '249,115,22',
+    fasting: true,
+    start: 8, end: 16,
+    desc: 'Fat burning accelerates. Your liver produces ketone bodies as an alternative fuel source — your brain loves this.',
+    next: 'Autophagy'
+  },
+  {
+    name: 'Autophagy',
+    icon: '♻️',
+    color: '#34C98A',
+    rgb: '52,201,138',
+    fasting: true,
+    start: 16, end: 24,
+    desc: 'Cellular cleanup begins. Damaged proteins and organelles are recycled. This is where deep healing happens.',
+    next: 'Deep Fasting'
+  },
+  {
+    name: 'Deep Fasting',
+    icon: '🧬',
+    color: '#7C3AED',
+    rgb: '124,58,237',
+    fasting: true,
+    start: 24, end: 48,
+    desc: 'Growth hormone surges. Cellular repair intensifies. Metabolic adaptation reaches peak efficiency.',
+    next: 'Immune Regen'
+  },
+  {
+    name: 'Immune Regen',
+    icon: '🛡️',
+    color: '#E05C7A',
+    rgb: '224,92,122',
+    fasting: true,
+    start: 48, end: 9999,
+    desc: 'Immune system regeneration begins. Old immune cells are recycled, new ones produced. Peak fasting state.',
+    next: null
+  },
 ];
-const FAST_TARGET_HRS = 16;
 
-// Stage glow colors (r,g,b)
-const STAGE_COLORS_RGB = [
-  '158,149,184', // Fed
-  '124,111,199', // Early Fasting
-  '232,168,56',  // Ketosis
-  '52,201,138',  // Autophagy
-  '124,58,237',  // Deep Fasting
-  '224,92,122',  // Immune Regen
-];
-
-// Fed timer — tracks time spent NOT fasting (daily)
-let fedState = LS.get('fed') || { startTs: null, totalSecs: 0, lastDate: null };
-
-function getFedElapsed() {
-  const td = today();
-  if (fedState.lastDate !== td) {
-    fedState = { startTs: null, totalSecs: 0, lastDate: td };
-    LS.set('fed', fedState);
+// Fasting-only stages (index into STAGES where fasting:true)
+function getFastingStageIdx(fastHrs) {
+  const fastingStages = STAGES.filter(s => s.fasting);
+  for (let i = fastingStages.length - 1; i >= 0; i--) {
+    if (fastHrs >= fastingStages[i].start) {
+      return STAGES.indexOf(fastingStages[i]);
+    }
   }
-  if (fastState.running) return fedState.totalSecs || 0;
-  if (!fedState.startTs) return fedState.totalSecs || 0;
-  return fedState.totalSecs + Math.floor((Date.now() - fedState.startTs) / 1000);
+  return 1; // default to Fed (first fasting stage)
 }
 
-function syncFedTimer() {
-  const td = today();
-  if (fedState.lastDate !== td) fedState = { startTs: null, totalSecs: 0, lastDate: td };
-  if (!fastState.running && !fedState.startTs) {
-    fedState.startTs = Date.now();
-    fedState.lastDate = td;
-  } else if (fastState.running && fedState.startTs) {
-    fedState.totalSecs = getFedElapsed();
-    fedState.startTs = null;
-  }
-  LS.set('fed', fedState);
+// Overall current stage index including Feeding (idx 0)
+function getCurrentStageIdx() {
+  if (!fastState.running) return 0; // Feeding
+  const hrs = getFastElapsed() / 3600;
+  return getFastingStageIdx(hrs);
 }
 
-let fastState = LS.get('fast') || { running:false, startTs:null, totalSecs:0, log:[] };
+/* ── State storage ───────────────────────────────────────────── */
+// feedingState: tracks active eating window timer
+let feedingState = LS.get('feeding') || { startTs: Date.now(), totalSecs: 0, lastDate: today() };
+
+function getFeedingElapsed() {
+  const td = today();
+  // Reset daily if new day
+  if (feedingState.lastDate !== td) {
+    feedingState = { startTs: Date.now(), totalSecs: 0, lastDate: td };
+    LS.set('feeding', feedingState);
+  }
+  if (fastState.running) return feedingState.totalSecs || 0;
+  if (!feedingState.startTs) return feedingState.totalSecs || 0;
+  return feedingState.totalSecs + Math.floor((Date.now() - feedingState.startTs) / 1000);
+}
+
+function startFeedingTimer() {
+  const td = today();
+  feedingState.startTs  = Date.now();
+  feedingState.lastDate = td;
+  LS.set('feeding', feedingState);
+}
+
+function pauseFeedingTimer() {
+  feedingState.totalSecs = getFeedingElapsed();
+  feedingState.startTs   = null;
+  LS.set('feeding', feedingState);
+}
+
+let fastState = LS.get('fast') || { running: false, startTs: null, totalSecs: 0, log: [] };
 
 function getFastElapsed() {
   if (!fastState.running || !fastState.startTs) return fastState.totalSecs || 0;
-  return fastState.totalSecs + Math.floor((Date.now() - fastState.startTs)/1000);
+  return fastState.totalSecs + Math.floor((Date.now() - fastState.startTs) / 1000);
 }
 
-function getCurrentStage(hrs) {
-  for (let i = STAGES.length-1; i >= 0; i--) {
-    if (hrs >= STAGES[i].start) return i;
-  }
-  return 0;
-}
-
+/* ── UI update ───────────────────────────────────────────────── */
 function updateFastUI() {
-  const isFasting = fastState.running;
-  const fastSecs  = getFastElapsed();
-  const displaySecs = isFasting ? fastSecs : getFedElapsed();
-  const hrs   = fastSecs / 3600;
-  const stIdx = isFasting ? getCurrentStage(hrs) : 0;
+  const stIdx = getCurrentStageIdx();
   const st    = STAGES[stIdx];
-  const rgb   = STAGE_COLORS_RGB[stIdx];
+  const isFasting = fastState.running;
 
-  // Glow circle — set CSS custom property via style.setProperty
-  const glowEl  = document.getElementById('ring-glow');
-  const outerEl = document.getElementById('ring-outer');
-  if (glowEl)  glowEl.style.setProperty('--glow-color', `rgba(${rgb},0.22)`);
-  if (outerEl) outerEl.style.setProperty('--glow-color', `rgba(${rgb},0.45)`);
+  // Timer shows feeding window elapsed OR fast elapsed
+  const displaySecs = isFasting ? getFastElapsed() : getFeedingElapsed();
 
-  // Timer display
-  document.getElementById('fast-hhmm').textContent = fmtHHMM(displaySecs);
+  // Ring glow color
+  const ringCircle = document.getElementById('ring-live-circle');
+  if (ringCircle) {
+    ringCircle.setAttribute('stroke', `rgba(${st.rgb},0.85)`);
+    const svg = document.getElementById('ring-svg-glow');
+    if (svg) svg.style.setProperty('--rc', `rgba(${st.rgb},0.7)`);
+  }
+
+  // Timer text
+  document.getElementById('fast-hhmm').textContent    = fmtHHMM(displaySecs);
   document.getElementById('fast-seconds').textContent = String(displaySecs % 60).padStart(2,'0');
-  document.getElementById('fast-stage-ring').textContent = isFasting ? st.name : 'FED';
-  document.getElementById('fast-stage-ring').style.color = `rgb(${rgb})`;
 
-  // Btn
+  // Stage name + color
+  const stageLabel = document.getElementById('fast-stage-ring');
+  stageLabel.textContent  = st.name.toUpperCase();
+  stageLabel.style.color  = st.color;
+
+  // Stage emoji
+  const emojiEl = document.getElementById('fast-stage-emoji');
+  if (emojiEl) emojiEl.textContent = st.icon;
+
+  // Description
+  const descEl = document.getElementById('stage-desc-text');
+  if (descEl) descEl.textContent = st.desc;
+
+  // Next stage + ETA
+  const nextLbl = document.getElementById('stage-next-label');
+  const nextEta = document.getElementById('stage-next-eta');
+
+  if (!isFasting) {
+    // In feeding — next is Fed when fast starts
+    if (nextLbl) nextLbl.textContent = 'Next: Fed (start fast)';
+    if (nextEta) nextEta.textContent = '';
+  } else {
+    const nxtStage = st.next ? STAGES.find(s => s.name === st.next) : null;
+    if (!nxtStage) {
+      if (nextLbl) nextLbl.textContent = 'Peak stage reached';
+      if (nextEta) nextEta.textContent = '🏆';
+    } else {
+      if (nextLbl) nextLbl.textContent = `Next: ${nxtStage.name}`;
+      const fastSecs = getFastElapsed();
+      const remSecs  = Math.max((nxtStage.start * 3600) - fastSecs, 0);
+      const h = Math.floor(remSecs / 3600);
+      const m = Math.floor((remSecs % 3600) / 60);
+      const s = remSecs % 60;
+      if (nextEta) nextEta.textContent = h > 0
+        ? `in ${h}h ${String(m).padStart(2,'0')}m`
+        : `in ${m}m ${String(s).padStart(2,'0')}s`;
+    }
+  }
+
+  // Button
   const btn = document.getElementById('fast-btn');
   if (isFasting) {
     btn.textContent = 'End Fast';
     btn.classList.add('danger');
   } else {
-    btn.textContent = fastSecs > 0 ? 'Resume Fast' : 'Start Fast';
+    btn.textContent = 'Start Fast';
     btn.classList.remove('danger');
   }
-
-  // Stage badges + description
-  renderStageBadges(stIdx);
-  updateNextEta(fastSecs);
 }
 
-function renderStageBadges(activeIdx) {
-  const st  = STAGES[activeIdx];
-  const nxt = STAGES[activeIdx + 1];
-  // Update emoji in ring center
-  const emojiEl = document.getElementById('fast-stage-emoji');
-  if (emojiEl) emojiEl.textContent = st.icon;
-  // Description
-  const descEl = document.getElementById('stage-desc-text');
-  if (descEl) descEl.textContent = st.desc;
-  // Next stage label
-  const lblEl = document.getElementById('stage-next-label');
-  if (lblEl) lblEl.textContent = nxt ? `Next: ${nxt.name}` : 'Peak stage reached';
-}
-
-function updateNextEta(secs) {
-  const hrs   = secs / 3600;
-  const stIdx = getCurrentStage(hrs);
-  const nxt   = STAGES[stIdx + 1];
-  const etaEl = document.getElementById('stage-next-eta');
-  if (!etaEl) return;
-  if (!nxt) { etaEl.textContent = '🏆'; return; }
-  const remSecs = Math.max((nxt.start * 3600) - secs, 0);
-  const h = Math.floor(remSecs / 3600);
-  const m = Math.floor((remSecs % 3600) / 60);
-  const s = remSecs % 60;
-  etaEl.textContent = h > 0 ? `in ${h}h ${String(m).padStart(2,'0')}m` : `in ${m}m ${String(s).padStart(2,'0')}s`;
-}
-
+/* ── Button handlers ─────────────────────────────────────────── */
 function handleFastBtn() {
   if (fastState.running) {
+    // Show friction modal
     const secs = getFastElapsed();
-    const st = STAGES[getCurrentStage(secs/3600)];
-    document.getElementById('modal-time').textContent = fmtHHMM(secs);
+    const stIdx = getFastingStageIdx(secs / 3600);
+    const st    = STAGES[stIdx];
+    document.getElementById('modal-time').textContent  = fmtHHMM(secs);
     document.getElementById('modal-stage').textContent = st.name;
     document.getElementById('modal-overlay').classList.add('open');
   } else {
-    fastState.running = true;
-    fastState.startTs = Date.now();
+    // Feeding → Fast: pause feeding timer, start fast
+    pauseFeedingTimer();
+    fastState.running  = true;
+    fastState.startTs  = Date.now();
+    fastState.totalSecs = 0;
     LS.set('fast', fastState);
-    syncFedTimer();
-    toast('Fast started 🚀');
+    toast('Fast started — entering Fed state 🚀');
   }
 }
 
+/* ─── DEV: Fast-forward time by 4h per click ─────────────────
+   Injects seconds directly into fastState.totalSecs so all
+   elapsed-time calculations pick it up immediately.
+   Automatically starts the fast if not already running.
+─────────────────────────────────────────────────────────────── */
+const FFWD_STEP_SECS = 4 * 3600; // 4 hours per press
+
+function ffwdStep() {
+  // Auto-start fast if not running
+  if (!fastState.running) {
+    pauseFeedingTimer();
+    fastState.running   = true;
+    fastState.startTs   = Date.now();
+    fastState.totalSecs = 0;
+    LS.set('fast', fastState);
+  }
+
+  // Snapshot current elapsed, add 4h, store back
+  const current = getFastElapsed();
+  fastState.totalSecs = current + FFWD_STEP_SECS;
+  fastState.startTs   = Date.now(); // reset reference point
+  LS.set('fast', fastState);
+
+  // Show which stage we jumped to
+  const newSecs = getFastElapsed();
+  const stIdx   = getFastingStageIdx(newSecs / 3600);
+  const st      = STAGES[stIdx];
+  toast(`⏭ Jumped to ${st.name} (${Math.round(newSecs/3600)}h)`);
+
+  // Update label so button shows remaining to next stage
+  const btn = document.getElementById('ffwd-btn');
+  const nxt = STAGES[stIdx + 1];
+  if (btn) btn.textContent = nxt ? `⏭ +4h` : `⏭ MAX`;
+}
+
 function confirmEndFast() {
-  const secs = getFastElapsed();
-  const st   = STAGES[getCurrentStage(secs/3600)];
+  const secs  = getFastElapsed();
+  const stIdx = getFastingStageIdx(secs / 3600);
+  const st    = STAGES[stIdx];
   fastState.log = fastState.log || [];
-  fastState.log.unshift({ date: today(), secs, stage: st.name });
+  fastState.log.unshift({ date: today(), secs, stage: st.name, stageIdx: stIdx });
   fastState.running   = false;
   fastState.startTs   = null;
   fastState.totalSecs = 0;
   LS.set('fast', fastState);
-  syncFedTimer();
+  // Resume feeding window
+  feedingState.totalSecs = 0; // reset feeding window for new cycle
+  startFeedingTimer();
   closeModal();
-  toast('Fast ended. Great work!');
+  toast('Fast ended. Welcome back to your feeding window 🍴');
   saveToSupabase('fasts', { date: today(), secs, stage: st.name });
   buildFastDist();
 }
@@ -1241,59 +1428,129 @@ function buildDonut() {
   });
 }
 
+/* ─── DAY STATE LIST ─────────────────────────────────────── */
+function buildDayTracker() {
+  const el = document.getElementById('day-state-list');
+  if (!el) return;
+
+  const DAY_SECS = 86400;
+
+  // Accumulate seconds per stage
+  const stageSecs = new Array(STAGES.length).fill(0);
+  stageSecs[0] = getFeedingElapsed();
+
+  // Past fasts — distribute across stages reached
+  (fastState.log || []).forEach(entry => {
+    let rem = entry.secs;
+    const maxIdx = entry.stageIdx || STAGES.findIndex(s => s.name === entry.stage);
+    for (let i = 1; i <= maxIdx && i < STAGES.length; i++) {
+      const nxt   = STAGES[i + 1];
+      const cap   = nxt ? (nxt.start - STAGES[i].start) * 3600 : rem;
+      const spent = Math.min(rem, cap);
+      stageSecs[i] += spent;
+      rem -= spent;
+      if (rem <= 0) break;
+    }
+  });
+
+  // Live fast
+  if (fastState.running) {
+    stageSecs[getCurrentStageIdx()] += getFastElapsed();
+  }
+
+  el.innerHTML = '';
+  STAGES.forEach((s, i) => {
+    const secs = stageSecs[i];
+    if (!secs && i !== 0) return; // always show Feeding
+    const pct = Math.min(Math.round(secs / DAY_SECS * 100), 100);
+    const isActive = (i === 0 && !fastState.running) || (fastState.running && i === getCurrentStageIdx());
+    const row = document.createElement('div');
+    row.className = 'dst-row';
+    row.innerHTML = `
+      <span class="dst-icon">${s.icon}</span>
+      <span class="dst-name" style="color:${isActive ? s.color : ''}">${s.name}</span>
+      <span class="dst-time">${fmtHHMM(secs)}</span>
+      <span class="dst-pct" style="color:${s.color}">${pct}%</span>`;
+    el.appendChild(row);
+  });
+}
+
 /* ─── FASTING STAGE DISTRIBUTION ────────────────────────────*/
 let fastDistChart = null;
 
 function buildFastDist() {
-  const log    = fastState.log || [];
-  const fedSec = getFedElapsed();
+  const log = fastState.log || [];
 
-  // Accumulate seconds per stage from log
+  // Accumulate seconds per stage from log entries
   const stageSecs = new Array(STAGES.length).fill(0);
+
+  // Feeding window (current session)
+  stageSecs[0] = getFeedingElapsed();
+
+  // Past fast logs — each log entry has duration up to the stage reached
   log.forEach(entry => {
-    const idx = STAGES.findIndex(s => s.name === entry.stage);
-    if (idx >= 0) stageSecs[idx] += entry.secs;
+    const stageIdx = entry.stageIdx || STAGES.findIndex(s => s.name === entry.stage);
+    if (stageIdx > 0) {
+      // Distribute seconds across the stages reached in that fast
+      let remaining = entry.secs;
+      for (let i = 1; i <= stageIdx && i < STAGES.length; i++) {
+        const st     = STAGES[i];
+        const nextSt = STAGES[i + 1];
+        const stDurSecs = nextSt ? (nextSt.start - st.start) * 3600 : remaining;
+        const spent  = Math.min(remaining, stDurSecs);
+        stageSecs[i] += spent;
+        remaining    -= spent;
+        if (remaining <= 0) break;
+      }
+    }
   });
+
   // Add live current fast
   if (fastState.running) {
-    const liveSecs = getFastElapsed();
-    const liveIdx  = getCurrentStage(liveSecs / 3600);
+    const liveSecs  = getFastElapsed();
+    const liveIdx   = getCurrentStageIdx();
     stageSecs[liveIdx] += liveSecs;
   }
-  // Fed time (today)
-  stageSecs[0] = Math.max(stageSecs[0], fedSec);
 
-  const total = stageSecs.reduce((a,b)=>a+b,0) || 1;
-  const colors = STAGES.map((_,i) => `rgb(${STAGE_COLORS_RGB[i]})`);
+  const colors = STAGES.map(s => s.color);
   const labels = STAGES.map(s => s.name);
+  const nonZero = stageSecs.some(v => v > 0);
+  const chartData = nonZero ? stageSecs : [1]; // placeholder so chart renders
+  const chartLabels = nonZero ? labels : ['No data yet'];
+  const chartColors = nonZero ? colors : ['#2C2448'];
 
   const canvas = document.getElementById('fast-dist-chart');
   if (!canvas) return;
 
   if (fastDistChart) {
-    fastDistChart.data.datasets[0].data = stageSecs;
+    fastDistChart.data.labels              = chartLabels;
+    fastDistChart.data.datasets[0].data   = chartData;
+    fastDistChart.data.datasets[0].backgroundColor = chartColors;
     fastDistChart.update('none');
   } else {
     const ctx = canvas.getContext('2d');
     fastDistChart = new Chart(ctx, {
       type: 'doughnut',
-      data: { labels, datasets: [{ data: stageSecs, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] },
+      data: {
+        labels: chartLabels,
+        datasets: [{ data: chartData, backgroundColor: chartColors, borderWidth: 0, hoverOffset: 4 }]
+      },
       options: {
         cutout: '70%', responsive: true, maintainAspectRatio: true,
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${fmtDur(ctx.raw)}` } } }
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${fmtDur(c.raw)}` } } }
       }
     });
   }
 
   const leg = document.getElementById('fast-dist-legend');
-  if (leg) {
-    leg.innerHTML = '';
-    STAGES.forEach((s, i) => {
-      if (!stageSecs[i]) return;
-      const pct = Math.round(stageSecs[i]/total*100);
-      leg.innerHTML += `<div class="legend-row"><span class="legend-dot" style="background:${colors[i]}"></span>${s.icon} ${s.name}<span class="legend-val">${pct}%</span></div>`;
-    });
-  }
+  if (!leg) return;
+  const total = stageSecs.reduce((a,b)=>a+b,0) || 1;
+  leg.innerHTML = '';
+  STAGES.forEach((s, i) => {
+    if (!stageSecs[i]) return;
+    const pct = Math.round(stageSecs[i] / total * 100);
+    leg.innerHTML += `<div class="legend-row"><span class="legend-dot" style="background:${s.color}"></span>${s.icon} ${s.name}<span class="legend-val">${pct}%</span></div>`;
+  });
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1536,6 +1793,7 @@ function tick() {
   updateFastUI();
   updateStateUI();
   buildDonut();
+  buildDayTracker();
 }
 
 // Slower refresh for distribution charts (every 10s)
@@ -1547,8 +1805,8 @@ function tickSlow() {
 
 function init() {
   initAuth();
-  syncFedTimer();
-  renderStageBadges(0);
+  // Start feeding timer if not fasting
+  if (!fastState.running) startFeedingTimer();
   renderHabitTabs();
   renderHabitList();
   tick();
