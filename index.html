@@ -1596,6 +1596,31 @@ const sb = createClient(
 let currentUser = null;
 
 /* ═══════════════════════════════════════════════════════════════
+   PERSIST LAYER — must come before any state or auth code
+═══════════════════════════════════════════════════════════════ */
+const LS = {
+  get: k => { try { return JSON.parse(localStorage.getItem('mr_'+k)); } catch { return null; } },
+  set: (k,v) => localStorage.setItem('mr_'+k, JSON.stringify(v)),
+};
+
+/* ── Helper needed by feedingState init ── */
+/* ── State — declared before everything else ── */
+let fastState    = LS.get('fast') || { running: false, startTs: null, totalSecs: 0, log: [] };
+let feedingState = LS.get('feeding') || (() => {
+  const preload = fastState.running ? 0 : secsSinceMidnight();
+  return { startTs: fastState.running ? null : Date.now(), totalSecs: preload, lastDate: today() };
+})();
+let momentState  = LS.get('moment') || {
+  active: 'wasteful',
+  timers: { purposeful:0, wasteful:0, nourishing:0, training:0, recovering:0 },
+  startTs: Date.now()
+};
+let habits = LS.get('habits') || {
+  purposeful: [], nourishing: [], training: [], recovering: [], wasteful: [],
+};
+let activeHabitCat = 'purposeful';
+
+/* ═══════════════════════════════════════════════════════════════
    AUTH — Single active session per account.
    On fresh sign-in: all other sessions for this user are killed.
    On existing session restore (same browser/tab): no kill fired,
@@ -1676,10 +1701,6 @@ async function signInGoogle() {
 /* ═══════════════════════════════════════════════════════════════
    PERSIST LAYER (localStorage for offline, Supabase when signed in)
 ═══════════════════════════════════════════════════════════════ */
-const LS = {
-  get: k => { try { return JSON.parse(localStorage.getItem('mr_'+k)); } catch { return null; } },
-  set: (k,v) => localStorage.setItem('mr_'+k, JSON.stringify(v)),
-};
 
 /* ═══════════════════════════════════════════════════════════════
    THEME
@@ -1726,10 +1747,6 @@ const DAYS  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Satu
 const DSHRT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-function today() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
 function fmtDur(secs) {
   const h = Math.floor(secs/3600), m = Math.floor((secs%3600)/60), s = secs%60;
   return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
@@ -1893,10 +1910,6 @@ function secsSinceMidnight() {
 // feedingState: tracks active eating window timer
 // On first load with no saved state, pre-seed with seconds since midnight
 // so feeding time reflects reality (midnight → now = feeding window)
-let feedingState = LS.get('feeding') || (() => {
-  const preload = fastState.running ? 0 : secsSinceMidnight();
-  return { startTs: fastState.running ? null : Date.now(), totalSecs: preload, lastDate: today() };
-})();
 
 function getFeedingElapsed() {
   const td = today();
@@ -1924,7 +1937,6 @@ function pauseFeedingTimer() {
   LS.set('feeding', feedingState);
 }
 
-let fastState = LS.get('fast') || { running: false, startTs: null, totalSecs: 0, log: [] };
 
 function getFastElapsed() {
   if (!fastState.running || !fastState.startTs) return fastState.totalSecs || 0;
@@ -2169,7 +2181,6 @@ function closeModal() {
 const STATE_LABELS = { purposeful:'Purposeful', wasteful:'Wasteful', nourishing:'Nourishing', training:'Training', recovering:'Recovering' };
 
 // Time is always moving — default active state is wasteful
-let momentState = LS.get('moment') || { active:'wasteful', timers:{ purposeful:0, wasteful:0, nourishing:0, training:0, recovering:0 }, startTs: Date.now() };
 let activeAudio = null;
 
 function getStateElapsed(s) {
@@ -2444,14 +2455,6 @@ const HABIT_CATS = ['purposeful','nourishing','training','recovering','wasteful'
 // Empty by default — new users start fresh.
 // pullHabits() populates from Supabase after login.
 // Logged-out users start with a truly empty list.
-let habits = LS.get('habits') || {
-  purposeful: [],
-  nourishing: [],
-  training:   [],
-  recovering: [],
-  wasteful:   [],
-};
-let activeHabitCat = 'purposeful';
 
 function getCatStatus(cat) {
   const list = habits[cat] || [];
