@@ -1695,31 +1695,40 @@ function initAuth() {
 }
 
 function setUser(user) {
-  currentUser = user;
+  try {
+    currentUser = user;
+    window._diagLog = window._diagLog || [];
+    window._diagLog.push('setUser called: ' + user.email);
 
-  // Update avatar in topbar
-  const area = document.getElementById('auth-area');
-  const meta = user.user_metadata || {};
-  const name = meta.full_name || meta.name || user.email || 'User';
-  const av   = meta.avatar_url;
-  area.innerHTML = `<div class="user-avatar" title="${name}" onclick="toggleProfileDropdown()">${
-    av ? `<img src="${av}" referrerpolicy="no-referrer">` : name[0].toUpperCase()
-  }</div>`;
+    const area = document.getElementById('auth-area');
+    window._diagLog.push('auth-area found: ' + !!area);
+    if (!area) { window._diagLog.push('ERROR: auth-area is null'); return; }
 
-  // Populate profile dropdown
-  const sm = document.getElementById('profile-avatar-sm');
-  if (sm) sm.innerHTML = av ? `<img src="${av}" referrerpolicy="no-referrer">` : name[0].toUpperCase();
-  const pn = document.getElementById('profile-name');
-  if (pn) pn.textContent = name;
-  const pe = document.getElementById('profile-email');
-  if (pe) pe.textContent = user.email || '';
+    const meta = user.user_metadata || {};
+    const name = meta.full_name || meta.name || user.email || 'User';
+    const av   = meta.avatar_url;
+    area.innerHTML = '<div class="user-avatar" title="' + name + '" onclick="toggleProfileDropdown()">' +
+      (av ? '<img src="' + av + '" referrerpolicy="no-referrer">' : name[0].toUpperCase()) +
+      '</div>';
+    window._diagLog.push('avatar set OK');
 
-  console.log('[Auth] User set:', user.email);
+    const sm = document.getElementById('profile-avatar-sm');
+    if (sm) sm.innerHTML = av ? '<img src="' + av + '" referrerpolicy="no-referrer">' : name[0].toUpperCase();
+    const pn = document.getElementById('profile-name');
+    if (pn) pn.textContent = name;
+    const pe = document.getElementById('profile-email');
+    if (pe) pe.textContent = user.email || '';
 
-  // Non-blocking — don't await these
-  loadUserData();
-  subscribeRealtime();
-  drainQueue();
+    window._diagLog.push('setUser complete');
+
+    loadUserData();
+    subscribeRealtime();
+    drainQueue();
+  } catch(e) {
+    window._diagLog = window._diagLog || [];
+    window._diagLog.push('setUser CRASH: ' + e.message);
+    currentUser = user; // ensure currentUser is set even if DOM ops fail
+  }
 }
 
 function clearUser() {
@@ -3686,10 +3695,20 @@ async function refreshDiag() {
   sep('App State');
   r('currentUser', currentUser ? currentUser.email : 'null',
     currentUser ? 'ok' : 'warn');
+  r('auth-area exists', document.getElementById('auth-area') ? 'YES' : 'NO',
+    document.getElementById('auth-area') ? 'ok' : 'err');
   r('auth-area HTML', (function() {
     var a = document.getElementById('auth-area');
-    return a ? a.innerHTML.slice(0,40) : 'NOT FOUND';
+    return a ? (a.innerHTML.trim().slice(0,50) || '(empty)') : 'NOT FOUND';
   })());
+
+  sep('setUser Log');
+  var diagLog = window._diagLog || ['(not called yet)'];
+  diagLog.forEach(function(line, i) {
+    var cls = line.indexOf('CRASH') >= 0 || line.indexOf('ERROR') >= 0 ? 'err' :
+              line.indexOf('OK') >= 0 || line.indexOf('complete') >= 0 ? 'ok' : '';
+    r('step ' + (i+1), line, cls);
+  });
 
   // ── onAuthStateChange test ─────────────────────────────────
   sep('Auth Listener');
