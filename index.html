@@ -504,11 +504,11 @@
   }
 
   /* Donut wrap */
-  #donut-wrap, #fast-dist-wrap {
+  #donut-wrap {
     margin: 12px 16px 0;
     padding: 20px 16px;
   }
-  #donut-wrap canvas, #fast-dist-wrap canvas { max-height: 200px; }
+  #donut-wrap canvas { max-height: 200px; }
   .donut-legend {
     display: grid; grid-template-columns: 1fr 1fr;
     gap: 6px; margin-top: 14px;
@@ -945,12 +945,6 @@
       <div class="donut-legend" id="donut-legend"></div>
     </div>
 
-    <!-- Fasting stage distribution -->
-    <div class="card" id="fast-dist-wrap">
-      <div class="section-title" style="margin-bottom:0">Fasting Distribution</div>
-      <canvas id="fast-dist-chart"></canvas>
-      <div class="donut-legend" id="fast-dist-legend"></div>
-    </div>
 
     <!-- HABITS -->
     <div class="section-pad" style="margin-top:4px;">
@@ -1344,14 +1338,29 @@ function getCurrentStageIdx() {
 }
 
 /* ── State storage ───────────────────────────────────────────── */
+// Returns seconds elapsed since today's midnight — used to pre-seed
+// feeding time so the app reflects reality even on first open/reset
+function secsSinceMidnight() {
+  const now = Date.now();
+  const d   = new Date();
+  d.setHours(0, 0, 0, 0);
+  return Math.floor((now - d.getTime()) / 1000);
+}
+
 // feedingState: tracks active eating window timer
-let feedingState = LS.get('feeding') || { startTs: Date.now(), totalSecs: 0, lastDate: today() };
+// On first load with no saved state, pre-seed with seconds since midnight
+// so feeding time reflects reality (midnight → now = feeding window)
+let feedingState = LS.get('feeding') || (() => {
+  const preload = fastState.running ? 0 : secsSinceMidnight();
+  return { startTs: fastState.running ? null : Date.now(), totalSecs: preload, lastDate: today() };
+})();
 
 function getFeedingElapsed() {
   const td = today();
   // Reset daily if new day
   if (feedingState.lastDate !== td) {
-    feedingState = { startTs: Date.now(), totalSecs: 0, lastDate: td };
+    // New day detected mid-session — reset to 0 (midnight just passed)
+    feedingState = { startTs: fastState.running ? null : Date.now(), totalSecs: 0, lastDate: td };
     LS.set('feeding', feedingState);
   }
   if (fastState.running) return feedingState.totalSecs || 0;
@@ -1560,17 +1569,21 @@ function adminReset(target) {
   if (target === 'fast' || target === 'all') {
     fastState = { running: false, startTs: null, originalStartTs: null, totalSecs: 0, log: fastState.log || [] };
     LS.set('fast', fastState);
-    startFeedingTimer();
-    toast('🔄 Fast timer reset');
   }
   if (target === 'feeding' || target === 'all') {
-    feedingState = { startTs: Date.now(), totalSecs: 0, lastDate: today() };
+    // Pre-seed with time since midnight — feeding started at midnight by assumption
+    const preload = secsSinceMidnight();
+    feedingState = { startTs: Date.now(), totalSecs: preload, lastDate: today() };
     LS.set('feeding', feedingState);
-    toast('🔄 Feeding timer reset');
   }
-  if (target === 'all') {
-    toast('🔄 All timers reset');
+  if (target === 'fast' || target === 'all') {
+    // Start feeding timer after fast reset (feeding is now active)
+    if (!fastState.running) startFeedingTimer();
   }
+  const msg = target === 'all' ? '🔄 All timers reset — feeding pre-seeded from midnight'
+            : target === 'fast' ? '🔄 Fast timer reset'
+            : '🔄 Feeding timer reset — pre-seeded from midnight';
+  toast(msg);
 }
 
 function confirmEndFast() {
@@ -1590,7 +1603,6 @@ function confirmEndFast() {
   closeModal();
   toast('Fast ended. Welcome back to your feeding window 🍴');
   saveToSupabase('fasts', { date: today(), secs, stage: st.name });
-  buildFastDist();
 }
 
 
@@ -1843,83 +1855,6 @@ function buildDayTracker() {
   });
 }
 
-/* ─── FASTING STAGE DISTRIBUTION ────────────────────────────*/
-let fastDistChart = null;
-
-function buildFastDist() {
-  const log = fastState.log || [];
-
-  // Accumulate seconds per stage from log entries
-  const stageSecs = new Array(STAGES.length).fill(0);
-
-  // Feeding window (current session)
-  stageSecs[0] = getFeedingElapsed();
-
-  // Past fast logs — each log entry has duration up to the stage reached
-  log.forEach(entry => {
-    const stageIdx = entry.stageIdx || STAGES.findIndex(s => s.name === entry.stage);
-    if (stageIdx > 0) {
-      // Distribute seconds across the stages reached in that fast
-      let remaining = entry.secs;
-      for (let i = 1; i <= stageIdx && i < STAGES.length; i++) {
-        const st     = STAGES[i];
-        const nextSt = STAGES[i + 1];
-        const stDurSecs = nextSt ? (nextSt.start - st.start) * 3600 : remaining;
-        const spent  = Math.min(remaining, stDurSecs);
-        stageSecs[i] += spent;
-        remaining    -= spent;
-        if (remaining <= 0) break;
-      }
-    }
-  });
-
-  // Add live current fast
-  if (fastState.running) {
-    const liveSecs  = getFastElapsed();
-    const liveIdx   = getCurrentStageIdx();
-    stageSecs[liveIdx] += liveSecs;
-  }
-
-  const colors = STAGES.map(s => s.color);
-  const labels = STAGES.map(s => s.name);
-  const nonZero = stageSecs.some(v => v > 0);
-  const chartData = nonZero ? stageSecs : [1]; // placeholder so chart renders
-  const chartLabels = nonZero ? labels : ['No data yet'];
-  const chartColors = nonZero ? colors : ['#2C2448'];
-
-  const canvas = document.getElementById('fast-dist-chart');
-  if (!canvas) return;
-
-  if (fastDistChart) {
-    fastDistChart.data.labels              = chartLabels;
-    fastDistChart.data.datasets[0].data   = chartData;
-    fastDistChart.data.datasets[0].backgroundColor = chartColors;
-    fastDistChart.update('none');
-  } else {
-    const ctx = canvas.getContext('2d');
-    fastDistChart = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: chartLabels,
-        datasets: [{ data: chartData, backgroundColor: chartColors, borderWidth: 0, hoverOffset: 4 }]
-      },
-      options: {
-        cutout: '70%', responsive: true, maintainAspectRatio: true,
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${fmtDur(c.raw)}` } } }
-      }
-    });
-  }
-
-  const leg = document.getElementById('fast-dist-legend');
-  if (!leg) return;
-  const total = stageSecs.reduce((a,b)=>a+b,0) || 1;
-  leg.innerHTML = '';
-  STAGES.forEach((s, i) => {
-    if (!stageSecs[i]) return;
-    const pct = Math.round(stageSecs[i] / total * 100);
-    leg.innerHTML += `<div class="legend-row"><span class="legend-dot" style="background:${s.color}"></span>${s.icon} ${s.name}<span class="legend-val">${pct}%</span></div>`;
-  });
-}
 
 /* ═══════════════════════════════════════════════════════════════
    HABITS
@@ -2164,12 +2099,9 @@ function tick() {
   buildDayTracker();
 }
 
-// Slower refresh for distribution charts (every 10s)
+// Slower refresh tick (reserved for future use)
 let distTick = 0;
-function tickSlow() {
-  distTick++;
-  if (distTick % 10 === 0) buildFastDist();
-}
+function tickSlow() { distTick++; }
 
 function init() {
   initAuth();
@@ -2178,7 +2110,6 @@ function init() {
   renderHabitTabs();
   renderHabitList();
   tick();
-  buildFastDist();
   setInterval(tick, 1000);
   setInterval(tickSlow, 1000);
 }
