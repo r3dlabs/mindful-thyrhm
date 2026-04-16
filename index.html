@@ -1678,12 +1678,20 @@ async function initAuth() {
 
 // Hardcode the EXACT canonical URL to prevent Vercel from stripping tokens during a redirect
 async function signInGoogle() {
-  await sb.auth.signInWithOAuth({
-    provider: 'google',
-    options: { 
-      redirectTo: 'https://www.mindful-rhythm.com' 
-    }
-  });
+  try {
+    const { data, error } = await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { 
+        redirectTo: 'https://www.mindful-rhythm.com' 
+      }
+    });
+
+    if (error) {
+      alert("Supabase Error: " + error.message);
+    } 
+  } catch (err) {
+    alert("Code Crash: " + err.message);
+  }
 }
 
 let _currentUserId    = null;
@@ -1732,63 +1740,6 @@ function clearUser(reason) {
     ? `📱 You were signed in on another device.<br>Sign in again to continue.`
     : `Track your fasting journey, own your time, build intentional habits. Sign in to begin.`;
   showGate();
-}
-
-let _currentUserId    = null;
-let _explicitSignOut  = false;
-
-function setUser(user) {
-  // Deduplicate — same user, same session, no re-init
-  if (_currentUserId === user.id) return;
-  _currentUserId = user.id;
-  currentUser    = user;
-
-  // Update avatar
-  const area = document.getElementById('auth-area');
-  const meta = user.user_metadata || {};
-  const name = meta.full_name || meta.name || user.email || 'U';
-  const av   = meta.avatar_url;
-  area.innerHTML = `<div class="user-avatar" title="${name}" onclick="toggleProfileDropdown()">${
-    av ? `<img src="${av}" referrerpolicy="no-referrer">` : name[0].toUpperCase()
-  }</div>`;
-
-  // Populate dropdown
-  const sm = document.getElementById('profile-avatar-sm');
-  if (sm) sm.innerHTML = av ? `<img src="${av}" referrerpolicy="no-referrer">` : name[0].toUpperCase();
-  const pn = document.getElementById('profile-name');
-  if (pn) pn.textContent = meta.full_name || meta.name || 'User';
-  const pe = document.getElementById('profile-email');
-  if (pe) pe.textContent = user.email || '';
-
-  // Reveal app
-  showApp();
-
-  // Sync + subscribe (non-blocking)
-  loadUserData();
-  subscribeRealtime();
-  drainQueue();
-}
-
-function clearUser(reason) {
-  currentUser    = null;
-  _currentUserId = null;
-  unsubscribeRealtime();
-  const area = document.getElementById('auth-area');
-  area.innerHTML = `<button id="login-btn" onclick="signInGoogle()">Sign In</button>`;
-  const desc = document.querySelector('.gate-desc');
-  if (desc) desc.innerHTML = reason === 'kicked'
-    ? `📱 You were signed in on another device.<br>Sign in again to continue.`
-    : `Track your fasting journey, own your time, build intentional habits. Sign in to begin.`;
-  showGate();
-}
-
-
-
-async function signInGoogle() {
-  await sb.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.origin }
-  });
 }
 
 /* ═══════════════════════════════════════════════════════════════
