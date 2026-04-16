@@ -1741,11 +1741,17 @@ let feedingState = LS.get('feeding') || (() => {
   const preload = fastState.running ? 0 : secsSinceMidnight();
   return { startTs: fastState.running ? null : Date.now(), totalSecs: preload, lastDate: today() };
 })();
-let momentState  = LS.get('moment') || {
-  active: 'wasteful',
-  timers: { purposeful:0, wasteful:0, nourishing:0, training:0, recovering:0 },
-  startTs: Date.now()
-};
+let momentState = LS.get('moment') || (() => {
+  // Pre-seed wasteful with time elapsed since midnight —
+  // same logic as feeding: you've been alive since 00:00, that time was spent somewhere
+  const preload = secsSinceMidnight();
+  return {
+    active:  'wasteful',
+    timers:  { purposeful:0, wasteful: preload, nourishing:0, training:0, recovering:0 },
+    startTs: Date.now(),
+    lastDate: today()
+  };
+})();
 let habits = LS.get('habits') || {
   purposeful: [], nourishing: [], training: [], recovering: [], wasteful: [],
 };
@@ -2259,6 +2265,17 @@ function adminReset(target) {
     feedingState = { startTs: Date.now(), totalSecs: preload, lastDate: today() };
     LS.set('feeding', feedingState);
   }
+  if (target === 'all') {
+    // Reset moment states — pre-seed wasteful with time since midnight
+    const mPreload = secsSinceMidnight();
+    momentState = {
+      active:   'wasteful',
+      timers:   { purposeful:0, wasteful: mPreload, nourishing:0, training:0, recovering:0 },
+      startTs:  Date.now(),
+      lastDate: today()
+    };
+    LS.set('moment', momentState);
+  }
   if (target === 'fast' || target === 'all') {
     // Start feeding timer after fast reset (feeding is now active)
     if (!fastState.running) startFeedingTimer();
@@ -2343,9 +2360,23 @@ function toggleState(btn) {
 }
 
 function startWasteful() {
+  // If no active state, start wasteful
   if (!momentState.active) {
     momentState.active  = 'wasteful';
     momentState.startTs = Date.now();
+    LS.set('moment', momentState);
+  }
+  // Daily reset check — if last saved date is not today, reset all timers
+  // and pre-seed wasteful with time since midnight
+  const td = today();
+  if (momentState.lastDate && momentState.lastDate !== td) {
+    const preload = secsSinceMidnight();
+    momentState = {
+      active:   'wasteful',
+      timers:   { purposeful:0, wasteful: preload, nourishing:0, training:0, recovering:0 },
+      startTs:  Date.now(),
+      lastDate: td
+    };
     LS.set('moment', momentState);
   }
 }
