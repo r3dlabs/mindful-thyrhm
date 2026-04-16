@@ -795,6 +795,33 @@
   }
   .wday-fill { height: 100%; border-radius: 2px; background: var(--accent); }
 
+  /* ─── WEEKLY CHART ───────────────────────────────────── */
+  .wk-chart-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 16px;
+    margin-bottom: 10px; position: relative;
+    height: 200px;
+  }
+  .wk-chart-wrap canvas { width: 100% !important; height: 100% !important; }
+  .wk-chart-legend {
+    display: flex; flex-wrap: wrap; gap: 8px 14px;
+    margin-bottom: 4px;
+  }
+  .wk-legend-item {
+    display: flex; align-items: center; gap: 5px;
+    font-family: var(--font-cond); font-size: 11px; font-weight: 600;
+    color: var(--text2); letter-spacing: .04em;
+  }
+  .wk-legend-dot {
+    width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0;
+  }
+  .wk-break-section { margin-top: 14px; }
+  .wk-break-title {
+    font-family: var(--font-cond); font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 8px;
+  }
+
   /* ─── STATS SECTIONS ──────────────────────────────────── */
   .stats-section {
     padding: 0 16px; margin-top: 20px;
@@ -863,10 +890,7 @@
   }
 
   /* ─── FAST LOG TABLE ──────────────────────────────────── */
-  .fast-log-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); overflow: hidden;
-  }
+
 
   .month-grid {
     display: grid; grid-template-columns: repeat(7,1fr);
@@ -1024,27 +1048,6 @@
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ─── FAST LOG TABLE ──────────────────────────────────────── */
-  .log-table {
-    width: 100%; border-collapse: collapse;
-    font-size: 13px;
-  }
-  .log-table th {
-    font-family: var(--font-cond); font-size: 10px; letter-spacing: .1em;
-    text-transform: uppercase; color: var(--text3);
-    padding: 8px 10px; text-align: left;
-    border-bottom: 1px solid var(--border);
-  }
-  .log-table td {
-    padding: 10px; color: var(--text2);
-    border-bottom: 1px solid var(--border);
-  }
-  .log-table td:first-child { color: var(--text); font-weight: 500; }
-  .log-badge {
-    display: inline-block; padding: 2px 8px; border-radius: 10px;
-    font-family: var(--font-cond); font-size: 11px; font-weight: 600;
-    background: var(--surface2); color: var(--accent);
-  }
 
   /* ─── DATE HEADER ─────────────────────────────────────────── */
   .date-header {
@@ -1262,70 +1265,49 @@
     <!-- FASTING STATS -->
     <div class="stats-section">
       <div class="stats-section-title">Fasting</div>
-      <div class="kpi-row cols3">
+      <div class="kpi-row">
         <div class="kpi-card">
-          <div class="kpi-lbl">Fasts</div>
-          <div class="kpi-val" id="wk-fasts">—</div>
-          <div class="kpi-sub">completed</div>
+          <div class="kpi-lbl">Deepest Stage</div>
+          <div class="kpi-val" id="wk-deepest">—</div>
+          <div class="kpi-sub" id="wk-deepest-time">—</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-lbl">Longest</div>
+          <div class="kpi-lbl">Longest Fast</div>
           <div class="kpi-val" id="wk-long-fast">—</div>
-          <div class="kpi-sub">single fast</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">Avg Daily</div>
-          <div class="kpi-val" id="wk-avg-fast">—</div>
-          <div class="kpi-sub">fasting hrs</div>
+          <div class="kpi-sub" id="wk-long-fast-date">—</div>
         </div>
       </div>
-      <!-- Stage distribution bars -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-lbl">Avg Daily Feeding</div>
+          <div class="kpi-val" id="wk-avg-feeding">—</div>
+          <div class="kpi-sub">per day this week</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Avg Daily Fasting</div>
+          <div class="kpi-val" id="wk-avg-fast">—</div>
+          <div class="kpi-sub">fed → immune regen</div>
+        </div>
+      </div>
       <div class="state-bar-list" id="wk-fast-bars"></div>
     </div>
 
-    <!-- MOMENT STATS -->
+    <!-- MOMENT STATS — stacked bar chart -->
     <div class="stats-section">
       <div class="stats-section-title">Moments</div>
-      <div class="kpi-row">
-        <div class="kpi-card">
-          <div class="kpi-lbl">Most Time</div>
-          <div class="kpi-val" id="wk-top-state">—</div>
-          <div class="kpi-sub">dominant state</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">Purposeful</div>
-          <div class="kpi-val" id="wk-purpose">—</div>
-          <div class="kpi-sub">avg per day</div>
-        </div>
+      <div class="wk-chart-wrap">
+        <canvas id="wk-moment-chart"></canvas>
       </div>
-      <div class="state-bar-list" id="wk-moment-bars"></div>
+      <div class="wk-chart-legend" id="wk-chart-legend"></div>
     </div>
 
     <!-- HABITS -->
     <div class="stats-section">
       <div class="stats-section-title">Habits</div>
-      <div class="kpi-row">
-        <div class="kpi-card">
-          <div class="kpi-lbl">Completion</div>
-          <div class="kpi-val" id="wk-habit">—</div>
-          <div class="kpi-sub">today's habits</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">Broken</div>
-          <div class="kpi-val" id="wk-broken">—</div>
-          <div class="kpi-sub">today</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- FAST LOG -->
-    <div class="stats-section">
-      <div class="stats-section-title">Fast Log</div>
-      <div class="fast-log-card">
-        <table class="log-table" style="width:100%">
-          <thead><tr><th>Date</th><th>Duration</th><th>Stage Reached</th></tr></thead>
-          <tbody id="fast-log-body"></tbody>
-        </table>
+      <div class="state-bar-list" id="wk-habit-cat-bars"></div>
+      <div class="wk-break-section">
+        <div class="wk-break-title">Break Reasons</div>
+        <div class="state-bar-list" id="wk-break-reason-bars"></div>
       </div>
     </div>
 
@@ -2627,24 +2609,79 @@ function renderWeekly() {
   });
   const wf = weekFastsFallback;
 
-  const longest  = wf.reduce((a,b) => b.secs > a ? b.secs : a, 0);
-  const totalFastSecs = wf.reduce((a,b) => a + b.secs, 0);
-  const avgDaily = wf.length ? Math.round(totalFastSecs / 7) : 0;
+  // ── Fasting KPIs ─────────────────────────────────────────────────────
+  // Only use this week's log entries — no live timers for past weeks
+  const isCurrentWeek = weekOffset === 0;
 
-  setText('wk-fasts',     wf.length || '—');
-  setText('wk-long-fast', longest ? fmtHHMM(longest) : '—');
-  setText('wk-avg-fast',  avgDaily ? fmtHHMM(avgDaily) : '—');
+  // Longest fast this week
+  const longestEntry = wf.reduce((a,b) => b.secs > (a?.secs||0) ? b : a, null);
+  const longest      = longestEntry ? longestEntry.secs : 0;
 
-  // Fasting stage distribution bars (from today's data)
+  // Deepest stage reached this week
+  const deepestEntry = wf.reduce((a,b) => {
+    const ai = a?.stageIdx || STAGES.findIndex(s=>s.name===a?.stage) || 0;
+    const bi = b?.stageIdx || STAGES.findIndex(s=>s.name===b?.stage) || 0;
+    return bi > ai ? b : a;
+  }, null);
+  const deepestIdx = deepestEntry
+    ? (deepestEntry.stageIdx || STAGES.findIndex(s=>s.name===deepestEntry.stage))
+    : (isCurrentWeek ? getCurrentStageIdx() : 0);
+  const deepestStage = STAGES[deepestIdx];
+
+  // Time spent in deepest stage across all week fasts
+  let deepestSecs = 0;
+  wf.forEach(f => {
+    const fi = f.stageIdx || STAGES.findIndex(s=>s.name===f.stage);
+    if (fi === deepestIdx) {
+      const stg = STAGES[deepestIdx], nxt = STAGES[deepestIdx+1];
+      const cap = nxt ? (nxt.start - stg.start)*3600 : f.secs;
+      deepestSecs += Math.min(f.secs, cap);
+    }
+  });
+  if (isCurrentWeek && fastState.running && getCurrentStageIdx() === deepestIdx) {
+    deepestSecs += getFastElapsed();
+  }
+
+  // Total fasting secs this week (all fasting stages, not feeding)
+  const totalFastSecs = wf.reduce((a,b)=>a+b.secs,0)
+    + (isCurrentWeek && fastState.running ? getFastElapsed() : 0);
+
+  // Total feeding secs this week — today only if current week
+  const totalFeedingSecs = isCurrentWeek ? getFeedingElapsed() : 0;
+
+  // Avg daily fasting & feeding (divide by 7 days)
+  const avgDailyFast    = Math.round(totalFastSecs / 7);
+  const avgDailyFeeding = Math.round(totalFeedingSecs / (isCurrentWeek ? 1 : 7));
+
+  setText('wk-deepest',       deepestStage ? deepestStage.icon + ' ' + deepestStage.name : '—');
+  setText('wk-deepest-time',  deepestSecs  ? fmtHrs(deepestSecs) + ' this week' : '—');
+  setText('wk-long-fast',     longest ? fmtHHMM(longest) : '—');
+  setText('wk-long-fast-date',longestEntry ? longestEntry.date : '—');
+  setText('wk-avg-fast',      avgDailyFast    ? fmtHHMM(avgDailyFast)    : '—');
+  setText('wk-avg-feeding',   avgDailyFeeding ? fmtHHMM(avgDailyFeeding) : '—');
+
+  // Stage distribution bars — log-based only, + today if current week
   const fastStageSecs = new Array(STAGES.length).fill(0);
-  fastStageSecs[0] = getFeedingElapsed();
-  if (fastState.running) fastStageSecs[getCurrentStageIdx()] += getFastElapsed();
+  if (isCurrentWeek) {
+    fastStageSecs[0] = getFeedingElapsed();
+    if (fastState.running) {
+      const liveIdx = getCurrentStageIdx();
+      let rem = getFastElapsed();
+      for (let i = 1; i <= liveIdx && i < STAGES.length; i++) {
+        const nxt = STAGES[i+1];
+        const cap = nxt ? (nxt.start - STAGES[i].start)*3600 : rem;
+        const sp  = Math.min(rem, cap);
+        fastStageSecs[i] += sp; rem -= sp;
+        if (rem <= 0) break;
+      }
+    }
+  }
   wf.forEach(entry => {
     let rem = entry.secs;
-    const maxIdx = entry.stageIdx || STAGES.findIndex(s => s.name === entry.stage);
+    const maxIdx = entry.stageIdx || STAGES.findIndex(s=>s.name===entry.stage);
     for (let i = 1; i <= maxIdx && i < STAGES.length; i++) {
       const nxt = STAGES[i+1];
-      const cap = nxt ? (nxt.start - STAGES[i].start) * 3600 : rem;
+      const cap = nxt ? (nxt.start - STAGES[i].start)*3600 : rem;
       const sp  = Math.min(rem, cap);
       fastStageSecs[i] += sp; rem -= sp;
       if (rem <= 0) break;
@@ -2654,41 +2691,163 @@ function renderWeekly() {
     icon: s.icon, name: s.name, color: s.color, secs: fastStageSecs[i]
   })));
 
-  // ── Moment KPIs ────────────────────────────────────────────
-  const mSecs = {};
-  STATE_DEFS.forEach(sd => { mSecs[sd.key] = getStateElapsed(sd.key); });
-  const totalMoment  = Object.values(mSecs).reduce((a,b)=>a+b,0) || 1;
-  const topState     = STATE_DEFS.reduce((a,b) => mSecs[b.key]>mSecs[a.key]?b:a, STATE_DEFS[0]);
-  const purposeSecs  = mSecs['purposeful'] || 0;
-  const avgPurpose   = purposeSecs > 0 ? Math.round(purposeSecs / 7) : 0;
+  // ── Moments — stacked bar chart ─────────────────────────────────────
+  // Per-day data: today only from live timers, past days from stored daily totals
+  // For now use today's live data distributed evenly across days (until Supabase sync)
+  const dayLabels = dates.map(d => DSHRT[d.getDay()]);
+  const mSecs     = {};
+  STATE_DEFS.forEach(sd => {
+    // Only show today's data on current day, zeros for other days (until sync)
+    mSecs[sd.key] = new Array(7).fill(0);
+    const todayIdx = dates.findIndex(d => {
+      const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      return ds === todayStr;
+    });
+    if (todayIdx >= 0 && isCurrentWeek) {
+      mSecs[sd.key][todayIdx] = parseFloat((getStateElapsed(sd.key)/3600).toFixed(2));
+    }
+  });
 
-  setText('wk-top-state', topState.icon + ' ' + topState.label);
-  setText('wk-purpose',   avgPurpose ? fmtHHMM(avgPurpose) : '—');
+  buildMomentChart(dayLabels, mSecs);
 
-  buildStateBars('wk-moment-bars', STATE_DEFS.map(sd => ({
-    icon: sd.icon, name: sd.label, color: sd.color, secs: mSecs[sd.key]
-  })));
+  // ── Habits — completion & break % per category ───────────────────────
+  const catBars = [];
+  const HABIT_CATS_LIST = ['purposeful','nourishing','training','recovering','wasteful'];
+  HABIT_CATS_LIST.forEach(cat => {
+    const sd    = STATE_DEFS.find(s=>s.key===cat);
+    const list  = habits[cat]||[];
+    if (!list.length) return;
+    const done  = list.filter(h=>h.done).length;
+    const broken= list.filter(h=>h.broken===todayStr).length;
+    const pct   = Math.round(done/list.length*100);
+    catBars.push({
+      icon: sd?.icon||'', name: sd?.label||cat, color: sd?.color||'var(--accent)',
+      secs: done, total: list.length, pct,
+      broken, brokenPct: Math.round(broken/list.length*100),
+    });
+  });
 
-  // ── Habit KPIs ─────────────────────────────────────────────
-  const allH   = Object.values(habits).flat();
-  const doneH  = allH.filter(h => h.done).length;
-  const brokenH= allH.filter(h => h.broken === todayStr).length;
-  setText('wk-habit',  allH.length ? Math.round(doneH/allH.length*100)+'%' : '—');
-  setText('wk-broken', brokenH || '—');
+  // Render category completion bars
+  const catEl = document.getElementById('wk-habit-cat-bars');
+  if (catEl) {
+    catEl.innerHTML = '';
+    catBars.forEach(r => {
+      const div = document.createElement('div');
+      div.className = 'sbl-row';
+      div.innerHTML = `
+        <span class="sbl-icon">${r.icon}</span>
+        <span class="sbl-name">${r.name}</span>
+        <div class="sbl-bar-wrap">
+          <div class="sbl-bar" style="width:${r.pct}%;background:${r.color}"></div>
+        </div>
+        <span class="sbl-time" style="font-size:10px">${r.done}/${r.total}</span>
+        <span class="sbl-pct" style="color:${r.color}">${r.pct}%</span>`;
+      catEl.appendChild(div);
 
-  // ── Fast log ───────────────────────────────────────────────
-  const tbody = document.getElementById('fast-log-body');
-  tbody.innerHTML = fasts.length
-    ? fasts.slice(0,12).map(l => {
-        const stageObj = STAGES.find(s => s.name === l.stage);
-        const color    = stageObj ? stageObj.color : 'var(--accent)';
-        return `<tr>
-          <td>${l.date}</td>
-          <td>${fmtHHMM(l.secs)}</td>
-          <td><span class="log-badge" style="color:${color}">${l.stage}</span></td>
-        </tr>`;
-      }).join('')
-    : '<tr><td colspan="3" style="color:var(--text3);text-align:center;padding:20px;font-family:var(--font-cond)">No fasts logged yet</td></tr>';
+      // Break sub-row if any broken
+      if (r.broken > 0) {
+        const bd = document.createElement('div');
+        bd.className = 'sbl-row';
+        bd.style.paddingLeft = '28px';
+        bd.innerHTML = `
+          <span class="sbl-icon" style="font-size:11px">💔</span>
+          <span class="sbl-name" style="font-size:11px;color:var(--text3)">broken</span>
+          <div class="sbl-bar-wrap">
+            <div class="sbl-bar" style="width:${r.brokenPct}%;background:var(--danger)"></div>
+          </div>
+          <span class="sbl-time" style="font-size:10px">${r.broken}/${r.total}</span>
+          <span class="sbl-pct" style="color:var(--danger)">${r.brokenPct}%</span>`;
+        catEl.appendChild(bd);
+      }
+    });
+  }
+
+  // Break reasons
+  const allHabits = Object.values(habits).flat();
+  const reasonCounts = {};
+  allHabits.forEach(h => {
+    (h.breakLog||[]).forEach(b => {
+      if (!b.date || !dates.some(d => {
+        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        return ds === b.date;
+      })) return;
+      const r = b.reason || 'No reason';
+      reasonCounts[r] = (reasonCounts[r]||0) + 1;
+    });
+  });
+  const totalReasons = Object.values(reasonCounts).reduce((a,b)=>a+b,0)||1;
+  const reasonEl = document.getElementById('wk-break-reason-bars');
+  if (reasonEl) {
+    reasonEl.innerHTML = '';
+    const sorted = Object.entries(reasonCounts).sort((a,b)=>b[1]-a[1]);
+    if (!sorted.length) {
+      reasonEl.innerHTML = `<div style="font-family:var(--font-cond);font-size:12px;color:var(--text3)">No breaks this week 🔥</div>`;
+    } else {
+      sorted.forEach(([reason, count]) => {
+        const pct = Math.round(count/totalReasons*100);
+        const div = document.createElement('div');
+        div.className = 'sbl-row';
+        div.innerHTML = `
+          <span class="sbl-icon" style="font-size:11px">—</span>
+          <span class="sbl-name" style="font-size:11px">${reason}</span>
+          <div class="sbl-bar-wrap">
+            <div class="sbl-bar" style="width:${pct}%;background:var(--danger)"></div>
+          </div>
+          <span class="sbl-time" style="font-size:10px">${count}x</span>
+          <span class="sbl-pct" style="color:var(--danger)">${pct}%</span>`;
+        reasonEl.appendChild(div);
+      });
+    }
+  }
+}
+
+/* ─── STACKED BAR CHART FOR MOMENTS ─────────────────────── */
+let wkMomentChart = null;
+
+function buildMomentChart(labels, mSecs) {
+  const canvas = document.getElementById('wk-moment-chart');
+  if (!canvas) return;
+
+  const datasets = STATE_DEFS.map(sd => ({
+    label: sd.label,
+    data: mSecs[sd.key],
+    backgroundColor: sd.color,
+    borderRadius: 3,
+    borderSkipped: false,
+  }));
+
+  if (wkMomentChart) {
+    wkMomentChart.data.labels   = labels;
+    wkMomentChart.data.datasets = datasets;
+    wkMomentChart.update('none');
+  } else {
+    const isDark  = document.documentElement.getAttribute('data-theme') === 'dark';
+    const gridClr = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    const txtClr  = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)';
+    const ctx = canvas.getContext('2d');
+    wkMomentChart = new Chart(ctx, {
+      type: 'bar',
+      data: { labels, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: {
+          callbacks: { label: c => ` ${c.dataset.label}: ${c.raw.toFixed(1)}h` }
+        }},
+        scales: {
+          x: { stacked: true, grid: { color: gridClr }, ticks: { color: txtClr, font: { family: "'Barlow Condensed'" } } },
+          y: { stacked: true, grid: { color: gridClr }, ticks: { color: txtClr, font: { family: "'Barlow Condensed'" }, callback: v => v+'h' } }
+        }
+      }
+    });
+  }
+
+  // Legend
+  const legEl = document.getElementById('wk-chart-legend');
+  if (legEl) {
+    legEl.innerHTML = STATE_DEFS.map(sd =>
+      `<div class="wk-legend-item"><span class="wk-legend-dot" style="background:${sd.color}"></span>${sd.icon} ${sd.label}</div>`
+    ).join('');
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
