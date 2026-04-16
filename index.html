@@ -628,40 +628,50 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
-    padding: 12px 14px;
-    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    display: flex; align-items: center; gap: 10px;
     transition: border-color .2s;
+    position: relative;
   }
   .habit-item.done { border-color: var(--success); }
+  .habit-item.editing-mode { border-color: var(--accent); }
   .habit-check {
     width: 22px; height: 22px; border-radius: 6px;
     border: 2px solid var(--border);
     flex-shrink: 0; display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: all .2s; background: var(--surface2);
   }
-  .habit-check.done {
-    background: var(--success); border-color: var(--success);
-  }
+  .habit-check.done { background: var(--success); border-color: var(--success); }
   .habit-check svg { display: none; }
   .habit-check.done svg { display: block; }
   .habit-name {
-    flex: 1; font-size: 15px; color: var(--text);
+    flex: 1; font-size: 14px; color: var(--text);
     background: none; border: none; outline: none;
-    caret-color: var(--accent);
+    caret-color: var(--accent); min-width: 0;
   }
-  .habit-name.editing { border-bottom: 1px solid var(--accent); }
+  .habit-name.editing {
+    border-bottom: 1.5px solid var(--accent);
+    padding-bottom: 1px;
+  }
   .habit-streak {
-    display: flex; align-items: center; gap: 4px;
-    font-family: var(--font-cond); font-size: 13px; font-weight: 600;
-    color: var(--warn);
+    display: flex; align-items: center; gap: 3px;
+    font-family: var(--font-cond); font-size: 12px; font-weight: 600;
+    color: var(--warn); flex-shrink: 0;
   }
-  .habit-edit-btn {
+  .habit-actions {
+    display: flex; gap: 4px; flex-shrink: 0;
+  }
+  .habit-action-btn {
     width: 28px; height: 28px; border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
-    color: var(--text3); background: var(--surface2);
-    font-size: 13px; transition: background .2s;
+    background: var(--surface2); color: var(--text3);
+    transition: all .15s; cursor: pointer; flex-shrink: 0;
+    border: none;
   }
-  .habit-edit-btn:hover { background: var(--border); }
+  .habit-action-btn:hover { background: var(--border); color: var(--text); }
+  .habit-action-btn.edit:hover { background: rgba(124,58,237,0.15); color: var(--accent); }
+  .habit-action-btn.delete:hover { background: rgba(224,92,122,0.15); color: var(--danger); }
+  .habit-action-btn svg { pointer-events: none; }
   .add-habit-btn {
     margin: 10px 16px 0;
     padding: 12px;
@@ -798,6 +808,56 @@
     transition: background .2s;
   }
   .modal-cancel:hover { background: var(--border); }
+
+  /* ─── BREAK HABIT MODAL ──────────────────────────────────── */
+  #break-modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,.55);
+    backdrop-filter: blur(4px);
+    display: none; align-items: flex-end; justify-content: center;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  #break-modal-overlay.open { display: flex; }
+  .break-reason-label {
+    font-family: var(--font-cond); font-size: 11px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 10px;
+  }
+  .break-tags {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+  }
+  .break-tag {
+    padding: 7px 12px; border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--surface2); color: var(--text2);
+    font-family: var(--font-cond); font-size: 12px; font-weight: 600;
+    letter-spacing: .04em; cursor: pointer; transition: all .15s;
+  }
+  .break-tag:hover { border-color: var(--danger); color: var(--danger); }
+  .break-tag.selected {
+    background: rgba(224,92,122,0.15);
+    border-color: var(--danger); color: var(--danger);
+  }
+  .break-reason-input {
+    width: 100%; padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border);
+    background: var(--surface2); color: var(--text);
+    font-family: var(--font-body); font-size: 14px;
+    outline: none; transition: border-color .2s;
+  }
+  .break-reason-input:focus { border-color: var(--danger); }
+
+  /* Broken state on habit item */
+  .habit-item.broken {
+    border-color: var(--danger);
+    background: rgba(224,92,122,0.04);
+  }
+  .habit-check.broken {
+    background: rgba(224,92,122,0.15);
+    border-color: var(--danger);
+  }
+  .habit-streak.broken { color: var(--danger); }
 
   /* ─── TOAST ───────────────────────────────────────────────── */
   #toast {
@@ -1163,6 +1223,40 @@
     <div class="modal-btns">
       <button class="modal-confirm" onclick="confirmEndFast()">Yes, End Fast</button>
       <button class="modal-cancel" onclick="closeModal()">Keep Going 💪</button>
+    </div>
+  </div>
+</div>
+
+<!-- BREAK HABIT MODAL -->
+<div id="break-modal-overlay" onclick="closeBreakModal(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <div style="font-size:24px">💔</div>
+      <div class="modal-title" style="margin-bottom:0">Break Habit?</div>
+    </div>
+    <div class="modal-body">
+      You're about to break <strong id="break-habit-name">—</strong>.
+      Your streak of <strong id="break-habit-streak">—</strong> days will reset to zero.
+    </div>
+
+    <!-- Reason tags -->
+    <div class="break-reason-label">Why are you breaking it?</div>
+    <div class="break-tags" id="break-tags">
+      <button class="break-tag" onclick="selectBreakTag(this)">😴 Tired</button>
+      <button class="break-tag" onclick="selectBreakTag(this)">👥 Social</button>
+      <button class="break-tag" onclick="selectBreakTag(this)">⏰ No time</button>
+      <button class="break-tag" onclick="selectBreakTag(this)">😣 Stressed</button>
+      <button class="break-tag" onclick="selectBreakTag(this)">🤒 Unwell</button>
+      <button class="break-tag" onclick="selectBreakTag(this)">🌀 Distracted</button>
+    </div>
+    <input id="break-reason-input" class="break-reason-input" placeholder="Or type your reason..." maxlength="120">
+
+    <div class="modal-btns" style="margin-top:20px">
+      <button class="modal-confirm" style="background:var(--danger)" onclick="confirmBreakHabit()">
+        Break Habit — Reset Streak
+      </button>
+      <button class="modal-cancel" onclick="closeBreakModal()">Keep the Streak 🔥</button>
     </div>
   </div>
 </div>
@@ -2005,42 +2099,119 @@ function renderHabitTabs() {
   });
 }
 
+const BREAK_SVG  = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>`;
+const EDIT_SVG   = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+const DEL_SVG    = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
+const SAVE_SVG   = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+const CANCEL_SVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+
 function renderHabitList() {
   const list = document.getElementById('habit-list');
   list.innerHTML = '';
   const items = habits[activeHabitCat] || [];
-  items.forEach((h,i) => {
+  items.forEach((h, i) => {
     const div = document.createElement('div');
-    div.className = 'habit-item' + (h.done ? ' done' : '');
+    const isBroken = h.broken === today();
+    const itemClass = h.done ? ' done' : (isBroken ? ' broken' : '');
+    const checkClass = h.done ? ' done' : (isBroken ? ' broken' : '');
+    const streakIcon = isBroken ? '💔' : '🔥';
+    const streakClass = isBroken ? 'habit-streak broken' : 'habit-streak';
+    div.className = 'habit-item' + itemClass;
+    div.dataset.idx = i;
     div.innerHTML = `
-      <div class="habit-check${h.done?' done':''}" onclick="toggleHabit('${activeHabitCat}',${i})">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+      <div class="habit-check${checkClass}" onclick="toggleHabit('${activeHabitCat}',${i})">
+        ${isBroken
+          ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
+          : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`}
       </div>
-      <input class="habit-name" value="${h.name}" readonly
-        ondblclick="this.removeAttribute('readonly');this.classList.add('editing');this.focus()"
-        onblur="saveHabitName('${activeHabitCat}',${i},this)"
-        onkeydown="if(event.key==='Enter')this.blur()">
-      <div class="habit-streak">🔥 ${h.streak}</div>
-    `;
+      <input class="habit-name" value="${h.name.replace(/"/g,'&quot;')}" readonly
+        onkeydown="if(event.key==='Enter')saveHabitName('${activeHabitCat}',${i},this);if(event.key==='Escape')cancelHabitEdit(this,'${activeHabitCat}',${i})">
+      <div class="${streakClass}">${streakIcon} ${h.streak}</div>
+      <div class="habit-actions">
+        ${!isBroken && !h.done ? `<button class="habit-action-btn" title="Break habit" onclick="openBreakModal('${activeHabitCat}',${i})" style="color:var(--danger);opacity:.7">${BREAK_SVG}</button>` : ''}
+        <button class="habit-action-btn edit" title="Edit" onclick="startHabitEdit('${activeHabitCat}',${i},this)">${EDIT_SVG}</button>
+        <button class="habit-action-btn delete" title="Delete" onclick="deleteHabit('${activeHabitCat}',${i})">${DEL_SVG}</button>
+      </div>`;
     list.appendChild(div);
   });
 }
 
 function toggleHabit(cat, i) {
-  habits[cat][i].done = !habits[cat][i].done;
-  if (habits[cat][i].done) habits[cat][i].streak++;
+  const h = habits[cat][i];
+  // Can't toggle a broken habit — it's a conscious decision
+  if (h.broken === today()) {
+    toast('💔 This habit was intentionally broken today');
+    return;
+  }
+  h.done = !h.done;
+  if (h.done) h.streak = (h.streak || 0) + 1;
+  else if (h.streak > 0) h.streak--;
   LS.set('habits', habits);
   renderHabitTabs();
   renderHabitList();
-  saveToSupabase('habits', { date: today(), cat, name: habits[cat][i].name, done: habits[cat][i].done });
+  saveToSupabase('habits', { date: today(), cat, name: h.name, done: h.done });
+}
+
+function startHabitEdit(cat, i, btn) {
+  const item  = btn.closest('.habit-item');
+  const input = item.querySelector('.habit-name');
+  const acts  = item.querySelector('.habit-actions');
+  input.removeAttribute('readonly');
+  input.classList.add('editing');
+  input.focus(); input.select();
+  item.classList.add('editing-mode');
+  // Swap buttons to Save / Cancel
+  acts.innerHTML = `
+    <button class="habit-action-btn edit" title="Save" onclick="saveHabitName('${cat}',${i},this.closest('.habit-item').querySelector('.habit-name'))" style="color:var(--success)">${SAVE_SVG}</button>
+    <button class="habit-action-btn delete" title="Cancel" onclick="cancelHabitEdit(this.closest('.habit-item').querySelector('.habit-name'),'${cat}',${i})">${CANCEL_SVG}</button>`;
 }
 
 function saveHabitName(cat, i, input) {
-  habits[cat][i].name = input.value.trim() || habits[cat][i].name;
+  const trimmed = input.value.trim();
+  habits[cat][i].name = trimmed || habits[cat][i].name;
+  LS.set('habits', habits);
+  saveToSupabase('habits', { cat, name: habits[cat][i].name });
+  renderHabitList();
+}
+
+function cancelHabitEdit(input, cat, i) {
   input.value = habits[cat][i].name;
   input.setAttribute('readonly','');
   input.classList.remove('editing');
+  const item = input.closest('.habit-item');
+  if (item) item.classList.remove('editing-mode');
+  renderHabitList();
+}
+
+function deleteHabit(cat, i) {
+  const name = habits[cat][i].name;
+  // Confirm via inline swap — replace item with a confirm row
+  const list  = document.getElementById('habit-list');
+  const items = list.querySelectorAll('.habit-item');
+  const item  = items[i];
+  if (!item) return;
+  item.style.borderColor = 'var(--danger)';
+  item.style.background  = 'rgba(224,92,122,0.06)';
+  item.innerHTML = `
+    <span style="flex:1;font-size:13px;color:var(--danger);font-family:var(--font-cond);font-weight:600;letter-spacing:.04em">
+      Delete "${name}"?
+    </span>
+    <div class="habit-actions">
+      <button class="habit-action-btn delete" onclick="confirmDeleteHabit('${cat}',${i})" style="color:var(--danger);background:rgba(224,92,122,0.12)">
+        ${DEL_SVG}
+      </button>
+      <button class="habit-action-btn" onclick="renderHabitList()" style="color:var(--text3)">
+        ${CANCEL_SVG}
+      </button>
+    </div>`;
+}
+
+function confirmDeleteHabit(cat, i) {
+  habits[cat].splice(i, 1);
   LS.set('habits', habits);
+  renderHabitTabs();
+  renderHabitList();
+  toast('Habit deleted');
 }
 
 function addHabit() {
@@ -2054,6 +2225,57 @@ function addHabit() {
     const last = inputs[inputs.length-1];
     if (last) { last.removeAttribute('readonly'); last.classList.add('editing'); last.focus(); last.select(); }
   }, 50);
+}
+
+/* ─── BREAK HABIT MODAL ──────────────────────────────────── */
+let breakTarget = { cat: null, idx: null };
+
+function openBreakModal(cat, i) {
+  const h = habits[cat][i];
+  breakTarget = { cat, idx: i };
+  document.getElementById('break-habit-name').textContent   = h.name;
+  document.getElementById('break-habit-streak').textContent = h.streak;
+  document.getElementById('break-reason-input').value = '';
+  // Clear tag selections
+  document.querySelectorAll('.break-tag').forEach(t => t.classList.remove('selected'));
+  document.getElementById('break-modal-overlay').classList.add('open');
+}
+
+function selectBreakTag(btn) {
+  // Toggle selection — allow one or clear
+  const wasSelected = btn.classList.contains('selected');
+  document.querySelectorAll('.break-tag').forEach(t => t.classList.remove('selected'));
+  if (!wasSelected) btn.classList.add('selected');
+}
+
+function closeBreakModal(e) {
+  if (e && e.target !== document.getElementById('break-modal-overlay')) return;
+  document.getElementById('break-modal-overlay').classList.remove('open');
+}
+
+function confirmBreakHabit() {
+  const { cat, idx } = breakTarget;
+  if (cat === null || idx === null) return;
+
+  const h = habits[cat][idx];
+  const selectedTag = document.querySelector('.break-tag.selected')?.textContent || '';
+  const typedReason = document.getElementById('break-reason-input').value.trim();
+  const reason = typedReason || selectedTag || 'No reason given';
+
+  // Mark broken, reset streak
+  const prevStreak = h.streak;
+  h.broken  = today();
+  h.done    = false;
+  h.streak  = 0;
+  h.breakLog = h.breakLog || [];
+  h.breakLog.unshift({ date: today(), reason, prevStreak });
+
+  LS.set('habits', habits);
+  document.getElementById('break-modal-overlay').classList.remove('open');
+  renderHabitTabs();
+  renderHabitList();
+  toast(`💔 Streak reset. Reason: ${reason}`);
+  saveToSupabase('habit_breaks', { cat, name: h.name, reason, prevStreak, date: today() });
 }
 
 /* ═══════════════════════════════════════════════════════════════
