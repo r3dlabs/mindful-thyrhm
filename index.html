@@ -795,6 +795,46 @@
   }
   .wday-fill { height: 100%; border-radius: 2px; background: var(--accent); }
 
+  /* ─── STATS TRIO LAYOUT ──────────────────────────────── */
+  .stats-trio {
+    display: flex;
+    flex-direction: column;
+  }
+  .stats-col {
+    /* On mobile: full width, default stacking */
+  }
+
+  @media (min-width: 768px) {
+    .stats-trio {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 0;
+      padding: 0 16px;
+    }
+    .stats-col {
+      flex: 1; min-width: 0;
+      padding: 16px 12px 0;
+      border-right: 1px solid var(--border);
+    }
+    .stats-col:first-child { padding-left: 0; }
+    .stats-col:last-child  { padding-right: 0; border-right: none; }
+    /* Remove individual section padding since trio handles it */
+    .stats-trio .stats-section {
+      padding: 0;
+      margin-top: 0;
+    }
+    /* Chart needs fixed height on tablet so columns stay even */
+    .stats-trio .wk-chart-wrap { height: 180px; }
+  }
+
+  @media (min-width: 1024px) {
+    .stats-trio { gap: 0; }
+    .stats-col  { padding: 20px 20px 0; }
+    .stats-col:first-child { padding-left: 0; }
+    .stats-col:last-child  { padding-right: 0; }
+    .stats-trio .wk-chart-wrap { height: 200px; }
+  }
+
   /* ─── WEEKLY CHART ───────────────────────────────────── */
   .wk-chart-wrap {
     background: var(--surface); border: 1px solid var(--border);
@@ -1262,54 +1302,59 @@
     </div>
     <div class="week-grid" id="week-grid"></div>
 
-    <!-- FASTING STATS -->
-    <div class="stats-section">
-      <div class="stats-section-title">Fasting</div>
-      <div class="kpi-row">
-        <div class="kpi-card">
-          <div class="kpi-lbl">Deepest Stage</div>
-          <div class="kpi-val" id="wk-deepest">—</div>
-          <div class="kpi-sub" id="wk-deepest-time">—</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">Longest Fast</div>
-          <div class="kpi-val" id="wk-long-fast">—</div>
-          <div class="kpi-sub" id="wk-long-fast-date">—</div>
-        </div>
-      </div>
-      <div class="kpi-row">
-        <div class="kpi-card">
-          <div class="kpi-lbl">Avg Daily Feeding</div>
-          <div class="kpi-val" id="wk-avg-feeding">—</div>
-          <div class="kpi-sub">per day this week</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">Avg Daily Fasting</div>
-          <div class="kpi-val" id="wk-avg-fast">—</div>
-          <div class="kpi-sub">fed → immune regen</div>
-        </div>
-      </div>
-      <div class="state-bar-list" id="wk-fast-bars"></div>
-    </div>
+    <!-- STATS TRIO — side by side on tablet/desktop, stacked on mobile -->
+    <div class="stats-trio">
 
-    <!-- MOMENT STATS — stacked bar chart -->
-    <div class="stats-section">
-      <div class="stats-section-title">Moments</div>
-      <div class="wk-chart-wrap">
-        <canvas id="wk-moment-chart"></canvas>
+      <!-- FASTING STATS -->
+      <div class="stats-section stats-col">
+        <div class="stats-section-title">Fasting</div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-lbl">Deepest Stage</div>
+            <div class="kpi-val" id="wk-deepest">—</div>
+            <div class="kpi-sub" id="wk-deepest-time">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-lbl">Longest Fast</div>
+            <div class="kpi-val" id="wk-long-fast">—</div>
+            <div class="kpi-sub" id="wk-long-fast-date">—</div>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-lbl">Avg Daily Feeding</div>
+            <div class="kpi-val" id="wk-avg-feeding">—</div>
+            <div class="kpi-sub">per day this week</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-lbl">Avg Daily Fasting</div>
+            <div class="kpi-val" id="wk-avg-fast">—</div>
+            <div class="kpi-sub">fed → immune regen</div>
+          </div>
+        </div>
+        <div class="state-bar-list" id="wk-fast-bars"></div>
       </div>
-      <div class="wk-chart-legend" id="wk-chart-legend"></div>
-    </div>
 
-    <!-- HABITS -->
-    <div class="stats-section">
-      <div class="stats-section-title">Habits</div>
-      <div class="state-bar-list" id="wk-habit-cat-bars"></div>
-      <div class="wk-break-section">
-        <div class="wk-break-title">Break Reasons</div>
-        <div class="state-bar-list" id="wk-break-reason-bars"></div>
+      <!-- MOMENT STATS — stacked bar chart -->
+      <div class="stats-section stats-col">
+        <div class="stats-section-title">Moments</div>
+        <div class="wk-chart-wrap">
+          <canvas id="wk-moment-chart"></canvas>
+        </div>
+        <div class="wk-chart-legend" id="wk-chart-legend"></div>
       </div>
-    </div>
+
+      <!-- HABITS -->
+      <div class="stats-section stats-col">
+        <div class="stats-section-title">Habits</div>
+        <div class="state-bar-list" id="wk-habit-cat-bars"></div>
+        <div class="wk-break-section">
+          <div class="wk-break-title">Break Reasons</div>
+          <div class="state-bar-list" id="wk-break-reason-bars"></div>
+        </div>
+      </div>
+
+    </div><!-- /stats-trio -->
 
     <div class="spacer"></div>
   </div>
