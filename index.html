@@ -2763,8 +2763,9 @@ function renderWeekly() {
     const pct   = Math.round(done/list.length*100);
     catBars.push({
       icon: sd?.icon||'', name: sd?.label||cat, color: sd?.color||'var(--accent)',
-      secs: done, total: list.length, pct,
-      broken, brokenPct: Math.round(broken/list.length*100),
+      done, total: list.length, pct,
+      broken: broken || 0,
+      brokenPct: Math.round((broken||0)/list.length*100),
     });
   });
 
@@ -2781,8 +2782,8 @@ function renderWeekly() {
         <div class="sbl-bar-wrap">
           <div class="sbl-bar" style="width:${r.pct}%;background:${r.color}"></div>
         </div>
-        <span class="sbl-time" style="font-size:10px">${r.done}/${r.total}</span>
-        <span class="sbl-pct" style="color:${r.color}">${r.pct}%</span>`;
+        <span class="sbl-time" style="font-size:10px">${r.done||0}/${r.total||0}</span>
+        <span class="sbl-pct" style="color:${r.color}">${r.pct||0}%</span>`;
       catEl.appendChild(div);
 
       // Break sub-row if any broken
