@@ -1301,7 +1301,7 @@ function confirmEndFast() {
   const stIdx = getFastingStageIdx(secs / 3600);
   const st    = STAGES[stIdx];
   fastState.log = fastState.log || [];
-  fastState.log.unshift({ date: today(), secs, stage: st.name, stageIdx: stIdx });
+  fastState.log.unshift({ date: today(), secs, stage: st.name, stageIdx: stIdx, endTs: Date.now() });
   fastState.running   = false;
   fastState.startTs   = null;
   fastState.totalSecs = 0;
@@ -1429,20 +1429,72 @@ function buildDonut() {
 }
 
 /* ─── DAY STATE LIST ─────────────────────────────────────── */
+/* ─── helpers ────────────────────────────────────────────────
+   getMidnightTs()  → unix-ms of today's midnight (00:00:00)
+   getFastSecsToday() → seconds of the CURRENT live fast that
+     fall within today (i.e. since midnight or fast-start,
+     whichever is later). Capped at DAY_SECS. Used only for
+     the day-view percentage — the raw fasting timer is
+     unaffected and keeps counting across midnight freely.
+─────────────────────────────────────────────────────────────── */
+function getMidnightTs() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+}
+
+function getFastSecsToday() {
+  if (!fastState.running || !fastState.startTs) return 0;
+  const midnightMs  = getMidnightTs();
+  const effectiveStart = Math.max(fastState.startTs, midnightMs);
+  return Math.floor((Date.now() - effectiveStart) / 1000);
+}
+
+function getPastFastSecsToday() {
+  // For completed fasts in the log that ended today, take only
+  // the portion that falls within today's 24h window.
+  const midnightMs = getMidnightTs();
+  let total = 0;
+  (fastState.log || []).forEach(entry => {
+    if (!entry.endTs) return; // no timestamp, skip
+    const endMs   = entry.endTs;
+    const startMs = endMs - (entry.secs * 1000);
+    if (endMs < midnightMs) return; // ended before today
+    const effectiveStart = Math.max(startMs, midnightMs);
+    total += Math.floor((endMs - effectiveStart) / 1000);
+  });
+  return total;
+}
+
 function buildDayTracker() {
   const el = document.getElementById('day-state-list');
   if (!el) return;
 
   const DAY_SECS = 86400;
+  const midnightMs = getMidnightTs();
 
-  // Accumulate seconds per stage
+  // Per-stage seconds — TODAY only
   const stageSecs = new Array(STAGES.length).fill(0);
+
+  // Feeding: already daily-reset by getFeedingElapsed()
   stageSecs[0] = getFeedingElapsed();
 
-  // Past fasts — distribute across stages reached
+  // Completed fasts that touched today — distribute across stages,
+  // but only count seconds that fall within today's window
   (fastState.log || []).forEach(entry => {
-    let rem = entry.secs;
+    if (!entry.endTs) return;
+    const endMs      = entry.endTs;
+    const startMs    = endMs - (entry.secs * 1000);
+    if (endMs < midnightMs) return; // entirely before today
+
+    // Seconds of this fast that fall within today
+    const effectiveStartMs = Math.max(startMs, midnightMs);
+    const todaySecs        = Math.floor((endMs - effectiveStartMs) / 1000);
+    if (todaySecs <= 0) return;
+
+    // Distribute todaySecs across fasting stages proportionally
     const maxIdx = entry.stageIdx || STAGES.findIndex(s => s.name === entry.stage);
+    let rem = Math.min(todaySecs, entry.secs);
     for (let i = 1; i <= maxIdx && i < STAGES.length; i++) {
       const nxt   = STAGES[i + 1];
       const cap   = nxt ? (nxt.start - STAGES[i].start) * 3600 : rem;
@@ -1453,9 +1505,30 @@ function buildDayTracker() {
     }
   });
 
-  // Live fast
-  if (fastState.running) {
-    stageSecs[getCurrentStageIdx()] += getFastElapsed();
+  // Live fast — only today's portion, distributed across stages
+  if (fastState.running && fastState.startTs) {
+    const todayFastSecs  = getFastSecsToday();
+    const totalFastSecs  = getFastElapsed();
+    const liveIdx        = getCurrentStageIdx();
+
+    // Distribute today's fast seconds stage by stage from the beginning
+    // of the current fast, capped to what falls in today
+    let rem = Math.min(todayFastSecs, totalFastSecs);
+    for (let i = 1; i <= liveIdx && i < STAGES.length; i++) {
+      const nxt   = STAGES[i + 1];
+      const cap   = nxt ? (nxt.start - STAGES[i].start) * 3600 : rem;
+      const spent = Math.min(rem, cap);
+      stageSecs[i] += spent;
+      rem -= spent;
+      if (rem <= 0) break;
+    }
+  }
+
+  // Guard: total can't exceed 24h
+  const totalTracked = stageSecs.reduce((a,b)=>a+b,0);
+  if (totalTracked > DAY_SECS) {
+    const scale = DAY_SECS / totalTracked;
+    stageSecs.forEach((_, i) => { stageSecs[i] = Math.floor(stageSecs[i] * scale); });
   }
 
   el.innerHTML = '';
@@ -1463,7 +1536,8 @@ function buildDayTracker() {
     const secs = stageSecs[i];
     if (!secs && i !== 0) return; // always show Feeding
     const pct = Math.min(Math.round(secs / DAY_SECS * 100), 100);
-    const isActive = (i === 0 && !fastState.running) || (fastState.running && i === getCurrentStageIdx());
+    const isActive = (i === 0 && !fastState.running) ||
+                     (fastState.running && i === getCurrentStageIdx());
     const row = document.createElement('div');
     row.className = 'dst-row';
     row.innerHTML = `
