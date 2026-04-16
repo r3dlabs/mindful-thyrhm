@@ -173,6 +173,69 @@
   /* ════════════════════════════════════════════════════════════
      FASTING HERO
   ════════════════════════════════════════════════════════════ */
+  /* ─── HERO DUO LAYOUT ────────────────────────────────────── */
+  .hero-duo {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  @media (min-width: 768px) {
+    .hero-duo {
+      flex-direction: row;
+      align-items: stretch;
+      gap: 0;
+      padding: 16px 16px 0;
+    }
+    .hero-duo #fasting-hero,
+    .hero-duo #moment-hero {
+      flex: 1;
+      margin: 0;
+      min-width: 0;
+    }
+    .hero-duo #fasting-hero {
+      border-radius: var(--radius) 0 0 var(--radius);
+      border-right: none;
+    }
+    .hero-duo #moment-hero {
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+    /* On wide screens, ring sizes can be slightly smaller to fit */
+    .hero-duo .ring-wrap,
+    .hero-duo #moment-ring-wrap {
+      width: 150px;
+      height: 150px;
+    }
+    .hero-duo #fast-hhmm,
+    .hero-duo #moment-hhmm { font-size: 30px; }
+    /* More vertical on tablet — stack ring above list */
+    .hero-duo .hero-row,
+    .hero-duo .moment-row {
+      flex-direction: column;
+      align-items: center;
+    }
+    .hero-duo .day-tracker,
+    .hero-duo .moment-state-list {
+      width: 100%;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    /* On desktop keep ring + list side by side */
+    .hero-duo .hero-row,
+    .hero-duo .moment-row {
+      flex-direction: row;
+      align-items: center;
+    }
+    .hero-duo .ring-wrap,
+    .hero-duo #moment-ring-wrap {
+      width: 160px;
+      height: 160px;
+    }
+    .hero-duo #fast-hhmm,
+    .hero-duo #moment-hhmm { font-size: 32px; }
+  }
+
   #fasting-hero {
     margin: 16px 16px 0;
     padding: 20px 20px 20px;
@@ -428,27 +491,50 @@
     padding: 2px 4px 14px;
     display: flex; flex-direction: column; gap: 6px;
   }
-  .stage-scroll-wrap {
-    min-height: 52px;
+  .stage-nav {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stage-nav-btn {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text3); flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    position: relative; overflow: hidden;
+    cursor: pointer; transition: all .18s; font-size: 14px;
+    user-select: none;
   }
-  .stage-scroll-text {
+  .stage-nav-btn:hover { background: var(--border); color: var(--text); }
+  .stage-nav-btn:disabled { opacity: .25; cursor: default; }
+  .stage-nav-content {
+    flex: 1; min-height: 52px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+  }
+  .stage-nav-text {
     font-size: 12px; color: var(--text2); line-height: 1.55;
-    position: absolute; width: 100%;
-    opacity: 0; transition: opacity .5s ease, transform .5s ease;
-    transform: translateY(8px);
+    opacity: 0; transition: opacity .3s ease, transform .3s ease;
+    transform: translateX(20px); position: absolute; width: 100%;
   }
-  .stage-scroll-text.active {
-    opacity: 1; transform: translateY(0); position: relative;
+  .stage-nav-text.active {
+    opacity: 1; transform: translateX(0); position: relative;
   }
-  .stage-scroll-label {
+  .stage-nav-text.slide-left  { transform: translateX(-20px); }
+  .stage-nav-text.slide-right { transform: translateX(20px); }
+  .stage-nav-label {
     font-family: var(--font-cond); font-size: 10px; font-weight: 700;
     letter-spacing: .1em; text-transform: uppercase;
     margin-bottom: 2px; display: block;
   }
-  .stage-scroll-label.current { color: var(--accent); }
-  .stage-scroll-label.upcoming { color: var(--text3); }
+  /* label color set inline per stage */
+  .stage-nav-dots {
+    display: flex; gap: 5px; justify-content: center; align-items: center;
+    margin-top: 4px;
+  }
+  .stage-nav-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--border); transition: background .3s, transform .3s;
+  }
+  .stage-nav-dot.active { transform: scale(1.3); }
   .stage-next-line {
     display: flex; align-items: center; justify-content: center; gap: 8px;
   }
@@ -471,6 +557,7 @@
   #moment-hero {
     margin: 12px 16px 0;
     padding: 20px 20px 20px;
+    /* On tablet+ margin is handled by hero-duo */
     display: flex; flex-direction: column; align-items: center;
     position: relative; overflow: hidden;
   }
@@ -988,6 +1075,9 @@
       </div>
     </div>
 
+    <!-- HERO DUO — side by side on tablet/desktop -->
+    <div class="hero-duo">
+
     <!-- FASTING HERO -->
     <div class="card" id="fasting-hero">
       <!-- Ring + Day Tracker side by side -->
@@ -1014,9 +1104,18 @@
 
       <!-- Stage description scroller -->
       <div class="stage-desc-block">
-        <div class="stage-scroll-wrap">
-          <div class="stage-scroll-text active" id="stage-scroll-text"></div>
+        <div class="stage-nav">
+          <button class="stage-nav-btn" id="stage-nav-prev" onclick="stageNavStep(-1)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="stage-nav-content">
+            <div class="stage-nav-text active" id="stage-nav-text"></div>
+          </div>
+          <button class="stage-nav-btn" id="stage-nav-next" onclick="stageNavStep(1)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
+        <div class="stage-nav-dots" id="stage-nav-dots"></div>
         <div class="stage-next-line">
           <span id="stage-next-label">Next: Fed (start fast)</span>
           <span id="stage-next-eta" class="stage-next-eta"></span>
@@ -1067,6 +1166,7 @@
 
     </div>
 
+    </div><!-- /hero-duo -->
 
     <!-- HABITS -->
     <div class="section-pad" style="margin-top:4px;">
@@ -2425,58 +2525,113 @@ function tickSlow() { distTick++; }
 
 /* ─── STAGE DESCRIPTION SCROLLER ────────────────────────── */
 // Builds a rotation: current state desc first, then upcoming states in order
-let stageScrollTimer = null;
-let stageScrollItems = [];
-let stageScrollIdx   = 0;
+let stageNavItems = [];
+let stageNavIdx   = 0;
 
 function initStageScroller(activeIdx) {
-  // Build items: current stage first, then all subsequent stages
   const items = [];
 
-  // Current stage — "You are in X"
+  // Current stage first
   const cur = STAGES[activeIdx];
   items.push({
     label: `You are in ${cur.name}`,
-    labelClass: 'current',
+    color: cur.color,
     text: cur.desc,
+    eta: null,
+    isCurrent: true,
   });
 
-  // Upcoming stages
+  // Upcoming stages with ETA
   for (let i = activeIdx + 1; i < STAGES.length; i++) {
     const s = STAGES[i];
+    const fastSecs = getFastElapsed();
+    let etaStr = '';
+    if (s.start) {
+      const rem = Math.max((s.start * 3600) - fastSecs, 0);
+      const h = Math.floor(rem / 3600), m = Math.floor((rem % 3600) / 60);
+      etaStr = h > 0 ? `${h}h ${String(m).padStart(2,'0')}m away` : `${m}m away`;
+    }
     items.push({
-      label: `Upcoming: ${s.name}${s.start ? ` · ${s.start}h+` : ''}`,
-      labelClass: 'upcoming',
+      label: `Upcoming · ${s.icon} ${s.name}${s.start ? ` · ${s.start}h+` : ''}`,
+      color: s.color,
       text: s.desc,
+      eta: etaStr,
+      isCurrent: false,
     });
   }
 
-  // If items haven't changed (same stage), don't reset
+  // Only reset if stage changed
   const newKey = items.map(i => i.label).join('|');
-  if (stageScrollItems._key === newKey) return;
+  if (stageNavItems._key === newKey) return;
 
-  stageScrollItems      = items;
-  stageScrollItems._key = newKey;
-  stageScrollIdx        = 0;
+  stageNavItems      = items;
+  stageNavItems._key = newKey;
+  stageNavIdx        = 0;
 
-  clearInterval(stageScrollTimer);
-  renderStageScroll(0);
-  stageScrollTimer = setInterval(() => {
-    stageScrollIdx = (stageScrollIdx + 1) % stageScrollItems.length;
-    renderStageScroll(stageScrollIdx);
-  }, 6000);
+  renderStageNav(0, 'none');
+  buildStageNavDots();
 }
 
-function renderStageScroll(idx) {
-  const el = document.getElementById('stage-scroll-text');
+function stageNavStep(dir) {
+  const next = stageNavIdx + dir;
+  if (next < 0 || next >= stageNavItems.length) return;
+  renderStageNav(next, dir > 0 ? 'left' : 'right');
+  stageNavIdx = next;
+  buildStageNavDots();
+}
+
+function renderStageNav(idx, direction) {
+  const el   = document.getElementById('stage-nav-text');
+  const prev = document.getElementById('stage-nav-prev');
+  const nxt  = document.getElementById('stage-nav-next');
   if (!el) return;
-  const item = stageScrollItems[idx];
+
+  const item = stageNavItems[idx];
   if (!item) return;
-  el.classList.remove('active');
+
+  // Slide out current
+  if (direction !== 'none') {
+    el.classList.remove('active');
+    el.classList.add(direction === 'left' ? 'slide-left' : 'slide-right');
+  }
+
   setTimeout(() => {
-    el.innerHTML = `<span class="stage-scroll-label ${item.labelClass}">${item.label}</span>${item.text}`;
-    el.classList.add('active');
-  }, 520);
+    const prefix = item.isCurrent ? 'YOU ARE IN' : 'UPCOMING';
+    const nameColor = item.color;
+    const etaHtml = item.eta ? ` <span style="color:${nameColor};opacity:.8">${item.eta}</span>` : '';
+    el.innerHTML = `<span class="stage-nav-label" style="color:${nameColor}">${item.label}${etaHtml}</span>${item.text}`;
+    el.className = 'stage-nav-text';
+    // Slide in from opposite side
+    if (direction !== 'none') {
+      el.classList.add(direction === 'left' ? 'slide-right' : 'slide-left');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => { el.classList.remove('slide-left','slide-right'); el.classList.add('active'); });
+      });
+    } else {
+      el.classList.add('active');
+    }
+  }, direction !== 'none' ? 200 : 0);
+
+  // Update nav buttons
+  if (prev) prev.disabled = (idx === 0);
+  if (nxt)  nxt.disabled  = (idx === stageNavItems.length - 1);
+}
+
+function buildStageNavDots() {
+  const wrap = document.getElementById('stage-nav-dots');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  stageNavItems.forEach((item, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'stage-nav-dot' + (i === stageNavIdx ? ' active' : '');
+    // Always use stage color — dim when inactive
+    dot.style.background = i === stageNavIdx
+      ? item.color
+      : `color-mix(in srgb, ${item.color} 30%, var(--border))`;
+    if (i === stageNavIdx) dot.style.transform = 'scale(1.3)';
+    dot.onclick = () => { stageNavStep(i - stageNavIdx); };
+    wrap.appendChild(dot);
+  });
 }
 
 /* ─── QUOTE SCROLLER ─────────────────────────────────────── */
