@@ -1378,80 +1378,98 @@
     </div>
     <div class="month-grid" id="month-grid"></div>
 
-    <!-- MONTHLY FASTING STATS -->
-    <div class="stats-section">
-      <div class="stats-section-title">Fasting</div>
-      <div class="kpi-row cols3">
-        <div class="kpi-card">
-          <div class="kpi-lbl">Total Fasts</div>
-          <div class="kpi-val" id="mo-fasts">—</div>
-          <div class="kpi-sub">this month</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">Longest</div>
-          <div class="kpi-val" id="mo-long-fast">—</div>
-          <div class="kpi-sub">single fast</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">Fast Days</div>
-          <div class="kpi-val" id="mo-fast-days">—</div>
-          <div class="kpi-sub">days with a fast</div>
-        </div>
-      </div>
-      <div class="kpi-row">
-        <div class="kpi-card">
-          <div class="kpi-lbl">Avg Duration</div>
-          <div class="kpi-val" id="mo-avg-fast">—</div>
-          <div class="kpi-sub">per fast</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">Best Stage</div>
-          <div class="kpi-val" id="mo-best-stage">—</div>
-          <div class="kpi-sub">most reached</div>
-        </div>
-      </div>
-      <div class="state-bar-list" id="mo-fast-bars"></div>
-    </div>
+    <!-- MONTHLY STATS TRIO -->
+    <div class="stats-trio">
 
-    <!-- MONTHLY MOMENT STATS -->
-    <div class="stats-section">
-      <div class="stats-section-title">Moments</div>
-      <div class="kpi-row">
-        <div class="kpi-card">
-          <div class="kpi-lbl">Purposeful</div>
-          <div class="kpi-val" id="mo-focus">—</div>
-          <div class="kpi-sub">total hours</div>
+      <!-- FASTING -->
+      <div class="stats-section stats-col">
+        <div class="stats-section-title">Fasting</div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-lbl">Deepest Stage</div>
+            <div class="kpi-val" id="mo-deepest">—</div>
+            <div class="kpi-sub" id="mo-deepest-time">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-lbl">Longest Fast</div>
+            <div class="kpi-val" id="mo-long-fast">—</div>
+            <div class="kpi-sub" id="mo-long-fast-date">—</div>
+          </div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">Wasteful</div>
-          <div class="kpi-val" id="mo-wasteful">—</div>
-          <div class="kpi-sub">total hours</div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-lbl">Total Fasts</div>
+            <div class="kpi-val" id="mo-fasts">—</div>
+            <div class="kpi-sub" id="mo-fast-days-sub">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-lbl">Avg Per Fast</div>
+            <div class="kpi-val" id="mo-avg-fast">—</div>
+            <div class="kpi-sub">avg duration</div>
+          </div>
         </div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-lbl">Avg Daily Feeding</div>
+            <div class="kpi-val" id="mo-avg-feeding">—</div>
+            <div class="kpi-sub">feeding window</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-lbl">Avg Daily Fasting</div>
+            <div class="kpi-val" id="mo-avg-daily-fast">—</div>
+            <div class="kpi-sub">all fasting stages</div>
+          </div>
+        </div>
+        <div class="state-bar-list" id="mo-fast-bars"></div>
       </div>
-      <div class="state-bar-list" id="mo-moment-bars"></div>
-    </div>
 
-    <!-- MONTHLY HABIT STATS -->
-    <div class="stats-section">
-      <div class="stats-section-title">Habits</div>
-      <div class="kpi-row cols3">
-        <div class="kpi-card">
-          <div class="kpi-lbl">Completion</div>
-          <div class="kpi-val" id="mo-habit">—</div>
-          <div class="kpi-sub">today's rate</div>
+      <!-- MOMENTS — stacked bar chart by week -->
+      <div class="stats-section stats-col">
+        <div class="stats-section-title">Moments</div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-lbl">Most Time In</div>
+            <div class="kpi-val" id="mo-top-state">—</div>
+            <div class="kpi-sub" id="mo-top-state-hrs">dominant state</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-lbl">Purposeful</div>
+            <div class="kpi-val" id="mo-focus">—</div>
+            <div class="kpi-sub">total this month</div>
+          </div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">Best Streak</div>
-          <div class="kpi-val" id="mo-streak">—</div>
-          <div class="kpi-sub">days</div>
+        <div class="wk-chart-wrap" style="height:160px">
+          <canvas id="mo-moment-chart"></canvas>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">Breaks</div>
-          <div class="kpi-val" id="mo-breaks">—</div>
-          <div class="kpi-sub">conscious breaks</div>
+        <div class="wk-chart-legend" id="mo-chart-legend"></div>
+        <div style="margin-top:10px">
+          <div class="state-bar-list" id="mo-moment-bars"></div>
         </div>
       </div>
-    </div>
+
+      <!-- HABITS -->
+      <div class="stats-section stats-col">
+        <div class="stats-section-title">Habits</div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-lbl">Best Streak</div>
+            <div class="kpi-val" id="mo-streak">—</div>
+            <div class="kpi-sub">across all habits</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-lbl">Total Breaks</div>
+            <div class="kpi-val" id="mo-breaks">—</div>
+            <div class="kpi-sub">this month</div>
+          </div>
+        </div>
+        <div class="state-bar-list" id="mo-habit-cat-bars"></div>
+        <div class="wk-break-section">
+          <div class="wk-break-title">Break Reasons</div>
+          <div class="state-bar-list" id="mo-break-reason-bars"></div>
+        </div>
+      </div>
+
+    </div><!-- /stats-trio -->
 
     <div class="spacer"></div>
   </div>
@@ -2937,61 +2955,231 @@ function renderMonthly() {
     grid.appendChild(div);
   }
 
-  // ── Monthly fasting KPIs ───────────────────────────────────
+  const isCurrentMonth = monthOffset === 0;
   const moStr   = `${yr}-${String(mo+1).padStart(2,'0')}`;
+  const daysInMonth = new Date(yr, mo+1, 0).getDate();
   const moFasts = fasts.filter(f => f.date && f.date.startsWith(moStr));
-  const uniqueDays = new Set(moFasts.map(f => f.date)).size;
-  const longest = moFasts.reduce((a,b) => b.secs > a ? b.secs : a, 0);
-  const avgDur  = moFasts.length ? Math.round(moFasts.reduce((a,b)=>a+b.secs,0) / moFasts.length) : 0;
 
-  // Most reached stage
-  const stageCounts = {};
-  moFasts.forEach(f => { stageCounts[f.stage] = (stageCounts[f.stage]||0)+1; });
-  const bestStage = Object.entries(stageCounts).sort((a,b)=>b[1]-a[1])[0];
+  // Add live current fast if this month
+  const allMoFasts = [...moFasts];
+  if (isCurrentMonth && fastState.running) {
+    allMoFasts.push({ secs: getFastElapsed(), stage: STAGES[getCurrentStageIdx()].name, stageIdx: getCurrentStageIdx(), date: todayStr });
+  }
 
-  setText('mo-fasts',      moFasts.length || '—');
-  setText('mo-long-fast',  longest ? fmtHHMM(longest) : '—');
-  setText('mo-fast-days',  uniqueDays || '—');
-  setText('mo-avg-fast',   avgDur ? fmtHHMM(avgDur) : '—');
-  setText('mo-best-stage', bestStage ? bestStage[0] : '—');
+  // ── Fasting KPIs ──────────────────────────────────────────
+  const uniqueDays   = new Set(allMoFasts.map(f=>f.date)).size;
+  const longestEntry = allMoFasts.reduce((a,b)=>b.secs>(a?.secs||0)?b:a, null);
+  const longest      = longestEntry?.secs || 0;
+  const totalFastSecs= allMoFasts.reduce((a,b)=>a+b.secs,0);
+  const avgDur       = allMoFasts.length ? Math.round(totalFastSecs/allMoFasts.length) : 0;
+  const avgDailyFast = Math.round(totalFastSecs / daysInMonth);
+  const avgDailyFeed = isCurrentMonth ? Math.round(getFeedingElapsed() / 1) : 0; // today only until sync
 
-  // Stage distribution bars (same as weekly, from today's local data)
-  const fastStageSecs = new Array(STAGES.length).fill(0);
-  fastStageSecs[0] = getFeedingElapsed();
-  if (fastState.running) fastStageSecs[getCurrentStageIdx()] += getFastElapsed();
-  moFasts.forEach(entry => {
-    let rem = entry.secs;
-    const maxIdx = entry.stageIdx || STAGES.findIndex(s => s.name === entry.stage);
-    for (let i = 1; i <= maxIdx && i < STAGES.length; i++) {
-      const nxt = STAGES[i+1];
-      const cap = nxt ? (nxt.start - STAGES[i].start) * 3600 : rem;
-      const sp  = Math.min(rem, cap); fastStageSecs[i] += sp; rem -= sp;
-      if (rem <= 0) break;
+  // Deepest stage this month
+  const deepestEntry = allMoFasts.reduce((a,b)=>{
+    const ai = a?.stageIdx||STAGES.findIndex(s=>s.name===a?.stage)||0;
+    const bi = b?.stageIdx||STAGES.findIndex(s=>s.name===b?.stage)||0;
+    return bi>ai?b:a;
+  }, null);
+  const deepestIdx   = deepestEntry ? (deepestEntry.stageIdx||STAGES.findIndex(s=>s.name===deepestEntry.stage)) : 0;
+  const deepestStage = STAGES[deepestIdx];
+  let deepestSecs = 0;
+  allMoFasts.forEach(f=>{
+    const fi = f.stageIdx||STAGES.findIndex(s=>s.name===f.stage);
+    if (fi===deepestIdx){
+      const stg=STAGES[deepestIdx],nxt=STAGES[deepestIdx+1];
+      const cap=nxt?(nxt.start-stg.start)*3600:f.secs;
+      deepestSecs+=Math.min(f.secs,cap);
     }
   });
-  buildStateBars('mo-fast-bars', STAGES.map((s,i) => ({
-    icon: s.icon, name: s.name, color: s.color, secs: fastStageSecs[i]
+
+  setText('mo-deepest',        deepestStage ? deepestStage.icon+' '+deepestStage.name : '—');
+  setText('mo-deepest-time',   deepestSecs  ? fmtHrs(deepestSecs)+' this month' : '—');
+  setText('mo-long-fast',      longest ? fmtHHMM(longest) : '—');
+  setText('mo-long-fast-date', longestEntry?.date || '—');
+  setText('mo-fasts',          allMoFasts.length || '—');
+  setText('mo-fast-days-sub',  uniqueDays ? uniqueDays+' days with a fast' : 'no fasts logged');
+  setText('mo-avg-fast',       avgDur ? fmtHHMM(avgDur) : '—');
+  setText('mo-avg-feeding',    avgDailyFeed ? fmtHHMM(avgDailyFeed) : '—');
+  setText('mo-avg-daily-fast', avgDailyFast ? fmtHHMM(avgDailyFast) : '—');
+
+  // Stage distribution bars — cumulative from log
+  const fastStageSecs = new Array(STAGES.length).fill(0);
+  if (isCurrentMonth) fastStageSecs[0] = getFeedingElapsed();
+  allMoFasts.forEach(entry=>{
+    let rem = entry.secs;
+    const maxIdx = entry.stageIdx||STAGES.findIndex(s=>s.name===entry.stage);
+    for (let i=1;i<=maxIdx&&i<STAGES.length;i++){
+      const nxt=STAGES[i+1];
+      const cap=nxt?(nxt.start-STAGES[i].start)*3600:rem;
+      const sp=Math.min(rem,cap);
+      fastStageSecs[i]+=sp; rem-=sp;
+      if(rem<=0) break;
+    }
+  });
+  buildStateBars('mo-fast-bars', STAGES.map((s,i)=>({
+    icon:s.icon, name:s.name, color:s.color, secs:fastStageSecs[i]
   })));
 
-  // ── Monthly moment KPIs ────────────────────────────────────
-  const purposeSecs  = getStateElapsed('purposeful');
-  const wastefulSecs = getStateElapsed('wasteful');
-  setText('mo-focus',    purposeSecs  > 0 ? fmtHrs(purposeSecs)  : '—');
-  setText('mo-wasteful', wastefulSecs > 0 ? fmtHrs(wastefulSecs) : '—');
+  // ── Moments KPIs & chart ───────────────────────────────────
+  // Moment data: today only from live timers (until Supabase sync)
+  const moMomentSecs = {};
+  STATE_DEFS.forEach(sd=>{ moMomentSecs[sd.key] = isCurrentMonth ? getStateElapsed(sd.key) : 0; });
 
-  buildStateBars('mo-moment-bars', STATE_DEFS.map(sd => ({
-    icon: sd.icon, name: sd.label, color: sd.color, secs: getStateElapsed(sd.key)
+  const topState = STATE_DEFS.reduce((a,b)=>moMomentSecs[b.key]>moMomentSecs[a.key]?b:a, STATE_DEFS[0]);
+  setText('mo-top-state',     topState.icon+' '+topState.label);
+  setText('mo-top-state-hrs', moMomentSecs[topState.key] ? fmtHrs(moMomentSecs[topState.key]) : '—');
+  setText('mo-focus',         moMomentSecs['purposeful'] ? fmtHrs(moMomentSecs['purposeful']) : '—');
+
+  // Monthly chart — group by week (up to 5 weeks)
+  buildMonthChart(yr, mo, daysInMonth, moMomentSecs);
+
+  buildStateBars('mo-moment-bars', STATE_DEFS.map(sd=>({
+    icon:sd.icon, name:sd.label, color:sd.color, secs:moMomentSecs[sd.key]
   })));
 
-  // ── Monthly habit KPIs ─────────────────────────────────────
-  const allH    = Object.values(habits).flat();
-  const doneH   = allH.filter(h => h.done).length;
-  const brokenH = allH.filter(h => h.broken).length;
-  // Best streak across all habits
-  const bestStreak = allH.reduce((a,h) => Math.max(a, h.streak||0), 0);
-  setText('mo-habit',   allH.length ? Math.round(doneH/allH.length*100)+'%' : '—');
-  setText('mo-streak',  bestStreak || '—');
-  setText('mo-breaks',  brokenH || '—');
+  // ── Habits KPIs ────────────────────────────────────────────
+  const allH       = Object.values(habits).flat();
+  const bestStreak = allH.reduce((a,h)=>Math.max(a,h.streak||0),0);
+
+  // Break log entries this month
+  const moBreaks = [];
+  allH.forEach(h=>{
+    (h.breakLog||[]).forEach(b=>{
+      if (b.date && b.date.startsWith(moStr)) moBreaks.push(b);
+    });
+  });
+
+  setText('mo-streak', bestStreak||'—');
+  setText('mo-breaks', moBreaks.length||'—');
+
+  // Per-category bars
+  const moCatEl = document.getElementById('mo-habit-cat-bars');
+  if (moCatEl) {
+    moCatEl.innerHTML = '';
+    const CATS = ['purposeful','nourishing','training','recovering','wasteful'];
+    CATS.forEach(cat=>{
+      const sd   = STATE_DEFS.find(s=>s.key===cat);
+      const list = habits[cat]||[];
+      if (!list.length) return;
+      const done  = list.filter(h=>h.done).length;
+      const broke = list.filter(h=>h.broken&&h.broken.startsWith(moStr)).length;
+      const pct   = Math.round(done/list.length*100);
+      const bpct  = Math.round(broke/list.length*100);
+      const row = document.createElement('div');
+      row.className = 'sbl-row';
+      row.innerHTML = `
+        <span class="sbl-icon">${sd?.icon||''}</span>
+        <span class="sbl-name">${sd?.label||cat}</span>
+        <div class="sbl-bar-wrap"><div class="sbl-bar" style="width:${pct}%;background:${sd?.color||'var(--accent)'}"></div></div>
+        <span class="sbl-time" style="font-size:10px">${done}/${list.length}</span>
+        <span class="sbl-pct" style="color:${sd?.color||'var(--accent)'}">${pct}%</span>`;
+      moCatEl.appendChild(row);
+      if (broke>0){
+        const bd=document.createElement('div');
+        bd.className='sbl-row'; bd.style.paddingLeft='28px';
+        bd.innerHTML=`
+          <span class="sbl-icon" style="font-size:11px">💔</span>
+          <span class="sbl-name" style="font-size:11px;color:var(--text3)">broken</span>
+          <div class="sbl-bar-wrap"><div class="sbl-bar" style="width:${bpct}%;background:var(--danger)"></div></div>
+          <span class="sbl-time" style="font-size:10px">${broke}/${list.length}</span>
+          <span class="sbl-pct" style="color:var(--danger)">${bpct}%</span>`;
+        moCatEl.appendChild(bd);
+      }
+    });
+  }
+
+  // Break reasons this month
+  const moReasonCounts={};
+  moBreaks.forEach(b=>{ const r=b.reason||'No reason'; moReasonCounts[r]=(moReasonCounts[r]||0)+1; });
+  const moReasonEl=document.getElementById('mo-break-reason-bars');
+  if (moReasonEl){
+    moReasonEl.innerHTML='';
+    const total=Object.values(moReasonCounts).reduce((a,b)=>a+b,0)||1;
+    const sorted=Object.entries(moReasonCounts).sort((a,b)=>b[1]-a[1]);
+    if (!sorted.length){
+      moReasonEl.innerHTML=`<div style="font-family:var(--font-cond);font-size:12px;color:var(--text3)">No breaks this month 🔥</div>`;
+    } else {
+      sorted.forEach(([reason,count])=>{
+        const pct=Math.round(count/total*100);
+        const div=document.createElement('div');
+        div.className='sbl-row';
+        div.innerHTML=`
+          <span class="sbl-icon" style="font-size:11px">—</span>
+          <span class="sbl-name" style="font-size:11px">${reason}</span>
+          <div class="sbl-bar-wrap"><div class="sbl-bar" style="width:${pct}%;background:var(--danger)"></div></div>
+          <span class="sbl-time" style="font-size:10px">${count}x</span>
+          <span class="sbl-pct" style="color:var(--danger)">${pct}%</span>`;
+        moReasonEl.appendChild(div);
+      });
+    }
+  }
+}
+
+/* ─── MONTHLY MOMENT CHART — stacked by week ─────────────── */
+let moMomentChart = null;
+
+function buildMonthChart(yr, mo, daysInMonth, moMomentSecs) {
+  const canvas = document.getElementById('mo-moment-chart');
+  if (!canvas) return;
+
+  // Build week labels: W1, W2, W3, W4, W5
+  const weekLabels = [];
+  const weekData   = {};
+  STATE_DEFS.forEach(sd=>{ weekData[sd.key]=[]; });
+
+  let weekNum = 1;
+  let weekStart = 1;
+  while (weekStart <= daysInMonth) {
+    const weekEnd = Math.min(weekStart+6, daysInMonth);
+    weekLabels.push('W'+weekNum);
+    // Distribute today's data into the correct week
+    const todayDay = new Date().getDate();
+    const inThisWeek = todayDay >= weekStart && todayDay <= weekEnd;
+    STATE_DEFS.forEach(sd=>{
+      weekData[sd.key].push(inThisWeek ? parseFloat((moMomentSecs[sd.key]/3600).toFixed(2)) : 0);
+    });
+    weekStart += 7; weekNum++;
+  }
+
+  const datasets = STATE_DEFS.map(sd=>({
+    label: sd.label,
+    data: weekData[sd.key],
+    backgroundColor: sd.color,
+    borderRadius: 3,
+    borderSkipped: false,
+  }));
+
+  const isDark  = document.documentElement.getAttribute('data-theme')==='dark';
+  const gridClr = isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+  const txtClr  = isDark?'rgba(255,255,255,0.35)':'rgba(0,0,0,0.35)';
+
+  if (moMomentChart) {
+    moMomentChart.data.labels=weekLabels;
+    moMomentChart.data.datasets=datasets;
+    moMomentChart.update('none');
+  } else {
+    const ctx=canvas.getContext('2d');
+    moMomentChart=new Chart(ctx,{
+      type:'bar',
+      data:{labels:weekLabels, datasets},
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw.toFixed(1)}h`}}},
+        scales:{
+          x:{stacked:true,grid:{color:gridClr},ticks:{color:txtClr,font:{family:"'Barlow Condensed'"}}},
+          y:{stacked:true,grid:{color:gridClr},ticks:{color:txtClr,font:{family:"'Barlow Condensed'"},callback:v=>v+'h'}}
+        }
+      }
+    });
+  }
+
+  const legEl=document.getElementById('mo-chart-legend');
+  if (legEl){
+    legEl.innerHTML=STATE_DEFS.map(sd=>
+      `<div class="wk-legend-item"><span class="wk-legend-dot" style="background:${sd.color}"></span>${sd.icon} ${sd.label}</div>`
+    ).join('');
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
