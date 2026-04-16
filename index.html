@@ -1632,14 +1632,31 @@ let currentUser = null;
    On receiving a SIGNED_OUT event: show sign-in UI immediately.
 ═══════════════════════════════════════════════════════════════ */
 async function initAuth() {
-  // 1. Force Supabase to check the URL for tokens immediately on load
+  // --- DIAGNOSTIC BANNER (Catches hidden errors before they vanish) ---
+  const urlParams = new URLSearchParams(window.location.search);
+  const hashParams = new URLSearchParams(window.location.hash.substring(1));
+  const err = urlParams.get('error') || hashParams.get('error');
+  const errDesc = urlParams.get('error_description') || hashParams.get('error_description');
+
+  if (err) {
+    const dbg = document.createElement('div');
+    dbg.style = "position:fixed;top:0;left:0;right:0;background:#E05C7A;color:#fff;padding:14px;z-index:9999;text-align:center;font-family:monospace;font-weight:bold;box-shadow:0 4px 12px rgba(0,0,0,0.5);";
+    dbg.innerHTML = `🚨 AUTH ERROR: ${err} <br> ${errDesc?.replace(/\+/g, ' ')}`;
+    document.body.appendChild(dbg);
+  }
+  // --------------------------------------------------------------------
+
+  // 1. Explicitly grab the session on load
   const { data: { session }, error } = await sb.auth.getSession();
   
   if (error) {
-    console.error("Auth error:", error.message);
+    const dbg = document.createElement('div');
+    dbg.style = "position:fixed;top:0;left:0;right:0;background:#E05C7A;color:#fff;padding:14px;z-index:9999;text-align:center;font-family:monospace;font-weight:bold;";
+    dbg.innerHTML = `🚨 SESSION ERROR: ${error.message}`;
+    document.body.appendChild(dbg);
   } else if (session?.user) {
     setUser(session.user);
-    // Clean up the URL so it looks nice
+    // Clean up the URL only if login was successful
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 
@@ -1659,14 +1676,62 @@ async function initAuth() {
   });
 }
 
+// Hardcode the EXACT canonical URL to prevent Vercel from stripping tokens during a redirect
 async function signInGoogle() {
   await sb.auth.signInWithOAuth({
     provider: 'google',
     options: { 
-      // This tells it to redirect to whichever domain version you are currently using!
-      redirectTo: window.location.origin 
+      redirectTo: 'https://www.mindful-rhythm.com' 
     }
   });
+}
+
+let _currentUserId    = null;
+let _explicitSignOut  = false;
+
+function setUser(user) {
+  // Deduplicate — same user, same session, no re-init
+  if (_currentUserId === user.id) return;
+  _currentUserId = user.id;
+  currentUser    = user;
+
+  // Update avatar
+  const area = document.getElementById('auth-area');
+  const meta = user.user_metadata || {};
+  const name = meta.full_name || meta.name || user.email || 'U';
+  const av   = meta.avatar_url;
+  area.innerHTML = `<div class="user-avatar" title="${name}" onclick="toggleProfileDropdown()">${
+    av ? `<img src="${av}" referrerpolicy="no-referrer">` : name[0].toUpperCase()
+  }</div>`;
+
+  // Populate dropdown
+  const sm = document.getElementById('profile-avatar-sm');
+  if (sm) sm.innerHTML = av ? `<img src="${av}" referrerpolicy="no-referrer">` : name[0].toUpperCase();
+  const pn = document.getElementById('profile-name');
+  if (pn) pn.textContent = meta.full_name || meta.name || 'User';
+  const pe = document.getElementById('profile-email');
+  if (pe) pe.textContent = user.email || '';
+
+  // Reveal app
+  showApp();
+
+  // Sync + subscribe (non-blocking)
+  loadUserData();
+  subscribeRealtime();
+  drainQueue();
+}
+
+function clearUser(reason) {
+  currentUser    = null;
+  _currentUserId = null;
+  unsubscribeRealtime();
+  const area = document.getElementById('auth-area');
+  area.innerHTML = `<button id="login-btn" onclick="signInGoogle()">Sign In</button>`;
+  const desc = document.querySelector('.gate-desc');
+  if (desc) desc.innerHTML = reason === 'kicked'
+    ? `📱 You were signed in on another device.<br>Sign in again to continue.`
+    : `Track your fasting journey, own your time, build intentional habits. Sign in to begin.`;
+  showGate();
 }
 
 let _currentUserId    = null;
