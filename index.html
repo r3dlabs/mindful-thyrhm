@@ -1756,7 +1756,7 @@ function clearUser(reason) {
 async function signInGoogle() {
   await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: location.href }
+    options: { redirectTo: 'https://www.mindful-rhythm.com' }
   });
 }
 
