@@ -1681,12 +1681,8 @@ async function initAuth() {
   });
 }
 
-let _currentUserId = null;
-
 function setUser(user) {
-  if (_currentUserId === user.id) return;
-  _currentUserId = user.id;
-  currentUser    = user;
+  currentUser = user;
 
   // Update avatar in topbar
   const area = document.getElementById('auth-area');
@@ -1714,8 +1710,7 @@ function setUser(user) {
 }
 
 function clearUser() {
-  currentUser    = null;
-  _currentUserId = null;
+  currentUser = null;
   unsubscribeRealtime();
   const area = document.getElementById('auth-area');
   if (area) area.innerHTML = `<button id="login-btn" onclick="signInGoogle()">Sign In</button>`;
@@ -3618,72 +3613,72 @@ async function refreshDiag() {
   if (!el) return;
 
   const rows = [];
+  const r = (k, v, cls) => rows.push({ k, v: String(v), cls });
+  const sep = (s) => rows.push({ sep: s });
 
-  // ── URL & Hash ─────────────────────────────────────────────
-  rows.push({ sep: 'URL' });
-  rows.push({ k: 'window.location.href',   v: window.location.href });
-  rows.push({ k: 'window.location.hash',   v: window.location.hash || '(empty)',
-    cls: window.location.hash ? 'ok' : 'warn' });
-  rows.push({ k: 'hash contains tokens',
-    v: window.location.hash.includes('access_token') ? 'YES ✓' : 'NO',
-    cls: window.location.hash.includes('access_token') ? 'ok' : 'warn' });
+  sep('URL');
+  r('href', window.location.href);
+  r('hash', window.location.hash || '(empty)', window.location.hash ? 'ok' : 'warn');
+  r('hash has token', window.location.hash.includes('access_token') ? 'YES ✓' : 'NO',
+    window.location.hash.includes('access_token') ? 'ok' : 'warn');
 
-  // ── Supabase client ────────────────────────────────────────
-  rows.push({ sep: 'Supabase Client' });
-  rows.push({ k: 'sb defined',    v: typeof sb !== 'undefined' ? 'YES ✓' : 'NO ✗',
-    cls: typeof sb !== 'undefined' ? 'ok' : 'err' });
-  rows.push({ k: 'sb.auth',       v: typeof sb?.auth !== 'undefined' ? 'YES ✓' : 'NO ✗',
-    cls: typeof sb?.auth !== 'undefined' ? 'ok' : 'err' });
+  sep('Supabase');
+  r('sb defined', typeof sb !== 'undefined' ? 'YES ✓' : 'NO ✗',
+    typeof sb !== 'undefined' ? 'ok' : 'err');
 
-  // ── getSession result ──────────────────────────────────────
-  rows.push({ sep: 'getSession()' });
+  sep('getSession()');
   try {
-    const { data: { session }, error } = await sb.auth.getSession();
-    if (error) {
-      rows.push({ k: 'error', v: error.message, cls: 'err' });
-    } else if (session) {
-      rows.push({ k: 'session',      v: 'EXISTS ✓', cls: 'ok' });
-      rows.push({ k: 'user.email',   v: session.user?.email || 'N/A', cls: 'ok' });
-      rows.push({ k: 'user.id',      v: session.user?.id?.slice(0,8)+'...', cls: 'ok' });
-      rows.push({ k: 'provider',     v: session.user?.app_metadata?.provider || 'N/A' });
-      rows.push({ k: 'expires_at',   v: new Date(session.expires_at * 1000).toLocaleTimeString() });
-      rows.push({ k: 'access_token', v: session.access_token?.slice(0,20)+'...' });
+    const res = await sb.auth.getSession();
+    const session = res?.data?.session;
+    const err = res?.error;
+    if (err) {
+      r('error', err.message, 'err');
+    } else if (session?.user) {
+      r('status', 'LOGGED IN ✓', 'ok');
+      r('email', session.user.email, 'ok');
+      r('user.id', session.user.id.slice(0,12)+'...', 'ok');
+      r('provider', session.user.app_metadata?.provider || '?');
+      r('expires', new Date((session.expires_at||0)*1000).toLocaleTimeString());
+      r('token', session.access_token ? session.access_token.slice(0,16)+'...' : 'none');
     } else {
-      rows.push({ k: 'session', v: 'NULL — not logged in', cls: 'warn' });
+      r('status', 'NO SESSION', 'warn');
     }
   } catch(e) {
-    rows.push({ k: 'exception', v: e.message, cls: 'err' });
+    r('exception', e.message, 'err');
   }
 
-  // ── currentUser (app state) ────────────────────────────────
-  rows.push({ sep: 'App State' });
-  rows.push({ k: 'currentUser',    v: currentUser ? currentUser.email : 'null',
-    cls: currentUser ? 'ok' : 'warn' });
-  rows.push({ k: '_currentUserId', v: _currentUserId ? _currentUserId.slice(0,8)+'...' : 'null' });
+  sep('App');
+  r('currentUser', currentUser ? currentUser.email : 'null',
+    currentUser ? 'ok' : 'warn');
 
-  // ── localStorage ───────────────────────────────────────────
-  rows.push({ sep: 'localStorage' });
-  const sbKey = Object.keys(localStorage).find(k => k.includes('supabase') || k.includes('sb-'));
-  rows.push({ k: 'supabase key',   v: sbKey ? sbKey.slice(0,40) : 'NOT FOUND',
-    cls: sbKey ? 'ok' : 'err' });
-  if (sbKey) {
-    try {
-      const parsed = JSON.parse(localStorage.getItem(sbKey));
-      rows.push({ k: 'stored session',
-        v: parsed?.access_token ? 'HAS TOKEN ✓' : 'NO TOKEN',
-        cls: parsed?.access_token ? 'ok' : 'warn' });
-    } catch(e) {}
+  sep('localStorage');
+  try {
+    const sbKey = Object.keys(localStorage).find(k =>
+      k.includes('supabase') || k.startsWith('sb-'));
+    r('sb key', sbKey ? sbKey.slice(0,36)+'...' : 'NOT FOUND',
+      sbKey ? 'ok' : 'err');
+    if (sbKey) {
+      const val = JSON.parse(localStorage.getItem(sbKey) || '{}');
+      r('stored token', val?.access_token ? 'EXISTS ✓' : 'NONE',
+        val?.access_token ? 'ok' : 'warn');
+    }
+  } catch(e) {
+    r('ls error', e.message, 'err');
   }
 
-  // ── Render ─────────────────────────────────────────────────
-  el.innerHTML = rows.map(r => {
-    if (r.sep) return `<div class="diag-sep"></div><div style="color:var(--accent);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">${r.sep}</div>`;
-    return `<div class="diag-row"><span class="diag-key">${r.k}</span><span class="diag-val ${r.cls||''}">${r.v}</span></div>`;
+  el.innerHTML = rows.map(row => {
+    if (row.sep) return `
+      <div class="diag-sep"></div>
+      <div style="color:var(--accent);font-size:10px;letter-spacing:.1em;
+        text-transform:uppercase;margin-bottom:4px">${row.sep}</div>`;
+    return `<div class="diag-row">
+      <span class="diag-key">${row.k}</span>
+      <span class="diag-val ${row.cls||''}">${row.v}</span>
+    </div>`;
   }).join('');
 
-  // Auto-refresh every 2s while open
-  const card = document.getElementById('diag-card');
-  if (!card.classList.contains('hidden')) {
+  // Re-poll every 2s while open
+  if (!document.getElementById('diag-card').classList.contains('hidden')) {
     setTimeout(refreshDiag, 2000);
   }
 }
