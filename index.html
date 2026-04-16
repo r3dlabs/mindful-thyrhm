@@ -1674,40 +1674,32 @@ let currentUser = null;
    so reopening the app on the same device works seamlessly.
    On receiving a SIGNED_OUT event: show sign-in UI immediately.
 ═══════════════════════════════════════════════════════════════ */
-let _isNewSignIn = false; // true only on a fresh OAuth sign-in
-
 async function initAuth() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session?.user) {
-    // Restored existing session — no kill needed
-    setUser(session.user, false);
-  }
-
+  // onAuthStateChange fires reliably on every load including after
+  // OAuth redirects — let it be the single source of truth.
+  // We do NOT call getSession() first to avoid a race where the
+  // session hasn't been set from the URL hash yet.
   sb.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' && session?.user) {
-      const isNew = _isNewSignIn;
-      _isNewSignIn = false;
-      setUser(session.user, isNew);
-    } else if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
-      clearUser('session_expired');
-    } else if (!session) {
+    if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
+      // OAuth redirect lands here as SIGNED_IN
+      // Existing session restore lands here as INITIAL_SESSION
+      setUser(session.user);
+    } else if (event === 'SIGNED_OUT') {
+      clearUser();
+    } else if (event === 'USER_DELETED') {
       clearUser();
     }
   });
 }
 
-async function setUser(user, killOthers = false) {
-  currentUser = user;
+// Track if we already set up this user to avoid double-init
+let _currentUserId = null;
 
-  // Kill all other active sessions if this is a fresh sign-in
-  if (killOthers) {
-    try {
-      // Sign out all other sessions for this user
-      await sb.auth.signOut({ scope: 'others' });
-    } catch(e) {
-      console.warn('signOut others:', e.message);
-    }
-  }
+async function setUser(user) {
+  // Avoid double-init on duplicate events
+  if (_currentUserId === user.id) return;
+  _currentUserId = user.id;
+  currentUser    = user;
 
   // Update avatar
   const area = document.getElementById('auth-area');
@@ -1718,7 +1710,7 @@ async function setUser(user, killOthers = false) {
     av ? `<img src="${av}" referrerpolicy="no-referrer">` : name[0].toUpperCase()
   }</div>`;
 
-  // Populate dropdown info
+  // Populate dropdown
   const sm = document.getElementById('profile-avatar-sm');
   if (sm) sm.innerHTML = av ? `<img src="${av}" referrerpolicy="no-referrer">` : name[0].toUpperCase();
   const pn = document.getElementById('profile-name');
@@ -1726,8 +1718,19 @@ async function setUser(user, killOthers = false) {
   const pe = document.getElementById('profile-email');
   if (pe) pe.textContent = user.email || '';
 
-  // Reveal app
+  // Reveal app immediately — don't wait for sync
   showApp();
+
+  // Kill all OTHER sessions (not this one) after a short delay
+  // so this session is fully established first
+  setTimeout(async () => {
+    try {
+      await sb.auth.signOut({ scope: 'others' });
+    } catch(e) {
+      console.warn('signOut others:', e.message);
+    }
+  }, 1500);
+
   // Sync, subscribe, drain
   await loadUserData();
   subscribeRealtime();
@@ -1735,23 +1738,22 @@ async function setUser(user, killOthers = false) {
 }
 
 function clearUser(reason) {
-  currentUser = null;
+  currentUser    = null;
+  _currentUserId = null;
   unsubscribeRealtime();
   const area = document.getElementById('auth-area');
   area.innerHTML = `<button id="login-btn" onclick="signInGoogle()">Sign In</button>`;
-  // Always show gate on sign out or session expiry
+  // Reset gate message
+  const desc = document.querySelector('.gate-desc');
+  if (desc) desc.innerHTML = reason === 'kicked'
+    ? `📱 You were signed in on another device.<br>Sign in again to continue.`
+    : `Track your fasting journey, own your time, build intentional habits. Sign in to begin.`;
   showGate();
-  if (reason === 'session_expired') {
-    // Gate already shown — update tagline to explain why
-    const desc = document.querySelector('.gate-desc');
-    if (desc) desc.innerHTML = `📱 You were signed in on another device.<br>Sign in again to continue.`;
-  }
 }
 
 
 
 async function signInGoogle() {
-  _isNewSignIn = true; // flag so setUser knows to kill others
   await sb.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: location.href }
