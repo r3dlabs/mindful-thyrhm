@@ -1620,35 +1620,16 @@ let habits = LS.get('habits') || {
 };
 let activeHabitCat = 'purposeful';
 
-/* ═══════════════════════════════════════════════════════════════
-   AUTH — Single active session per account.
-   On fresh sign-in: all other sessions for this user are killed.
-   On existing session restore (same browser/tab): no kill fired,
-   so reopening the app on the same device works seamlessly.
-   On receiving a SIGNED_OUT event: show sign-in UI immediately.
-═══════════════════════════════════════════════════════════════ */
 async function initAuth() {
-  // STEP 1: check for existing session (also catches OAuth redirect)
   const { data: { session } } = await sb.auth.getSession();
-  console.log('[Auth] getSession:', session?.user?.email || 'no session');
-  if (session?.user) {
-    setUser(session.user);
-    return; // session found — onAuthStateChange will handle future changes
-  }
-
-  // STEP 2: no session yet — watch for sign-in
-  sb.auth.onAuthStateChange((event, session) => {
-    console.log('[Auth] event:', event, session?.user?.email || 'no user');
-    if (session?.user) {
-      setUser(session.user);
-    } else if (event === 'SIGNED_OUT') {
-      clearUser();
-    }
+  if (session?.user) setUser(session.user);
+  sb.auth.onAuthStateChange((_, session) => {
+    if (session?.user) setUser(session.user);
+    else clearUser();
   });
 }
 
-let _currentUserId   = null;
-let _explicitSignOut = false;
+let _currentUserId = null;
 
 function setUser(user) {
   if (_currentUserId === user.id) return;
