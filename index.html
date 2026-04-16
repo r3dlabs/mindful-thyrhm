@@ -95,13 +95,13 @@
   }
   .brand span { color: var(--accent); }
   .topbar-right { display: flex; align-items: center; gap: 12px; }
-  #theme-btn {
+  #theme-btn, #fs-btn {
     width: 36px; height: 36px; border-radius: 50%;
     background: var(--surface2); color: var(--text2);
     display: flex; align-items: center; justify-content: center;
-    font-size: 16px; transition: background .2s;
+    transition: background .2s;
   }
-  #theme-btn:hover { background: var(--border); }
+  #theme-btn:hover, #fs-btn:hover { background: var(--border); }
   .user-avatar {
     width: 36px; height: 36px; border-radius: 50%;
     background: var(--accent); color: #fff;
@@ -426,11 +426,29 @@
   .stage-desc-block {
     width: 100%; text-align: center;
     padding: 2px 4px 14px;
-    display: flex; flex-direction: column; gap: 7px;
+    display: flex; flex-direction: column; gap: 6px;
   }
-  #stage-desc-text {
-    font-size: 13px; color: var(--text2); line-height: 1.55;
+  .stage-scroll-wrap {
+    min-height: 52px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
   }
+  .stage-scroll-text {
+    font-size: 12px; color: var(--text2); line-height: 1.55;
+    position: absolute; width: 100%;
+    opacity: 0; transition: opacity .5s ease, transform .5s ease;
+    transform: translateY(8px);
+  }
+  .stage-scroll-text.active {
+    opacity: 1; transform: translateY(0); position: relative;
+  }
+  .stage-scroll-label {
+    font-family: var(--font-cond); font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    margin-bottom: 2px; display: block;
+  }
+  .stage-scroll-label.current { color: var(--accent); }
+  .stage-scroll-label.upcoming { color: var(--text3); }
   .stage-next-line {
     display: flex; align-items: center; justify-content: center; gap: 8px;
   }
@@ -866,6 +884,10 @@
 <div id="topbar">
   <div class="brand">MINDFUL <span>RHYTHM</span></div>
   <div class="topbar-right">
+    <button id="fs-btn" title="Fullscreen" onclick="toggleFullscreen()">
+      <svg id="fs-icon-enter" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+      <svg id="fs-icon-exit" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg>
+    </button>
     <button id="theme-btn" title="Toggle theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg></button>
     <button id="admin-btn" title="Admin" onclick="toggleAdmin()">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -930,9 +952,11 @@
         <div class="day-tracker" id="day-state-list"></div>
       </div>
 
-      <!-- Stage description -->
+      <!-- Stage description scroller -->
       <div class="stage-desc-block">
-        <div id="stage-desc-text">You are in your eating window. Enjoy nourishing meals.</div>
+        <div class="stage-scroll-wrap">
+          <div class="stage-scroll-text active" id="stage-scroll-text"></div>
+        </div>
         <div class="stage-next-line">
           <span id="stage-next-label">Next: Fed (start fast)</span>
           <span id="stage-next-eta" class="stage-next-eta"></span>
@@ -1206,6 +1230,19 @@ document.getElementById('theme-btn').addEventListener('click', () => {
 });
 applyTheme();
 
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+document.addEventListener('fullscreenchange', () => {
+  const isFs = !!document.fullscreenElement;
+  document.getElementById('fs-icon-enter').style.display = isFs ? 'none'  : 'block';
+  document.getElementById('fs-icon-exit').style.display  = isFs ? 'block' : 'none';
+});
+
 /* ═══════════════════════════════════════════════════════════════
    NAV
 ═══════════════════════════════════════════════════════════════ */
@@ -1456,9 +1493,8 @@ function updateFastUI() {
   const emojiEl = document.getElementById('fast-stage-emoji');
   if (emojiEl) emojiEl.textContent = st.icon;
 
-  // Description
-  const descEl = document.getElementById('stage-desc-text');
-  if (descEl) descEl.textContent = st.desc;
+  // Trigger stage description scroller for current stage
+  initStageScroller(stIdx);
 
   // Next stage + ETA
   const nextLbl = document.getElementById('stage-next-label');
@@ -2165,6 +2201,62 @@ function tick() {
 let distTick = 0;
 function tickSlow() { distTick++; }
 
+/* ─── STAGE DESCRIPTION SCROLLER ────────────────────────── */
+// Builds a rotation: current state desc first, then upcoming states in order
+let stageScrollTimer = null;
+let stageScrollItems = [];
+let stageScrollIdx   = 0;
+
+function initStageScroller(activeIdx) {
+  // Build items: current stage first, then all subsequent stages
+  const items = [];
+
+  // Current stage — "You are in X"
+  const cur = STAGES[activeIdx];
+  items.push({
+    label: `You are in ${cur.name}`,
+    labelClass: 'current',
+    text: cur.desc,
+  });
+
+  // Upcoming stages
+  for (let i = activeIdx + 1; i < STAGES.length; i++) {
+    const s = STAGES[i];
+    items.push({
+      label: `Upcoming: ${s.name}${s.start ? ` · ${s.start}h+` : ''}`,
+      labelClass: 'upcoming',
+      text: s.desc,
+    });
+  }
+
+  // If items haven't changed (same stage), don't reset
+  const newKey = items.map(i => i.label).join('|');
+  if (stageScrollItems._key === newKey) return;
+
+  stageScrollItems      = items;
+  stageScrollItems._key = newKey;
+  stageScrollIdx        = 0;
+
+  clearInterval(stageScrollTimer);
+  renderStageScroll(0);
+  stageScrollTimer = setInterval(() => {
+    stageScrollIdx = (stageScrollIdx + 1) % stageScrollItems.length;
+    renderStageScroll(stageScrollIdx);
+  }, 6000);
+}
+
+function renderStageScroll(idx) {
+  const el = document.getElementById('stage-scroll-text');
+  if (!el) return;
+  const item = stageScrollItems[idx];
+  if (!item) return;
+  el.classList.remove('active');
+  setTimeout(() => {
+    el.innerHTML = `<span class="stage-scroll-label ${item.labelClass}">${item.label}</span>${item.text}`;
+    el.classList.add('active');
+  }, 520);
+}
+
 /* ─── QUOTE SCROLLER ─────────────────────────────────────── */
 const QUOTES = [
   "You must be present to win.",
@@ -2204,6 +2296,7 @@ function init() {
   startWasteful();
   renderHabitTabs();
   renderHabitList();
+  initStageScroller(0);
   initQuotes();
   tick();
   setInterval(tick, 1000);
