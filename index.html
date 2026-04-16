@@ -249,19 +249,57 @@
     letter-spacing: .06em;
   }
   .fast-btns { display: flex; gap: 10px; width: 100%; }
-  .btn-dev {
-    padding: 10px 14px;
-    border-radius: var(--radius-sm);
-    border: 1px dashed var(--border);
-    background: transparent;
-    color: var(--text3);
-    font-family: var(--font-cond); font-weight: 600;
-    font-size: 12px; letter-spacing: .04em;
+  /* ─── ADMIN ───────────────────────────────────────────────── */
+  #admin-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--surface2); color: var(--text3);
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, color .2s;
     flex-shrink: 0;
-    transition: all .2s;
   }
-  .btn-dev:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-dev:active { transform: scale(.97); }
+  #admin-btn:hover { background: var(--border); }
+  #admin-btn.unlocked { color: var(--warn); background: rgba(232,168,56,0.12); }
+  #admin-panel {
+    position: fixed; top: 64px; right: 12px; z-index: 150;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    display: none; flex-direction: column; gap: 8px;
+    min-width: 200px;
+    box-shadow: var(--shadow-lg);
+    animation: slideDown .18s ease;
+  }
+  #admin-panel.open { display: flex; }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .admin-title {
+    font-family: var(--font-cond); font-size: 10px; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--warn); margin-bottom: 2px;
+  }
+  .admin-divider {
+    height: 1px; background: var(--border); margin: 2px 0;
+  }
+  .admin-row {
+    display: flex; gap: 6px;
+  }
+  .btn-admin {
+    flex: 1; padding: 9px 8px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text2);
+    font-family: var(--font-cond); font-weight: 700;
+    font-size: 12px; letter-spacing: .04em;
+    transition: all .15s; cursor: pointer;
+    text-align: center;
+  }
+  .btn-admin:hover { border-color: var(--warn); color: var(--warn); }
+  .btn-admin:active { transform: scale(.97); }
+  .btn-admin.danger-admin { border-color: var(--danger); color: var(--danger); background: rgba(224,92,122,0.08); }
+  .btn-admin.danger-admin:hover { background: rgba(224,92,122,0.18); }
 
   /* ─── DAY STATE LIST ──────────────────────────────────── */
   .day-tracker {
@@ -699,9 +737,27 @@
   <div class="brand">MINDFUL <span>RHYTHM</span></div>
   <div class="topbar-right">
     <button id="theme-btn" title="Toggle theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg></button>
+    <button id="admin-btn" title="Admin" onclick="toggleAdmin()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 2-8 3v1h16v-1c0-1-3-3-8-3z"/><path d="M17 11l1.5 1.5L21 10"/></svg>
+    </button>
     <div id="auth-area">
       <button id="login-btn" onclick="signInGoogle()">Sign In</button>
     </div>
+  </div>
+
+  <!-- Admin panel (hidden until unlocked) -->
+  <div id="admin-panel">
+    <div class="admin-title">⚡ Dev Console</div>
+    <div class="admin-divider"></div>
+    <div class="admin-row">
+      <button class="btn-admin" onclick="adminFfwd(2)">⏭ +2h</button>
+      <button class="btn-admin" onclick="adminFfwd(4)">⏭ +4h</button>
+      <button class="btn-admin" onclick="adminFfwd(8)">⏭ +8h</button>
+    </div>
+    <div class="admin-divider"></div>
+    <button class="btn-admin danger-admin" onclick="adminReset('fast')">Reset Fast Timer</button>
+    <button class="btn-admin danger-admin" onclick="adminReset('feeding')">Reset Feeding Timer</button>
+    <button class="btn-admin danger-admin" onclick="adminReset('all')">Reset All Timers</button>
   </div>
 </div>
 
@@ -756,7 +812,6 @@
       <!-- CTA -->
       <div class="fast-btns">
         <button class="btn-start" id="fast-btn" onclick="handleFastBtn()">Start Fast</button>
-        <button class="btn-dev" id="ffwd-btn" onclick="ffwdStep()" title="DEV: skip to next stage">⏭ +4h</button>
       </div>
     </div>
 
@@ -1309,14 +1364,36 @@ function handleFastBtn() {
   }
 }
 
-/* ─── DEV: Fast-forward time by 4h per click ─────────────────
-   Injects seconds directly into fastState.totalSecs so all
-   elapsed-time calculations pick it up immediately.
-   Automatically starts the fast if not already running.
-─────────────────────────────────────────────────────────────── */
-const FFWD_STEP_SECS = 4 * 3600; // 4 hours per press
+/* ─── ADMIN ──────────────────────────────────────────────────*/
+let adminUnlocked = false;
+const ADMIN_PASSWORD = '!ronman';
 
-function ffwdStep() {
+function toggleAdmin() {
+  if (!adminUnlocked) {
+    const pw = prompt('Enter admin password:');
+    if (pw !== ADMIN_PASSWORD) {
+      toast('❌ Wrong password');
+      return;
+    }
+    adminUnlocked = true;
+    document.getElementById('admin-btn').classList.add('unlocked');
+    toast('✅ Admin unlocked');
+  }
+  const panel = document.getElementById('admin-panel');
+  panel.classList.toggle('open');
+}
+
+// Close panel if clicking outside
+document.addEventListener('click', e => {
+  const panel = document.getElementById('admin-panel');
+  const btn   = document.getElementById('admin-btn');
+  if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+    panel.classList.remove('open');
+  }
+});
+
+function adminFfwd(hrs) {
+  const stepSecs = hrs * 3600;
   // Auto-start fast if not running
   if (!fastState.running) {
     pauseFeedingTimer();
@@ -1326,24 +1403,32 @@ function ffwdStep() {
     fastState.totalSecs       = 0;
     LS.set('fast', fastState);
   }
-
-  // Add 4h to totalSecs only — never touch startTs or originalStartTs
-  const current = getFastElapsed();
-  fastState.totalSecs = current + FFWD_STEP_SECS;
-  fastState.startTs   = Date.now(); // anchor for future real-time counting
-  // originalStartTs stays untouched — used for day-view calculations
+  // Bump totalSecs, reset startTs anchor
+  fastState.totalSecs = getFastElapsed() + stepSecs;
+  fastState.startTs   = Date.now();
   LS.set('fast', fastState);
 
-  // Show which stage we jumped to
   const newSecs = getFastElapsed();
   const stIdx   = getFastingStageIdx(newSecs / 3600);
   const st      = STAGES[stIdx];
-  toast(`⏭ Jumped to ${st.name} (${Math.round(newSecs/3600)}h)`);
+  toast(`⏭ +${hrs}h → ${st.name} (${Math.round(newSecs/3600)}h total)`);
+}
 
-  // Update label so button shows remaining to next stage
-  const btn = document.getElementById('ffwd-btn');
-  const nxt = STAGES[stIdx + 1];
-  if (btn) btn.textContent = nxt ? `⏭ +4h` : `⏭ MAX`;
+function adminReset(target) {
+  if (target === 'fast' || target === 'all') {
+    fastState = { running: false, startTs: null, originalStartTs: null, totalSecs: 0, log: fastState.log || [] };
+    LS.set('fast', fastState);
+    startFeedingTimer();
+    toast('🔄 Fast timer reset');
+  }
+  if (target === 'feeding' || target === 'all') {
+    feedingState = { startTs: Date.now(), totalSecs: 0, lastDate: today() };
+    LS.set('feeding', feedingState);
+    toast('🔄 Feeding timer reset');
+  }
+  if (target === 'all') {
+    toast('🔄 All timers reset');
+  }
 }
 
 function confirmEndFast() {
