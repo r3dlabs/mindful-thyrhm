@@ -1574,7 +1574,15 @@
 <div id="diag-card" class="hidden">
   <div class="diag-title">
     🔍 Auth Diagnostics
-    <span class="diag-close" onclick="toggleDiag()">✕</span>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button onclick="copyDiag()" style="
+        padding:3px 10px;border-radius:10px;
+        background:var(--surface2);border:1px solid var(--border);
+        color:var(--text2);font-family:var(--font-cond);font-size:10px;
+        font-weight:700;letter-spacing:.06em;cursor:pointer;
+      " id="diag-copy-btn">COPY</button>
+      <span class="diag-close" onclick="toggleDiag()">✕</span>
+    </div>
   </div>
   <div id="diag-content">Loading...</div>
 </div>
@@ -1672,12 +1680,13 @@ let habits = LS.get('habits') || {
 };
 let activeHabitCat = 'purposeful';
 
-async function initAuth() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session?.user) setUser(session.user);
-  sb.auth.onAuthStateChange((_, session) => {
+function initAuth() {
+  // Register listener FIRST — synchronously — so it catches
+  // the INITIAL_SESSION event that fires on OAuth redirect return.
+  // getSession() alone misses the token when called after redirect.
+  sb.auth.onAuthStateChange((event, session) => {
     if (session?.user) setUser(session.user);
-    else clearUser();
+    else if (event === 'SIGNED_OUT') clearUser();
   });
 }
 
@@ -3681,6 +3690,52 @@ async function refreshDiag() {
   if (!document.getElementById('diag-card').classList.contains('hidden')) {
     setTimeout(refreshDiag, 2000);
   }
+}
+
+function copyDiag() {
+  const el = document.getElementById('diag-content');
+  if (!el) return;
+  // Extract plain text from the rendered rows
+  const rows = el.querySelectorAll('.diag-row');
+  const seps = el.querySelectorAll('[style*="letter-spacing"]');
+  let text = '=== AUTH DIAGNOSTICS ===
+';
+  text += `Copied: ${new Date().toLocaleString()}
+
+`;
+
+  // Walk all children in order
+  el.childNodes.forEach(node => {
+    if (node.nodeType === 1) {
+      const style = node.getAttribute('style') || '';
+      if (style.includes('letter-spacing')) {
+        // Section header
+        text += `
+--- ${node.textContent.trim()} ---
+`;
+      } else if (node.classList?.contains('diag-row')) {
+        const k = node.querySelector('.diag-key')?.textContent?.trim() || '';
+        const v = node.querySelector('.diag-val')?.textContent?.trim() || '';
+        text += `${k.padEnd(22)} ${v}
+`;
+      }
+    }
+  });
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('diag-copy-btn');
+    if (btn) { btn.textContent = 'COPIED ✓'; setTimeout(() => btn.textContent = 'COPY', 2000); }
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn = document.getElementById('diag-copy-btn');
+    if (btn) { btn.textContent = 'COPIED ✓'; setTimeout(() => btn.textContent = 'COPY', 2000); }
+  });
 }
 
 /* ═══════════════════════════════════════════════════════════════
