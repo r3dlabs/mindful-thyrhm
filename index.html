@@ -108,8 +108,53 @@
     display: flex; align-items: center; justify-content: center;
     font-family: var(--font-cond); font-weight: 700; font-size: 15px;
     overflow: hidden; cursor: pointer;
+    position: relative;
   }
   .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── PROFILE DROPDOWN ────────────────────────────────── */
+  #profile-dropdown {
+    position: fixed; top: 64px; right: 12px; z-index: 150;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px;
+    min-width: 200px; box-shadow: var(--shadow-lg);
+    display: none; flex-direction: column; gap: 4px;
+    animation: slideDown .18s ease;
+  }
+  #profile-dropdown.open { display: flex; }
+  .profile-user-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .profile-avatar-sm {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-cond); font-weight: 700; font-size: 13px;
+    overflow: hidden; flex-shrink: 0;
+  }
+  .profile-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
+  .profile-name {
+    font-family: var(--font-cond); font-size: 13px; font-weight: 600;
+    color: var(--text); white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .profile-email {
+    font-size: 11px; color: var(--text3);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .profile-menu-btn {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 10px; border-radius: 8px;
+    font-family: var(--font-cond); font-size: 13px; font-weight: 600;
+    color: var(--text2); cursor: pointer; transition: background .15s;
+    text-align: left; width: 100%;
+  }
+  .profile-menu-btn:hover { background: var(--surface2); }
+  .profile-menu-btn.danger { color: var(--danger); }
+  .profile-menu-btn.danger:hover { background: rgba(224,92,122,0.1); }
   #login-btn {
     padding: 6px 16px; border-radius: 8px;
     background: var(--accent); color: #fff;
@@ -1515,6 +1560,25 @@
   </div>
 </div>
 
+<!-- PROFILE DROPDOWN -->
+<div id="profile-dropdown">
+  <div class="profile-user-row">
+    <div class="profile-avatar-sm" id="profile-avatar-sm"></div>
+    <div>
+      <div class="profile-name"  id="profile-name">—</div>
+      <div class="profile-email" id="profile-email">—</div>
+    </div>
+  </div>
+  <button class="profile-menu-btn" onclick="toggleThemeFromMenu()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg>
+    <span id="profile-theme-label">Switch to Light</span>
+  </button>
+  <button class="profile-menu-btn danger" onclick="signOutUser()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    Sign Out
+  </button>
+</div>
+
 <!-- TOAST -->
 <div id="toast"></div>
 
@@ -1577,9 +1641,17 @@ async function setUser(user, killOthers = false) {
   const meta = user.user_metadata || {};
   const name = meta.full_name || meta.name || user.email || 'U';
   const av   = meta.avatar_url;
-  area.innerHTML = `<div class="user-avatar" title="${name}">${
+  area.innerHTML = `<div class="user-avatar" title="${name}" onclick="toggleProfileDropdown()">${
     av ? `<img src="${av}" referrerpolicy="no-referrer">` : name[0].toUpperCase()
   }</div>`;
+
+  // Populate dropdown info
+  const sm = document.getElementById('profile-avatar-sm');
+  if (sm) sm.innerHTML = av ? `<img src="${av}" referrerpolicy="no-referrer">` : name[0].toUpperCase();
+  const pn = document.getElementById('profile-name');
+  if (pn) pn.textContent = meta.full_name || meta.name || 'User';
+  const pe = document.getElementById('profile-email');
+  if (pe) pe.textContent = user.email || '';
 
   // Sync, subscribe, drain
   await loadUserData();
@@ -2821,15 +2893,15 @@ function renderWeekly() {
   HABIT_CATS_LIST.forEach(cat => {
     const sd    = STATE_DEFS.find(s=>s.key===cat);
     const list  = habits[cat]||[];
-    if (!list.length) return;
-    const done  = list.filter(h=>h.done).length;
-    const broken= list.filter(h=>h.broken===todayStr).length;
-    const pct   = Math.round(done/list.length*100);
+    const done   = list.filter(h=>h.done).length;
+    const broken = list.filter(h=>h.broken===todayStr).length;
+    const pct    = list.length ? Math.round(done/list.length*100) : 0;
     catBars.push({
       icon: sd?.icon||'', name: sd?.label||cat, color: sd?.color||'var(--accent)',
       done, total: list.length, pct,
       broken: broken || 0,
-      brokenPct: Math.round((broken||0)/list.length*100),
+      brokenPct: list.length ? Math.round((broken||0)/list.length*100) : 0,
+      empty: !list.length,
     });
   });
 
@@ -2846,8 +2918,9 @@ function renderWeekly() {
         <div class="sbl-bar-wrap">
           <div class="sbl-bar" style="width:${r.pct}%;background:${r.color}"></div>
         </div>
-        <span class="sbl-time" style="font-size:10px">${r.done||0}/${r.total||0}</span>
-        <span class="sbl-pct" style="color:${r.color}">${r.pct||0}%</span>`;
+        <span class="sbl-time" style="font-size:10px">${r.empty ? '—' : `${r.done||0}/${r.total||0}`}</span>
+        <span class="sbl-pct" style="color:${r.empty ? 'var(--text3)' : r.color}">${r.empty ? '—' : (r.pct||0)+'%'}</span>`;
+      div.style.opacity = r.empty ? '0.35' : '1';
       catEl.appendChild(div);
 
       // Break sub-row if any broken
@@ -3055,19 +3128,19 @@ function renderMonthly() {
     CATS.forEach(cat=>{
       const sd   = STATE_DEFS.find(s=>s.key===cat);
       const list = habits[cat]||[];
-      if (!list.length) return;
       const done  = list.filter(h=>h.done).length;
       const broke = list.filter(h=>h.broken&&h.broken.startsWith(moStr)).length;
-      const pct   = Math.round((done||0)/list.length*100);
-      const bpct  = Math.round((broke||0)/list.length*100);
+      const pct   = list.length ? Math.round((done||0)/list.length*100) : 0;
+      const bpct  = list.length ? Math.round((broke||0)/list.length*100) : 0;
       const row = document.createElement('div');
       row.className = 'sbl-row';
+      row.style.opacity = list.length ? '1' : '0.35';
       row.innerHTML = `
         <span class="sbl-icon">${sd?.icon||''}</span>
         <span class="sbl-name">${sd?.label||cat}</span>
         <div class="sbl-bar-wrap"><div class="sbl-bar" style="width:${pct}%;background:${sd?.color||'var(--accent)'}"></div></div>
-        <span class="sbl-time" style="font-size:10px">${done||0}/${list.length}</span>
-        <span class="sbl-pct" style="color:${sd?.color||'var(--accent)'}">${pct}%</span>`;
+        <span class="sbl-time" style="font-size:10px">${list.length ? `${done||0}/${list.length}` : '—'}</span>
+        <span class="sbl-pct" style="color:${list.length ? (sd?.color||'var(--accent)') : 'var(--text3)'}">${list.length ? pct+'%' : '—'}</span>`;
       moCatEl.appendChild(row);
       if (broke>0){
         const bd=document.createElement('div');
@@ -3527,6 +3600,46 @@ function saveToSupabase(table, data) {
   if (table === 'habit_breaks') return; // handled by pushHabitBreak
   enqueue(table, data);
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   PROFILE DROPDOWN
+═══════════════════════════════════════════════════════════════ */
+function toggleProfileDropdown() {
+  const dd = document.getElementById('profile-dropdown');
+  dd.classList.toggle('open');
+  // Update theme label
+  const lbl = document.getElementById('profile-theme-label');
+  if (lbl) lbl.textContent = darkMode ? 'Switch to Light' : 'Switch to Dark';
+}
+
+function toggleThemeFromMenu() {
+  darkMode = !darkMode;
+  LS.set('dark', darkMode);
+  applyTheme();
+  const lbl = document.getElementById('profile-theme-label');
+  if (lbl) lbl.textContent = darkMode ? 'Switch to Light' : 'Switch to Dark';
+}
+
+async function signOutUser() {
+  document.getElementById('profile-dropdown').classList.remove('open');
+  await sb.auth.signOut();
+  // Clear local state
+  LS.set('fast',    null);
+  LS.set('feeding', null);
+  LS.set('moment',  null);
+  LS.set('habits',  null);
+  toast('Signed out. See you soon 👋');
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', e => {
+  const dd  = document.getElementById('profile-dropdown');
+  const av  = document.querySelector('.user-avatar');
+  if (!dd) return;
+  if (dd.classList.contains('open') && !dd.contains(e.target) && e.target !== av && !av?.contains(e.target)) {
+    dd.classList.remove('open');
+  }
+});
 
 /* ═══════════════════════════════════════════════════════════════
    TOAST
