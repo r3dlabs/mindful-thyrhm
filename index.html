@@ -1663,6 +1663,19 @@ const LS = {
   set: (k,v) => localStorage.setItem('mr_'+k, JSON.stringify(v)),
 };
 
+// Date helpers — defined early so state initialisers can call them
+function today() {
+  const d = new Date();
+  return d.getFullYear() + '-' +
+    String(d.getMonth()+1).padStart(2,'0') + '-' +
+    String(d.getDate()).padStart(2,'0');
+}
+function secsSinceMidnight() {
+  const now = new Date();
+  const midnight = new Date(now); midnight.setHours(0,0,0,0);
+  return Math.floor((now - midnight) / 1000);
+}
+
 /* ── Helper needed by feedingState init ── */
 /* ── State — declared before everything else ── */
 let fastState    = LS.get('fast') || { running: false, startTs: null, totalSecs: 0, log: [] };
