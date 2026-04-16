@@ -2406,25 +2406,15 @@ function buildDayTracker() {
    HABITS
 ═══════════════════════════════════════════════════════════════ */
 const HABIT_CATS = ['purposeful','nourishing','training','recovering','wasteful'];
+// Empty by default — new users start fresh.
+// pullHabits() populates from Supabase after login.
+// Logged-out users start with a truly empty list.
 let habits = LS.get('habits') || {
-  purposeful: [
-    { id:'h1', name:'Deep Work Block', done:false, streak:3 },
-    { id:'h2', name:'Read 20 mins', done:false, streak:7 },
-  ],
-  nourishing: [
-    { id:'h3', name:'Eat clean meals', done:false, streak:2 },
-    { id:'h4', name:'Drink 2L water', done:false, streak:5 },
-  ],
-  training: [
-    { id:'h5', name:'Morning workout', done:false, streak:4 },
-  ],
-  recovering: [
-    { id:'h6', name:'Sleep by 10pm', done:false, streak:1 },
-    { id:'h7', name:'10-min meditation', done:false, streak:0 },
-  ],
-  wasteful: [
-    { id:'h8', name:'No doom scroll', done:false, streak:0 },
-  ],
+  purposeful: [],
+  nourishing: [],
+  training:   [],
+  recovering: [],
+  wasteful:   [],
 };
 let activeHabitCat = 'purposeful';
 
@@ -3452,9 +3442,14 @@ async function pullHabits() {
 
   const hasRemote = Object.values(rebuilt).some(a=>a.length>0);
   if (hasRemote) {
+    // Remote has habits — use them as source of truth
     habits = rebuilt;
-    LS.set('habits', habits);
+  } else if (currentUser) {
+    // Logged in but no habits in Supabase — clean slate
+    habits = { purposeful:[], nourishing:[], training:[], recovering:[], wasteful:[] };
   }
+  // Always persist whatever we resolved to
+  LS.set('habits', habits);
 }
 
 /* ── Realtime subscription — app_state ─────────────────────── */
