@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service — Mindful Rhythm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:          #F5F3FA;
+    --surface:     #FFFFFF;
+    --surface2:    #EDE9F6;
+    --border:      #D9D3EE;
+    --text:        #1A1428;
+    --text2:       #5E5378;
+    --text3:       #9E95B8;
+    --accent:      #7C3AED;
+    --accent-glow: rgba(124,58,237,0.12);
+    --radius:      16px;
+    --radius-sm:   10px;
+    --shadow:      0 2px 16px rgba(0,0,0,0.07);
+    --font-cond:   'Barlow Condensed', sans-serif;
+    --font-body:   'Barlow', sans-serif;
+  }
+  [data-theme="dark"] {
+    --bg:          #0E0A1A;
+    --surface:     #16112A;
+    --surface2:    #1E1836;
+    --border:      #2C2448;
+    --text:        #EDE8FF;
+    --text2:       #9E95B8;
+    --text3:       #4E4668;
+    --shadow:      0 2px 16px rgba(0,0,0,0.4);
+    --accent-glow: rgba(124,58,237,0.18);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    transition: background .3s, color .3s;
+  }
+  #topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: var(--shadow);
+  }
+  .back-link {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--text2); text-decoration: none;
+    font-family: var(--font-cond); font-size: 14px;
+    font-weight: 600; letter-spacing: .04em;
+    transition: color .2s;
+  }
+  .back-link:hover { color: var(--accent); }
+  .back-arrow {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; transition: background .2s;
+  }
+  .back-link:hover .back-arrow { background: var(--accent-glow); }
+  .topbar-brand {
+    font-family: var(--font-cond); font-weight: 800;
+    font-size: 16px; letter-spacing: .06em;
+    color: var(--text); display: none;
+  }
+  .topbar-brand span { color: var(--accent); }
+  .theme-toggle {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text2);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background .2s; flex-shrink: 0;
+  }
+  .theme-toggle:hover { background: var(--border); }
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+  .policy-header {
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .policy-eyebrow {
+    font-family: var(--font-cond); font-size: 11px; font-weight: 700;
+    letter-spacing: .16em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 10px;
+  }
+  .policy-title {
+    font-family: var(--font-cond); font-weight: 800;
+    font-size: 36px; letter-spacing: -.01em;
+    color: var(--text); line-height: 1.1; margin-bottom: 12px;
+  }
+  .policy-meta {
+    font-size: 13px; color: var(--text3);
+    font-family: var(--font-cond); letter-spacing: .04em;
+  }
+  .policy-section { margin-bottom: 36px; }
+  .policy-section h2 {
+    font-family: var(--font-cond); font-weight: 700;
+    font-size: 18px; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--text); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .policy-section h2 .section-icon { font-size: 18px; line-height: 1; }
+  .policy-section p {
+    font-size: 15px; color: var(--text2);
+    line-height: 1.8; margin-bottom: 12px;
+  }
+  .policy-section p:last-child { margin-bottom: 0; }
+  .policy-section ul {
+    list-style: none; margin: 0 0 12px 0; padding: 0;
+  }
+  .policy-section ul li {
+    font-size: 15px; color: var(--text2);
+    line-height: 1.8; padding-left: 20px; position: relative;
+    margin-bottom: 4px;
+  }
+  .policy-section ul li::before {
+    content: '·';
+    position: absolute; left: 6px;
+    color: var(--accent); font-weight: 700; font-size: 18px; line-height: 1.5;
+  }
+  .highlight-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 14px; color: var(--text2); line-height: 1.7;
+  }
+  .highlight-card strong { color: var(--text); }
+  .contact-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px; margin-top: 8px;
+  }
+  .contact-block p {
+    font-size: 14px; color: var(--text2); line-height: 1.7; margin-bottom: 8px;
+  }
+  .contact-block p:last-child { margin-bottom: 0; }
+  .contact-block a, .policy-section a {
+    color: var(--accent); text-decoration: none;
+    border-bottom: 1px solid var(--accent-glow); padding-bottom: 1px;
+    transition: border-color .2s;
+  }
+  .contact-block a:hover, .policy-section a:hover { border-color: var(--accent); }
+  .policy-divider { height: 1px; background: var(--border); margin: 32px 0; }
+  .policy-footer {
+    text-align: center;
+    font-family: var(--font-cond); font-size: 12px;
+    color: var(--text3); letter-spacing: .06em;
+    padding-top: 24px; border-top: 1px solid var(--border);
+  }
+  .policy-footer a { color: var(--accent); text-decoration: none; }
+  @media (min-width: 600px) {
+    .page { padding: 48px 32px 80px; }
+    .policy-title { font-size: 42px; }
+    .topbar-brand { display: block; }
+  }
+  @media (min-width: 768px) {
+    #topbar { padding: 0 40px; }
+    .page { padding: 56px 40px 80px; }
+  }
+  @media (min-width: 1024px) {
+    #topbar { padding: 0 60px; }
+    .page { padding: 64px 0 100px; }
+    .policy-title { font-size: 48px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <a href="/" class="back-link">
+    <div class="back-arrow">←</div>
+    Back to Mindful Rhythm
+  </a>
+  <div class="topbar-brand">MINDFUL <span>RHYTHM</span></div>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" id="theme-btn">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="4"/>
+      <line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/>
+      <line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/>
+      <line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/>
+      <line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/>
+    </svg>
+  </button>
+</div>
+
+<div class="page">
+
+  <div class="policy-header">
+    <div class="policy-eyebrow">Legal</div>
+    <h1 class="policy-title">Terms of Service</h1>
+    <div class="policy-meta">Mindful Rhythm &nbsp;·&nbsp; Last updated: April 2026</div>
+  </div>
+
+  <div class="highlight-card">
+    <strong>Plain English summary:</strong> Use the app responsibly, don't misuse it, and understand that wellness tracking data is for personal insight only — not medical advice. That's really it.
+  </div>
+
+  <div class="policy-divider"></div>
+
+  <div class="policy-section">
+    <h2><span class="section-icon">👋</span> Acceptance of Terms</h2>
+    <p>By accessing or using Mindful Rhythm ("the app", "the service") at <strong>mindful-rhythm.com</strong>, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the app.</p>
+    <p>We reserve the right to update these terms at any time. Continued use of the app after changes are posted constitutes acceptance of the revised terms.</p>
+  </div>
+
+  <div class="policy-section">
+    <h2><span class="section-icon">📋</span> Description of Service</h2>
+    <p>Mindful Rhythm is a personal wellness tracking application that helps you:</p>
+    <ul>
+      <li>Track intermittent fasting cycles and biological stages</li>
+      <li>Monitor how you spend your time across mindful moment states</li>
+      <li>Build and maintain daily habits with streak tracking</li>
+      <li>Review your progress through weekly and monthly analytics</li>
+    </ul>
+    <p>The service is provided as-is and may be updated, modified, or discontinued at any time.</p>
+  </div>
+
+  <div class="policy-section">
+    <h2><span class="section-icon">🏥</span> Not Medical Advice</h2>
+    <p>Mindful Rhythm is a personal productivity and wellness tracking tool. <strong>It is not a medical device and does not provide medical advice.</strong></p>
+    <p>The fasting stage information, biological descriptions, and wellness insights provided in the app are for general informational purposes only. They are not intended to diagnose, treat, cure, or prevent any health condition.</p>
+    <div class="highlight-card">
+      Always consult a qualified healthcare professional before starting any fasting regimen, especially if you have an existing medical condition, are pregnant, or are taking medication.
+    </div>
+  </div>
+
+  <div class="policy-section">
+    <h2><span class="section-icon">🔑</span> Your Account</h2>
+    <p>To use Mindful Rhythm, you sign in with your Google account. You are responsible for maintaining the security of your account and for all activity that occurs under it.</p>
+    <p>You must be at least 13 years old to use this service. By using the app, you represent that you meet this requirement.</p>
+    <p>We reserve the right to suspend or terminate accounts that violate these terms.</p>
+  </div>
+
+  <div class="policy-section">
+    <h2><span class="section-icon">✅</span> Acceptable Use</h2>
+    <p>You agree to use Mindful Rhythm only for lawful purposes and in a way that does not infringe the rights of others. You must not:</p>
+    <ul>
+      <li>Attempt to gain unauthorised access to any part of the service or its infrastructure</li>
+      <li>Use the service to transmit harmful, offensive, or unlawful content</li>
+      <li>Reverse engineer, decompile, or attempt to extract the source code of the app</li>
+      <li>Use automated scripts or bots to interact with the service</li>
+      <li>Misrepresent your identity or impersonate another person</li>
+    </ul>
+  </div>
+
+  <div class="policy-section">
+    <h2><span class="section-icon">📦</span> Your Data</h2>
+    <p>You retain full ownership of all data you enter into Mindful Rhythm — your fasting logs, habit records, and moment tracking data belong to you.</p>
+    <p>By using the service, you grant us a limited licence to store and process your data solely for the purpose of providing the app's functionality. We do not claim any ownership over your personal data.</p>
+    <p>You can request deletion of your data at any time. See our <a href="/privacy.html">Privacy Policy</a> for details.</p>
+  </div>
+
+  <div class="policy-section">
+    <h2><span class="section-icon">⚠️</span> Disclaimers & Limitation of Liability</h2>
+    <p>Mindful Rhythm is provided <strong>"as is"</strong> without warranties of any kind, either express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.</p>
+    <p>We do not guarantee that the service will be uninterrupted, error-free, or that data will never be lost. We strongly recommend keeping personal records of important health data independently.</p>
+    <p>To the maximum extent permitted by law, Mindful Rhythm and its creators shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the service.</p>
+  </div>
+
+  <div class="policy-section">
+    <h2><span class="section-icon">🌍</span> Governing Law</h2>
+    <p>These terms are governed by and construed in accordance with applicable law. Any disputes arising from these terms or your use of the service shall be subject to the exclusive jurisdiction of the relevant courts.</p>
+  </div>
+
+  <div class="policy-section">
+    <h2><span class="section-icon">🔗</span> Third-Party Services</h2>
+    <p>Mindful Rhythm uses the following third-party services:</p>
+    <ul>
+      <li><strong>Supabase</strong> — database and authentication infrastructure (<a href="https://supabase.com/privacy" target="_blank">Supabase Privacy Policy</a>)</li>
+      <li><strong>Google OAuth</strong> — sign-in authentication (<a href="https://policies.google.com/terms" target="_blank">Google Terms of Service</a>)</li>
+    </ul>
+    <p>Your use of these third-party services is subject to their respective terms and policies.</p>
+  </div>
+
+  <div class="policy-divider"></div>
+
+  <div class="policy-section">
+    <h2><span class="section-icon">✉️</span> Contact</h2>
+    <p>If you have questions about these Terms of Service, please contact us:</p>
+    <div class="contact-block">
+      <p><strong>Mindful Rhythm</strong></p>
+      <p>Website: <a href="https://www.mindful-rhythm.com">mindful-rhythm.com</a></p>
+      <p>Email: <a href="mailto:help@modulartechnologysolutions.com">help@modulartechnologysolutions.com</a></p>
+    </div>
+  </div>
+
+  <div class="policy-divider"></div>
+
+  <div class="policy-footer">
+    © 2026 Mindful Rhythm &nbsp;·&nbsp;
+    <a href="/privacy.html">Privacy Policy</a> &nbsp;·&nbsp;
+    <a href="/">Back to app</a>
+  </div>
+
+</div>
+
+<script>
+  var LS_KEY = 'mr_dark';
+  var darkMode = localStorage.getItem(LS_KEY) !== 'false';
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+    var btn = document.getElementById('theme-btn');
+    if (!btn) return;
+    btn.innerHTML = darkMode
+      ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg>'
+      : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  }
+  function toggleTheme() {
+    darkMode = !darkMode;
+    localStorage.setItem(LS_KEY, darkMode);
+    applyTheme();
+  }
+  applyTheme();
+</script>
+</body>
+</html>
