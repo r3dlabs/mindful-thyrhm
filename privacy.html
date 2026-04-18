@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Mindful Rhythm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ── TOKENS ─────────────────────────────────────────────── */
+  :root {
+    --bg:          #F5F3FA;
+    --surface:     #FFFFFF;
+    --surface2:    #EDE9F6;
+    --border:      #D9D3EE;
+    --text:        #1A1428;
+    --text2:       #5E5378;
+    --text3:       #9E95B8;
+    --accent:      #7C3AED;
+    --accent-glow: rgba(124,58,237,0.12);
+    --radius:      16px;
+    --radius-sm:   10px;
+    --shadow:      0 2px 16px rgba(0,0,0,0.07);
+    --font-cond:   'Barlow Condensed', sans-serif;
+    --font-body:   'Barlow', sans-serif;
+  }
+  [data-theme="dark"] {
+    --bg:          #0E0A1A;
+    --surface:     #16112A;
+    --surface2:    #1E1836;
+    --border:      #2C2448;
+    --text:        #EDE8FF;
+    --text2:       #9E95B8;
+    --text3:       #4E4668;
+    --shadow:      0 2px 16px rgba(0,0,0,0.4);
+    --accent-glow: rgba(124,58,237,0.18);
+  }
+
+  /* ── RESET ──────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    transition: background .3s, color .3s;
+  }
+
+  /* ── TOP BAR ────────────────────────────────────────────── */
+  #topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: var(--shadow);
+  }
+  .back-link {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--text2); text-decoration: none;
+    font-family: var(--font-cond); font-size: 14px;
+    font-weight: 600; letter-spacing: .04em;
+    transition: color .2s;
+  }
+  .back-link:hover { color: var(--accent); }
+  .back-arrow {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; transition: background .2s;
+  }
+  .back-link:hover .back-arrow { background: var(--accent-glow); }
+  .topbar-brand {
+    font-family: var(--font-cond); font-weight: 800;
+    font-size: 16px; letter-spacing: .06em;
+    color: var(--text); display: none;
+  }
+  .topbar-brand span { color: var(--accent); }
+  .theme-toggle {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text2);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background .2s;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover { background: var(--border); }
+
+  /* ── PAGE LAYOUT ────────────────────────────────────────── */
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* ── HEADER ─────────────────────────────────────────────── */
+  .policy-header {
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .policy-eyebrow {
+    font-family: var(--font-cond); font-size: 11px; font-weight: 700;
+    letter-spacing: .16em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 10px;
+  }
+  .policy-title {
+    font-family: var(--font-cond); font-weight: 800;
+    font-size: 36px; letter-spacing: -.01em;
+    color: var(--text); line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .policy-meta {
+    font-size: 13px; color: var(--text3);
+    font-family: var(--font-cond); letter-spacing: .04em;
+  }
+
+  /* ── SECTIONS ───────────────────────────────────────────── */
+  .policy-section {
+    margin-bottom: 36px;
+  }
+  .policy-section h2 {
+    font-family: var(--font-cond); font-weight: 700;
+    font-size: 18px; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--text); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .policy-section h2 .section-icon {
+    font-size: 18px; line-height: 1;
+  }
+  .policy-section p {
+    font-size: 15px; color: var(--text2);
+    line-height: 1.8; margin-bottom: 12px;
+  }
+  .policy-section p:last-child { margin-bottom: 0; }
+  .policy-section ul {
+    list-style: none; margin: 0 0 12px 0; padding: 0;
+  }
+  .policy-section ul li {
+    font-size: 15px; color: var(--text2);
+    line-height: 1.8; padding-left: 20px; position: relative;
+    margin-bottom: 4px;
+  }
+  .policy-section ul li::before {
+    content: '·';
+    position: absolute; left: 6px;
+    color: var(--accent); font-weight: 700; font-size: 18px;
+    line-height: 1.5;
+  }
+
+  /* ── HIGHLIGHT CARD ─────────────────────────────────────── */
+  .highlight-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 14px; color: var(--text2); line-height: 1.7;
+  }
+  .highlight-card strong { color: var(--text); }
+
+  /* ── CONTACT BLOCK ──────────────────────────────────────── */
+  .contact-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-top: 8px;
+  }
+  .contact-block p {
+    font-size: 14px; color: var(--text2); line-height: 1.7;
+    margin-bottom: 8px;
+  }
+  .contact-block p:last-child { margin-bottom: 0; }
+  .contact-block a {
+    color: var(--accent); text-decoration: none;
+    border-bottom: 1px solid var(--accent-glow);
+    padding-bottom: 1px; transition: border-color .2s;
+  }
+  .contact-block a:hover { border-color: var(--accent); }
+
+  /* ── DIVIDER ────────────────────────────────────────────── */
+  .policy-divider {
+    height: 1px; background: var(--border); margin: 32px 0;
+  }
+
+  /* ── FOOTER ─────────────────────────────────────────────── */
+  .policy-footer {
+    text-align: center;
+    font-family: var(--font-cond); font-size: 12px;
+    color: var(--text3); letter-spacing: .06em;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .policy-footer a {
+    color: var(--accent); text-decoration: none;
+  }
+
+  /* ── RESPONSIVE ─────────────────────────────────────────── */
+  @media (min-width: 600px) {
+    .page { padding: 48px 32px 80px; }
+    .policy-title { font-size: 42px; }
+    .topbar-brand { display: block; }
+  }
+  @media (min-width: 768px) {
+    #topbar { padding: 0 40px; }
+    .page { padding: 56px 40px 80px; }
+  }
+  @media (min-width: 1024px) {
+    #topbar { padding: 0 60px; }
+    .page { padding: 64px 0 100px; }
+    .policy-title { font-size: 48px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <a href="/" class="back-link">
+    <div class="back-arrow">←</div>
+    Back to Mindful Rhythm
+  </a>
+  <div class="topbar-brand">MINDFUL <span>RHYTHM</span></div>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" id="theme-btn">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="4"/>
+      <line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/>
+      <line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/>
+      <line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/>
+      <line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/>
+    </svg>
+  </button>
+</div>
+
+<!-- CONTENT -->
+<div class="page">
+
+  <div class="policy-header">
+    <div class="policy-eyebrow">Legal</div>
+    <h1 class="policy-title">Privacy Policy</h1>
+    <div class="policy-meta">Mindful Rhythm &nbsp;·&nbsp; Last updated: April 2026</div>
+  </div>
+
+  <div class="highlight-card">
+    <strong>The short version:</strong> We collect only what's needed to run your account and sync your data across devices. We don't sell your data, share it with advertisers, or use it for anything beyond making the app work for you.
+  </div>
+
+  <div class="policy-divider"></div>
+
+  <!-- 1 -->
+  <div class="policy-section">
+    <h2><span class="section-icon">👤</span> Who We Are</h2>
+    <p>Mindful Rhythm is a personal wellness app that helps you track intermittent fasting, mindful moments, and daily habits. The app is available at <strong>mindful-rhythm.com</strong>.</p>
+    <p>If you have any questions about this policy, you can reach us at the contact details at the bottom of this page.</p>
+  </div>
+
+  <!-- 2 -->
+  <div class="policy-section">
+    <h2><span class="section-icon">📦</span> What Data We Collect</h2>
+    <p>We collect only the information necessary to provide the service:</p>
+    <ul>
+      <li><strong>Account information</strong> — your name, email address, and profile photo, provided by Google when you sign in via Google OAuth.</li>
+      <li><strong>Fasting data</strong> — start and end times of your fasts, stages reached, and fasting duration logs.</li>
+      <li><strong>Moment state data</strong> — time spent in each moment state (Purposeful, Wasteful, Nourishing, Training, Recovering) throughout the day.</li>
+      <li><strong>Habit data</strong> — habit names, completion status, streaks, and break logs including optional reasons.</li>
+      <li><strong>App preferences</strong> — your theme preference (dark/light mode) and other local settings.</li>
+    </ul>
+    <p>We do not collect location data, device identifiers, or any health metrics beyond what you manually log in the app.</p>
+  </div>
+
+  <!-- 3 -->
+  <div class="policy-section">
+    <h2><span class="section-icon">🔐</span> How We Store Your Data</h2>
+    <p>Your data is stored securely using <strong>Supabase</strong>, a hosted database platform. All data is associated with your user account and protected by row-level security — meaning only you can access your own data.</p>
+    <p>Data is also cached locally in your browser's localStorage for offline access. This local data stays on your device and is only synced to the server when you are signed in.</p>
+    <div class="highlight-card">
+      Your fasting logs, moment timers, and habits are <strong>private to your account only</strong>. No one else — including the Mindful Rhythm team — can access your personal wellness data.
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="policy-section">
+    <h2><span class="section-icon">🔑</span> Google Sign-In</h2>
+    <p>We use Google OAuth for authentication. When you sign in with Google, we receive your name, email address, and profile photo from Google. We do not receive your Google password or access to any other Google services.</p>
+    <p>Your use of Google Sign-In is also governed by <a href="https://policies.google.com/privacy" target="_blank" style="color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-glow);">Google's Privacy Policy</a>.</p>
+  </div>
+
+  <!-- 5 -->
+  <div class="policy-section">
+    <h2><span class="section-icon">🚫</span> What We Don't Do</h2>
+    <ul>
+      <li>We do not sell your data to third parties.</li>
+      <li>We do not share your data with advertisers.</li>
+      <li>We do not use your wellness data to train AI or machine learning models.</li>
+      <li>We do not send marketing emails (beyond optional product updates you opt into).</li>
+      <li>We do not track you across other websites or apps.</li>
+    </ul>
+  </div>
+
+  <!-- 6 -->
+  <div class="policy-section">
+    <h2><span class="section-icon">🍪</span> Cookies & Local Storage</h2>
+    <p>We use browser localStorage to save your preferences and cache your app data for offline use. This is essential for the app to function. We do not use third-party tracking cookies or advertising cookies.</p>
+    <p>Supabase uses a session token stored in localStorage to keep you signed in across page loads. This token expires automatically and is cleared when you sign out.</p>
+  </div>
+
+  <!-- 7 -->
+  <div class="policy-section">
+    <h2><span class="section-icon">🗑️</span> Deleting Your Data</h2>
+    <p>You can delete your account and all associated data at any time. To request deletion:</p>
+    <ul>
+      <li>Sign in to Mindful Rhythm and use the account settings to delete your account, or</li>
+      <li>Contact us directly at the email below and we will delete your data within 7 days.</li>
+    </ul>
+    <p>Upon deletion, all your fasting logs, habit data, and moment records will be permanently removed from our servers.</p>
+  </div>
+
+  <!-- 8 -->
+  <div class="policy-section">
+    <h2><span class="section-icon">👶</span> Children's Privacy</h2>
+    <p>Mindful Rhythm is not directed at children under the age of 13. We do not knowingly collect personal information from children. If you believe a child has provided us with personal information, please contact us and we will delete it promptly.</p>
+  </div>
+
+  <!-- 9 -->
+  <div class="policy-section">
+    <h2><span class="section-icon">🔄</span> Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. When we do, we'll update the "Last updated" date at the top of this page. We encourage you to review this policy periodically. Continued use of the app after changes constitutes acceptance of the updated policy.</p>
+  </div>
+
+  <div class="policy-divider"></div>
+
+  <!-- Contact -->
+  <div class="policy-section">
+    <h2><span class="section-icon">✉️</span> Contact</h2>
+    <p>If you have questions, concerns, or requests regarding your privacy or this policy, please reach out:</p>
+    <div class="contact-block">
+      <p><strong>Mindful Rhythm</strong></p>
+      <p>Website: <a href="https://www.mindful-rhythm.com">mindful-rhythm.com</a></p>
+      <p>For privacy requests, data deletion, or questions about this policy, please contact us through the app or via the website above.</p>
+    </div>
+  </div>
+
+  <div class="policy-divider"></div>
+
+  <div class="policy-footer">
+    © 2026 Mindful Rhythm &nbsp;·&nbsp; <a href="/">Back to app</a>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+  // Theme — syncs with app localStorage key
+  var LS_KEY = 'mr_dark';
+  var darkMode = localStorage.getItem(LS_KEY) !== 'false';
+
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+    var btn = document.getElementById('theme-btn');
+    if (!btn) return;
+    if (darkMode) {
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg>';
+    } else {
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+    }
+  }
+
+  function toggleTheme() {
+    darkMode = !darkMode;
+    localStorage.setItem(LS_KEY, darkMode);
+    applyTheme();
+  }
+
+  applyTheme();
+</script>
+</body>
+</html>
