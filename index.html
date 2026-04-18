@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mindful Rhythm | Live the Moment</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏳</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⌛</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -464,92 +464,6 @@
   }
   .fast-btns { display: flex; gap: 10px; width: 100%; }
   /* ─── ADMIN PASSWORD MODAL ───────────────────────────────── */
-  #admin-pw-overlay {
-    position: fixed; inset: 0; z-index: 300;
-    background: rgba(0,0,0,.6);
-    backdrop-filter: blur(6px);
-    display: none; align-items: center; justify-content: center;
-    padding: 24px;
-  }
-  #admin-pw-overlay.open { display: flex; }
-  .admin-pw-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 32px 28px 28px;
-    width: 100%; max-width: 340px;
-    display: flex; flex-direction: column; align-items: center; gap: 0;
-    animation: pwPop .22s cubic-bezier(.34,1.56,.64,1);
-  }
-  @keyframes pwPop {
-    from { opacity: 0; transform: scale(.92); }
-    to   { opacity: 1; transform: scale(1); }
-  }
-  .admin-pw-icon {
-    width: 52px; height: 52px; border-radius: 50%;
-    background: rgba(232,168,56,0.12);
-    border: 1.5px solid rgba(232,168,56,0.3);
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 18px;
-    color: var(--warn);
-  }
-  .admin-pw-title {
-    font-family: var(--font-cond); font-weight: 700; font-size: 22px;
-    letter-spacing: .04em; text-transform: uppercase;
-    color: var(--text); margin-bottom: 6px;
-  }
-  .admin-pw-sub {
-    font-size: 13px; color: var(--text3); margin-bottom: 24px;
-    text-align: center; line-height: 1.5;
-  }
-  .admin-pw-field {
-    width: 100%; position: relative; margin-bottom: 12px;
-  }
-  #admin-pw-input {
-    width: 100%; padding: 14px 46px 14px 16px;
-    border-radius: var(--radius-sm);
-    border: 1.5px solid var(--border);
-    background: var(--surface2); color: var(--text);
-    font-family: var(--font-cond); font-size: 16px; font-weight: 600;
-    letter-spacing: .12em; outline: none;
-    transition: border-color .2s;
-  }
-  #admin-pw-input:focus { border-color: var(--warn); }
-  #admin-pw-input.error { border-color: var(--danger); animation: shake .3s ease; }
-  @keyframes shake {
-    0%,100% { transform: translateX(0); }
-    20%,60% { transform: translateX(-6px); }
-    40%,80% { transform: translateX(6px); }
-  }
-  .admin-pw-eye {
-    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-    color: var(--text3); cursor: pointer; padding: 4px;
-    display: flex; align-items: center;
-  }
-  .admin-pw-err {
-    font-family: var(--font-cond); font-size: 12px; color: var(--danger);
-    margin-bottom: 12px; min-height: 16px; align-self: flex-start;
-    letter-spacing: .04em;
-  }
-  #admin-pw-submit {
-    width: 100%; padding: 14px;
-    border-radius: var(--radius-sm);
-    background: var(--warn); color: #1A1428;
-    font-family: var(--font-cond); font-weight: 800; font-size: 15px;
-    letter-spacing: .1em; text-transform: uppercase;
-    transition: opacity .2s, transform .1s; margin-bottom: 10px;
-  }
-  #admin-pw-submit:hover { opacity: .88; }
-  #admin-pw-submit:active { transform: scale(.98); }
-  #admin-pw-cancel {
-    background: none; color: var(--text3);
-    font-family: var(--font-cond); font-size: 13px;
-    letter-spacing: .06em; padding: 6px;
-    transition: color .2s;
-  }
-  #admin-pw-cancel:hover { color: var(--text2); }
-
-  /* ─── ADMIN ───────────────────────────────────────────────── */
   #admin-btn {
     width: 36px; height: 36px; border-radius: 50%;
     background: var(--surface2); color: var(--text3);
@@ -1673,27 +1587,7 @@
   </button>
 </nav>
 
-<!-- ADMIN PASSWORD MODAL -->
-<div id="admin-pw-overlay" onclick="adminPwOverlayClick(event)">
-  <div class="admin-pw-card">
-    <div class="admin-pw-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    </div>
-    <div class="admin-pw-title">Dev Access</div>
-    <div class="admin-pw-sub">Enter your admin password to unlock the developer console.</div>
-    <div class="admin-pw-field">
-      <input id="admin-pw-input" type="password" placeholder="Password"
-        onkeydown="if(event.key==='Enter')submitAdminPw()"
-        oninput="document.getElementById('admin-pw-input').classList.remove('error');document.getElementById('admin-pw-err').textContent=''">
-      <span class="admin-pw-eye" onclick="togglePwVisibility()" id="pw-eye">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-      </span>
-    </div>
-    <div class="admin-pw-err" id="admin-pw-err"></div>
-    <button id="admin-pw-submit" onclick="submitAdminPw()">Unlock</button>
-    <button id="admin-pw-cancel" onclick="closeAdminPw()">Cancel</button>
-  </div>
-</div>
+<!-- admin password modal removed — triple-tap to open -->
 
 <!-- FRICTION MODAL -->
 <div id="modal-overlay">
@@ -2305,18 +2199,27 @@ function handleFastBtn() {
 }
 
 /* ─── ADMIN ──────────────────────────────────────────────────*/
-let adminUnlocked = false;
-const ADMIN_PASSWORD = '!ronman';
+// ── Triple-tap / triple-click to open dev console ────────────────────
+var _adminTapCount = 0;
+var _adminTapTimer = null;
 
 function toggleAdmin() {
-  if (!adminUnlocked) {
-    document.getElementById('admin-pw-overlay').classList.add('open');
-    setTimeout(() => document.getElementById('admin-pw-input').focus(), 80);
-    return;
+  _adminTapCount++;
+  clearTimeout(_adminTapTimer);
+  _adminTapTimer = setTimeout(function() { _adminTapCount = 0; }, 600);
+
+  if (_adminTapCount >= 3) {
+    _adminTapCount = 0;
+    clearTimeout(_adminTapTimer);
+    var panel = document.getElementById('admin-panel');
+    var isOpen = panel.classList.toggle('open');
+    if (isOpen) {
+      document.getElementById('admin-btn').classList.add('unlocked');
+      refreshDiag();
+    } else {
+      document.getElementById('admin-btn').classList.remove('unlocked');
+    }
   }
-  const panel = document.getElementById('admin-panel');
-  const isOpen = panel.classList.toggle('open');
-  if (isOpen) refreshDiag();
 }
 
 function toggleTheme() {
@@ -2379,44 +2282,7 @@ function toggleTheme() {
   });
 })();
 
-function submitAdminPw() {
-  const val = document.getElementById('admin-pw-input').value;
-  if (val === ADMIN_PASSWORD) {
-    adminUnlocked = true;
-    document.getElementById('admin-btn').classList.add('unlocked');
-    closeAdminPw();
-    document.getElementById('admin-panel').classList.add('open');
-    refreshDiag();
-    toast('✅ Dev console unlocked');
-  } else {
-    const inp = document.getElementById('admin-pw-input');
-    inp.classList.add('error');
-    document.getElementById('admin-pw-err').textContent = 'Incorrect password. Try again.';
-    inp.value = '';
-    inp.focus();
-  }
-}
-
-function closeAdminPw() {
-  document.getElementById('admin-pw-overlay').classList.remove('open');
-  document.getElementById('admin-pw-input').value = '';
-  document.getElementById('admin-pw-err').textContent = '';
-  document.getElementById('admin-pw-input').classList.remove('error');
-}
-
-function adminPwOverlayClick(e) {
-  if (e.target === document.getElementById('admin-pw-overlay')) closeAdminPw();
-}
-
-function togglePwVisibility() {
-  const inp  = document.getElementById('admin-pw-input');
-  const eye  = document.getElementById('pw-eye');
-  const show = inp.type === 'password';
-  inp.type   = show ? 'text' : 'password';
-  eye.innerHTML = show
-    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
-    : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
-}
+// password functions removed — triple-tap replaces them
 
 // Close admin panel if clicking outside
 document.addEventListener('click', e => {
@@ -2882,7 +2748,7 @@ function toggleHabit(cat, i) {
   LS.set('habits', habits);
   renderHabitTabs();
   renderHabitList();
-  pushHabit(habits[cat][i], cat);
+  if (currentUser) pushHabit(habits[cat][i], cat);
 }
 
 function startHabitEdit(cat, i, btn) {
@@ -2903,7 +2769,7 @@ function saveHabitName(cat, i, input) {
   const trimmed = input.value.trim();
   habits[cat][i].name = trimmed || habits[cat][i].name;
   LS.set('habits', habits);
-  pushHabit(habits[cat][i], cat);
+  if (currentUser) pushHabit(habits[cat][i], cat);
   renderHabitList();
 }
 
@@ -2943,7 +2809,7 @@ function confirmDeleteHabit(cat, i) {
   habits[cat].splice(i, 1);
   LS.set('habits', habits);
   // Rebuild all habits for this cat in Supabase (upsert remaining)
-  (habits[cat]||[]).forEach(h => pushHabit(h, cat));
+  if (currentUser) (habits[cat]||[]).forEach(h => pushHabit(h, cat));
   renderHabitTabs();
   renderHabitList();
   toast('Habit deleted');
@@ -2954,7 +2820,7 @@ function addHabit() {
   const newH = { id, name:'New Habit', done:false, streak:0 };
   habits[activeHabitCat].push(newH);
   LS.set('habits', habits);
-  pushHabit(newH, activeHabitCat);
+  if (currentUser) pushHabit(newH, activeHabitCat);
   renderHabitList();
   // Auto-focus last
   setTimeout(() => {
@@ -3637,6 +3503,9 @@ function pushAppState() {
     moment_start_ts:    momentState.startTs,
     moment_timers:      momentState.timers,            // frozen totals only
   };
+  // updated_at is set by DB trigger, but we include it explicitly
+  // so the remote timestamp comparison in pullAppState works correctly
+  payload.updated_at = new Date().toISOString();
   enqueue('app_state', payload);
 }
 
@@ -3705,10 +3574,20 @@ async function pullAppState() {
     .select('*')
     .eq('user_id', currentUser.id)
     .single();
-  if (error || !data) return;
+  if (error || !data) {
+    // No remote row yet — this is a first login or the row was never pushed.
+    // Push whatever local state we have up to Supabase so future logins restore it.
+    // Only push if we have meaningful local state (fast running, or timers > 0)
+    const hasMeaningfulState = fastState.running ||
+      fastState.totalSecs > 0 ||
+      Object.values(momentState.timers || {}).some(v => v > 0);
+    if (hasMeaningfulState) {
+      pushAppState();
+    }
+    return;
+  }
 
   // Remote wins if it was updated more recently than local LS write
-  // We use updated_at from Supabase vs local timestamp heuristic
   const remoteTs = new Date(data.updated_at).getTime();
   const localTs  = fastState._savedAt || 0;
 
@@ -3733,8 +3612,9 @@ async function pullAppState() {
         lastDate:  td,
         _savedAt:  remoteTs,
       };
-      // If feeding was paused (fast running then) but we're now not fasting, resume
+      // If feeding was paused (fast was running) but we're now not fasting, resume
       if (!fastState.running && !feedingState.startTs) {
+        // Resume from where totalSecs left off — do NOT re-seed from midnight
         feedingState.startTs = Date.now();
       }
     } else {
@@ -3748,12 +3628,19 @@ async function pullAppState() {
     LS.set('feeding', feedingState);
 
     // Restore moment state
+    const todayStr2 = today();
     momentState = {
-      active:   data.moment_active   || 'wasteful',
+      active:   data.moment_active || 'wasteful',
       startTs:  data.moment_start_ts || Date.now(),
-      timers:   data.moment_timers   || { purposeful:0, wasteful:0, nourishing:0, training:0, recovering:0 },
+      timers:   data.moment_timers  || { purposeful:0, wasteful:0, nourishing:0, training:0, recovering:0 },
+      lastDate: todayStr2,
       _savedAt: remoteTs,
     };
+    // If the saved moment startTs is from a previous day, reset it to now
+    // so we don't accumulate stale time from yesterday's session
+    if (momentState.startTs && momentState.startTs < new Date().setHours(0,0,0,0)) {
+      momentState.startTs = Date.now();
+    }
     LS.set('moment', momentState);
   }
 }
@@ -3799,7 +3686,23 @@ async function pullHabits() {
       .limit(200),
   ]);
 
-  if (habitsRes.error || !habitsRes.data?.length) return;
+  // If there's a real error, bail. But empty data is NOT an error —
+  // it means no habits in Supabase yet, which we handle below.
+  if (habitsRes.error) {
+    console.warn('pullHabits error:', habitsRes.error.message);
+    return;
+  }
+  if (!habitsRes.data?.length) {
+    // No remote habits — push local if we have any
+    const hasLocal = Object.values(habits).some(a => a.length > 0);
+    if (hasLocal) {
+      Object.entries(habits).forEach(([cat, list]) => {
+        list.forEach(h => pushHabit(h, cat));
+      });
+      LS.set('habits', habits);
+    }
+    return;
+  }
 
   const td = today();
   const breaks = breaksRes.data || [];
@@ -3831,16 +3734,26 @@ async function pullHabits() {
     });
   });
 
-  const hasRemote = Object.values(rebuilt).some(a=>a.length>0);
+  const hasRemote = Object.values(rebuilt).some(a => a.length > 0);
+
   if (hasRemote) {
-    // Remote has habits — use them as source of truth
+    // Remote has habits — use as source of truth
     habits = rebuilt;
-  } else if (currentUser) {
-    // Logged in but no habits in Supabase — clean slate
-    habits = { purposeful:[], nourishing:[], training:[], recovering:[], wasteful:[] };
+    LS.set('habits', habits);
+  } else {
+    // No remote habits found.
+    // If we have local habits, push them up to Supabase (first login sync).
+    // Do NOT overwrite local with empty — that's how habits disappear.
+    const hasLocal = Object.values(habits).some(a => a.length > 0);
+    if (hasLocal) {
+      Object.entries(habits).forEach(([cat, list]) => {
+        list.forEach(h => pushHabit(h, cat));
+      });
+      // Re-save local to LS (unchanged)
+      LS.set('habits', habits);
+    }
+    // If truly no habits anywhere — leave habits as-is (empty or whatever was in LS)
   }
-  // Always persist whatever we resolved to
-  LS.set('habits', habits);
 }
 
 /* ── Realtime subscription — app_state ─────────────────────── */
@@ -4120,10 +4033,31 @@ function toggleThemeFromMenu() {
 
 async function signOutUser() {
   document.getElementById('profile-dropdown').classList.remove('open');
+
+  // Push current state to Supabase BEFORE clearing localStorage
+  // so the next login can restore exactly where we left off
+  if (currentUser) {
+    // Freeze live moment timer before push
+    if (momentState.active && momentState.startTs) {
+      momentState.timers[momentState.active] = getStateElapsed(momentState.active);
+      // Keep startTs so it resumes correctly on next login
+    }
+    // Freeze live feeding timer
+    if (!fastState.running && feedingState.startTs) {
+      feedingState.totalSecs = getFeedingElapsed();
+      // Keep startTs null — will resume from totalSecs on next login
+      feedingState.startTs = null;
+    }
+    pushAppState();
+    // Drain synchronously — give it a moment to flush before sign out
+    await drainQueue();
+  }
+
   LS.set('fast',    null);
   LS.set('feeding', null);
   LS.set('moment',  null);
   LS.set('habits',  null);
+  LS.set('syncQueue', null);
   await sb.auth.signOut();
   clearUser();
   toast('Signed out. See you soon 👋');
