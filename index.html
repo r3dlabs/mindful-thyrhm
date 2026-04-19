@@ -3555,9 +3555,17 @@ function initQuotes() {
 ═══════════════════════════════════════════════════════════════ */
 
 let breakHabits = LS.get('breakHabits') || [];
-let brkActiveHabit = null;   // habit being broken right now
-let brkFrictionIdx = 0;      // which friction screen we're on
-let brkEditIdx     = null;    // index being edited in config modal
+let brkActiveHabit = null;
+let brkFrictionIdx = 0;
+let brkEditIdx     = null;
+
+// Days since a date string (YYYY-MM-DD) — streak calculation
+function brkDaysSince(dateStr) {
+  if (!dateStr) return null;
+  const start = new Date(dateStr); start.setHours(0,0,0,0);
+  const now   = new Date();        now.setHours(0,0,0,0);
+  return Math.floor((now - start) / 86400000);
+}
 
 // ── Phase navigation ─────────────────────────────────────────
 function brkShowPhase(id) {
@@ -3597,12 +3605,24 @@ function brkRenderList() {
   }
   if (empty) empty.style.display = 'none';
   breakHabits.forEach((h, i) => {
-    const count = (h.frictions || []).length;
+    const count  = (h.frictions || []).length;
+    const days   = brkDaysSince(h.streak_start || h.created_date);
+    const streak = days !== null ? days : 0;
+    const streakTxt = streak === 0 ? 'broken today'
+                    : streak === 1 ? '🔥 1 day'
+                    : `🔥 ${streak} days`;
     const div = document.createElement('div');
     div.className = 'brk-habit-item';
     div.innerHTML = `
-      <div class="brk-habit-name">${h.name}</div>
-      <div class="brk-habit-meta">${count} friction${count !== 1 ? 's' : ''}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="brk-habit-name">${h.name}</div>
+        <div class="brk-habit-meta">${count} friction${count !== 1 ? 's' : ''}</div>
+      </div>
+      <div style="
+        font-family:var(--font-cond);font-size:13px;font-weight:700;
+        color:${streak === 0 ? 'var(--danger)' : 'var(--warn)'};
+        text-align:right;flex-shrink:0;margin-right:8px;white-space:nowrap;
+      ">${streakTxt}</div>
       <button class="brk-habit-edit" onclick="event.stopPropagation();brkOpenConfig(${i})">Edit</button>`;
     div.onclick = () => brkSelectHabit(i);
     list.appendChild(div);
@@ -3638,11 +3658,17 @@ function brkNextFriction() {
 }
 
 function brkMarkBroken() {
-  const h = brkActiveHabit;
-  document.getElementById('brk-broken-title').textContent =
-    `"${h.name}" broken.`;
+  const h  = brkActiveHabit;
+  const td = today();
+  // Stamp broken date and reset streak
+  h.last_broken  = td;
+  h.streak_start = td;  // streak resets from today
+  LS.set('breakHabits', breakHabits);
+  if (currentUser) pushBreakHabit(h);
+
+  const days = brkDaysSince(h.streak_start);
+  document.getElementById('brk-broken-title').textContent = `"${h.name}" broken.`;
   brkShowPhase('brk-phase-broken');
-  // Write event for sync
   writeEvent('break_habit', Date.now(), { name: h.name });
 }
 
@@ -3712,7 +3738,15 @@ async function brkSaveConfig() {
     return;
   }
   const frictions = brkGetCurrentFrictions();
-  const habit = { name, frictions };
+  const existing = brkEditIdx !== null ? breakHabits[brkEditIdx] : {};
+  const habit = {
+    name, frictions,
+    // Preserve existing streak/dates; set created_date on first save
+    id:           existing.id           || null,
+    created_date: existing.created_date || today(),
+    streak_start: existing.streak_start || today(),
+    last_broken:  existing.last_broken  || null,
+  };
 
   if (brkEditIdx === null) {
     breakHabits.push(habit);
@@ -3744,10 +3778,13 @@ async function brkDeleteHabit() {
 async function pushBreakHabit(h) {
   if (!currentUser) return;
   const payload = {
-    user_id:    currentUser.id,
-    name:       h.name,
-    frictions:  h.frictions || [],
-    sort_order: 0,
+    user_id:      currentUser.id,
+    name:         h.name,
+    frictions:    h.frictions || [],
+    sort_order:   0,
+    streak_start: h.streak_start || today(),
+    last_broken:  h.last_broken  || null,
+    created_date: h.created_date || today(),
   };
   if (h.id && /^[0-9a-f-]{36}$/.test(h.id)) payload.id = h.id;
   try {
@@ -3782,9 +3819,12 @@ async function pullBreakHabits() {
         });
       });
       breakHabits = data.map(r => ({
-        id:        r.id,
-        name:      r.name,
-        frictions: r.frictions || [],
+        id:           r.id,
+        name:         r.name,
+        frictions:    r.frictions    || [],
+        streak_start: r.streak_start || r.created_at.slice(0,10),
+        last_broken:  r.last_broken  || null,
+        created_date: r.created_date || r.created_at.slice(0,10),
       }));
       LS.set('breakHabits', breakHabits);
     } else if (breakHabits.length > 0) {
