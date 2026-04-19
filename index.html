@@ -1041,7 +1041,7 @@
 
 <!-- TOP BAR -->
 <div id="topbar">
-  <div class="brand">MINDFUL <span>RHYTHM</span></div>
+  <div class="brand" id="brand-logo">MINDFUL <span>RHYTHM</span></div>
   <div class="topbar-right">
     <button id="fs-btn" title="Fullscreen" onclick="toggleFullscreen()">
       <svg id="fs-icon-enter" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
@@ -1343,7 +1343,7 @@
     </button>
   </div>
   <div class="gate-inner">
-    <div class="gate-logo">MINDFUL <span>RHYTHM</span></div>
+    <div class="gate-logo" id="gate-logo">MINDFUL <span>RHYTHM</span></div>
     <div class="gate-tagline">Live the Moment</div>
     <div class="gate-ring" id="gate-ring-icon">⏳</div>
     <div class="gate-desc">Track your fasting journey and own your time.</div>
@@ -1379,7 +1379,7 @@
   background:#0a0818; border-top:2px solid #7C3AED;
   font-family:monospace; font-size:11px;
   display:flex; flex-direction:column;
-  max-height:40vh; transition:max-height .3s ease;
+  max-height:32px; transition:max-height .3s ease;
   box-shadow:0 -4px 24px rgba(0,0,0,.6);
 ">
   <div id="dbg-header" style="
@@ -1403,7 +1403,7 @@
         background:#1E1836;color:#9E95B8;font-family:monospace;
         font-size:9px;cursor:pointer;
       ">CLR</button>
-      <span id="dbg-chevron" style="color:#4E4668;font-size:14px;">▲</span>
+      <span id="dbg-chevron" style="color:#4E4668;font-size:14px;">▼</span>
     </span>
   </div>
   <div id="dbg-body" style="
@@ -3374,7 +3374,7 @@ function initQuotes() {
    Triple-tap header to toggle. COPY button exports full log.
 ═══════════════════════════════════════════════════════════ */
 var _dbgLog   = [];
-var _dbgOpen  = true;   // starts open for diagnostics
+var _dbgOpen  = false;  // hidden by default — triple-tap MINDFUL to reveal
 var _dbgCount = 0;
 
 function dbg(category, msg, data) {
@@ -3406,10 +3406,38 @@ function dbgToggle() {
   _dbgOpen = !_dbgOpen;
   var panel   = document.getElementById('dbg-panel');
   var chevron = document.getElementById('dbg-chevron');
-  // Expand upward — cap at 40vh but stay above nav
   panel.style.maxHeight = _dbgOpen ? 'calc(40vh - 56px)' : '32px';
   if (chevron) chevron.textContent = _dbgOpen ? '▲' : '▼';
 }
+
+// Triple-tap on MINDFUL logo (topbar or gate) to toggle debug panel
+(function() {
+  var tapCount = 0;
+  var tapTimer = null;
+  function handleLogoTap(e) {
+    tapCount++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(function() { tapCount = 0; }, 600);
+    if (tapCount >= 3) {
+      tapCount = 0;
+      clearTimeout(tapTimer);
+      dbgToggle();
+    }
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    var els = [
+      document.getElementById('brand-logo'),
+      document.getElementById('gate-logo')
+    ];
+    els.forEach(function(el) {
+      if (el) {
+        el.addEventListener('click',      handleLogoTap);
+        el.addEventListener('touchstart', handleLogoTap, { passive: true });
+        el.style.cursor = 'default';
+      }
+    });
+  });
+})();
 
 function dbgClear() {
   _dbgLog = []; _dbgCount = 0;
