@@ -1378,7 +1378,7 @@
   position:fixed; bottom:56px; left:0; right:0; z-index:200;
   background:#0a0818; border-top:2px solid #7C3AED;
   font-family:monospace; font-size:11px;
-  display:flex; flex-direction:column;
+  display:none; flex-direction:column;
   max-height:32px; transition:max-height .3s ease;
   box-shadow:0 -4px 24px rgba(0,0,0,.6);
 ">
@@ -3402,6 +3402,7 @@ function dbg(category, msg, data) {
   if (_dbgOpen) body.scrollTop = body.scrollHeight;
 }
 
+// Expand/collapse panel content — triggered by header bar single tap
 function dbgToggle() {
   _dbgOpen = !_dbgOpen;
   var panel   = document.getElementById('dbg-panel');
@@ -3410,32 +3411,51 @@ function dbgToggle() {
   if (chevron) chevron.textContent = _dbgOpen ? '▲' : '▼';
 }
 
-// Triple-tap on MINDFUL logo (topbar or gate) to toggle debug panel
+// Show/hide entire panel — triggered by triple-tap on MINDFUL logo
+var _dbgVisible = false;
+function dbgShowToggle() {
+  _dbgVisible = !_dbgVisible;
+  var panel = document.getElementById('dbg-panel');
+  if (!panel) return;
+  if (_dbgVisible) {
+    panel.style.display = 'flex';
+    _dbgOpen = true;
+    panel.style.maxHeight = 'calc(40vh - 56px)';
+    var chevron = document.getElementById('dbg-chevron');
+    if (chevron) chevron.textContent = '▲';
+  } else {
+    panel.style.display = 'none';
+    _dbgOpen = false;
+  }
+}
+
+// Triple-tap MINDFUL logo (topbar or gate) to show/hide debug panel entirely
+// The panel header single-tap still expands/collapses the content as before
 (function() {
   var tapCount = 0;
   var tapTimer = null;
-  function handleLogoTap(e) {
+
+  function handleLogoTap() {
     tapCount++;
     clearTimeout(tapTimer);
     tapTimer = setTimeout(function() { tapCount = 0; }, 600);
     if (tapCount >= 3) {
       tapCount = 0;
       clearTimeout(tapTimer);
-      dbgToggle();
+      dbgShowToggle();
     }
   }
-  document.addEventListener('DOMContentLoaded', function() {
-    var els = [
-      document.getElementById('brand-logo'),
-      document.getElementById('gate-logo')
-    ];
-    els.forEach(function(el) {
-      if (el) {
-        el.addEventListener('click',      handleLogoTap);
-        el.addEventListener('touchstart', handleLogoTap, { passive: true });
-        el.style.cursor = 'default';
-      }
-    });
+
+  // Wire directly — script runs after DOM is parsed so no DOMContentLoaded needed
+  var els = [
+    document.getElementById('brand-logo'),
+    document.getElementById('gate-logo')
+  ];
+  els.forEach(function(el) {
+    if (el) {
+      el.addEventListener('click',      handleLogoTap);
+      el.addEventListener('touchstart', handleLogoTap, { passive: true });
+    }
   });
 })();
 
