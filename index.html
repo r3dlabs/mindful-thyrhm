@@ -1041,7 +1041,7 @@
 
 <!-- TOP BAR -->
 <div id="topbar">
-  <div class="brand" id="brand-logo">MINDFUL <span>RHYTHM</span></div>
+  <div class="brand">MINDFUL <span>RHYTHM</span></div>
   <div class="topbar-right">
     <button id="fs-btn" title="Fullscreen" onclick="toggleFullscreen()">
       <svg id="fs-icon-enter" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
@@ -1332,7 +1332,8 @@
       background:var(--surface2);border:1px solid var(--border);
       color:var(--text2);display:flex;align-items:center;justify-content:center;
       cursor:pointer;transition:background .2s;" id="gate-fs-btn">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      <svg id="gate-fs-icon-enter" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+      <svg id="gate-fs-icon-exit" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg>
     </button>
     <button onclick="toggleTheme()" title="Toggle theme" style="
       width:36px;height:36px;border-radius:50%;
@@ -1619,8 +1620,14 @@ function toggleFullscreen() {
 }
 document.addEventListener('fullscreenchange', () => {
   const isFs = !!document.fullscreenElement;
+  // Topbar icons
   document.getElementById('fs-icon-enter').style.display = isFs ? 'none'  : 'block';
   document.getElementById('fs-icon-exit').style.display  = isFs ? 'block' : 'none';
+  // Gate icons — same swap
+  const gEnter = document.getElementById('gate-fs-icon-enter');
+  const gExit  = document.getElementById('gate-fs-icon-exit');
+  if (gEnter) gEnter.style.display = isFs ? 'none'  : 'block';
+  if (gExit)  gExit.style.display  = isFs ? 'block' : 'none';
 });
 
 /* ═══════════════════════════════════════════════════════════════
@@ -3429,13 +3436,13 @@ function dbgShowToggle() {
   }
 }
 
-// Triple-tap MINDFUL logo (topbar or gate) to show/hide debug panel entirely
-// The panel header single-tap still expands/collapses the content as before
+// Triple-tap anywhere on the gate to show/hide debug panel
+// Only triggerable from the gate — invisible from main app
 (function() {
   var tapCount = 0;
   var tapTimer = null;
 
-  function handleLogoTap() {
+  function handleGateTap() {
     tapCount++;
     clearTimeout(tapTimer);
     tapTimer = setTimeout(function() { tapCount = 0; }, 600);
@@ -3446,17 +3453,11 @@ function dbgShowToggle() {
     }
   }
 
-  // Wire directly — script runs after DOM is parsed so no DOMContentLoaded needed
-  var els = [
-    document.getElementById('brand-logo'),
-    document.getElementById('gate-logo')
-  ];
-  els.forEach(function(el) {
-    if (el) {
-      el.addEventListener('click',      handleLogoTap);
-      el.addEventListener('touchstart', handleLogoTap, { passive: true });
-    }
-  });
+  var gate = document.getElementById('auth-gate');
+  if (gate) {
+    gate.addEventListener('click',      handleGateTap);
+    gate.addEventListener('touchstart', handleGateTap, { passive: true });
+  }
 })();
 
 function dbgClear() {
