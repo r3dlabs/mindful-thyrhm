@@ -1865,9 +1865,8 @@ function setUser(user) {
   if (pe) pe.textContent = user.email || '';
 
   showApp();
-  loadUserData();
+  flushPendingEvents().then(() => loadUserData());
   subscribeRealtime();
-  drainQueue();
 }
 
 function clearUser() {
@@ -2246,7 +2245,8 @@ function handleFastBtn() {
     fastState.totalSecs       = 0;
     fastState._savedAt        = nowTs;
     LS.set('fast', fastState);
-    pushAppState();
+    writeEvent('fast_start', nowTs, {});
+    dbg('FAST', 'fast_start event written', new Date(nowTs).toLocaleTimeString());
     toast('Fast started — entering Fed state 🚀');
   }
 }
@@ -2366,7 +2366,8 @@ function adminFfwd(hrs) {
   const newSecs = getFastElapsed();
   const stIdx   = getFastingStageIdx(newSecs / 3600);
   const st      = STAGES[stIdx];
-  pushAppState();
+  writeEvent('fast_ffwd', Date.now(), { addSecs: stepSecs });
+  dbg('FAST', 'fast_ffwd event written', '+' + stepSecs + 's');
   toast(`⏭ +${hrs}h → ${st.name} (${Math.round(newSecs/3600)}h total)`);
 }
 
@@ -2396,7 +2397,10 @@ function adminReset(target) {
     // Start feeding timer after fast reset (feeding is now active)
     if (!fastState.running) startFeedingTimer();
   }
-  pushAppState();
+  if (target === 'all') {
+    writeEvent('day_reset', Date.now(), { target });
+    dbg('SYNC', 'day_reset event written');
+  }
   const msg = target === 'all' ? '🔄 All timers reset — feeding pre-seeded from midnight'
             : target === 'fast' ? '🔄 Fast timer reset'
             : '🔄 Feeding timer reset — pre-seeded from midnight';
@@ -2418,12 +2422,12 @@ function confirmEndFast() {
   fastState.totalSecs       = 0;
   fastState._savedAt        = endTs;
   LS.set('fast', fastState);
-  // Push completed fast to Supabase log
+  writeEvent('fast_end', endTs, { secs, stage: st.name });
   pushFast(secs, st.name, stIdx, startTs, endTs);
+  dbg('FAST', 'fast_end event written', { secs, stage: st.name });
   // Resume feeding window
   feedingState.totalSecs = 0;
   startFeedingTimer();
-  pushAppState();
   closeModal();
   toast('Fast ended. Welcome back to your feeding window 🍴');
 }
@@ -2455,22 +2459,25 @@ function switchState(s) {
   if (momentState.active === s) return;
 
   const now = Date.now();
+  const prevState = momentState.active;
 
-  // Close out previous state session
-  if (momentState.active) {
-    const prevSecs = getStateElapsed(momentState.active);
-    momentState.timers[momentState.active] = prevSecs;
-    // Push completed session
-    pushMoment(momentState.active, prevSecs, momentState.startTs, now);
+  // Snapshot frozen timer for previous state
+  if (prevState) {
+    const prevSecs = getStateElapsed(prevState);
+    momentState.timers[prevState] = prevSecs;
   }
 
   momentState.active   = s;
   momentState.startTs  = now;
   momentState._savedAt = now;
   LS.set('moment', momentState);
+
+  // Write moment_switch event — replay will reconstruct timers
+  writeEvent('moment_switch', now, { from: prevState, to: s });
+  dbg('MOMENT', 'moment_switch event written', { from: prevState, to: s });
+
   stopAudio();
   playAudio(s);
-  pushAppState();
 }
 
 function toggleState(btn) {
@@ -3507,113 +3514,310 @@ function buildMonthChart(yr, mo, daysInMonth, moMomentSecs) {
 ═══════════════════════════════════════════════════════════════ */
 
 /* ── Offline queue ─────────────────────────────────────────── */
-let syncQueue = LS.get('syncQueue') || [];
-let isSyncing = false;
+/* ═══════════════════════════════════════════════════════════════
+   EVENT-SOURCED SYNC
+   Instead of syncing computed state, we store timestamped events.
+   On any login/device: pull events → replay → reconstruct state.
+   No merge conflicts. No stale overwrites. Always accurate.
+═══════════════════════════════════════════════════════════════ */
 
-function enqueue(table, data) {
-  syncQueue.push({ table, data, ts: Date.now() });
-  // Keep queue bounded to last 200 ops
-  if (syncQueue.length > 200) syncQueue = syncQueue.slice(-200);
-  LS.set('syncQueue', syncQueue);
-  drainQueue();
-}
-
-async function drainQueue() {
-  if (!currentUser || isSyncing || !navigator.onLine || !syncQueue.length) {
-    if (syncQueue.length > 0 && !currentUser) dbg('SYNC', 'drainQueue skipped — no user, queue has items', syncQueue.length);
+// ── Event write: fire and forget individual upsert ────────────
+async function writeEvent(type, ts, meta) {
+  if (!currentUser) {
+    // Queue for later — stored in LS under 'pendingEvents'
+    const pending = LS.get('pendingEvents') || [];
+    pending.push({ type, ts, meta: meta || {} });
+    LS.set('pendingEvents', pending);
+    dbg('SYNC', 'writeEvent queued (no user)', type);
     return;
   }
-  dbg('SYNC', 'drainQueue flushing', syncQueue.length + ' ops');
-  isSyncing = true;
-  const batch = [...syncQueue];
-  syncQueue = [];
-  LS.set('syncQueue', syncQueue);
-  for (const op of batch) {
-    try {
-      await sb.from(op.table).upsert({ user_id: currentUser.id, ...op.data });
-    } catch(e) {
-      // Re-queue failed ops
-      syncQueue.unshift(op);
-      LS.set('syncQueue', syncQueue);
-      console.warn('Sync failed, re-queued:', op.table, e.message);
-      break;
+  try {
+    const { error } = await sb.from('events').upsert({
+      user_id: currentUser.id,
+      type:    type,
+      ts:      ts,
+      meta:    meta || {},
+    }, { onConflict: 'user_id,type,ts' });
+    if (error) {
+      dbg('ERR', 'writeEvent failed', { type, error: error.message });
+      // Queue for retry
+      const pending = LS.get('pendingEvents') || [];
+      pending.push({ type, ts, meta: meta || {} });
+      LS.set('pendingEvents', pending);
+    } else {
+      dbg('SYNC', 'writeEvent ok', type + ' @ ' + new Date(ts).toLocaleTimeString());
+    }
+  } catch(e) {
+    dbg('ERR', 'writeEvent exception', e.message);
+    const pending = LS.get('pendingEvents') || [];
+    pending.push({ type, ts, meta: meta || {} });
+    LS.set('pendingEvents', pending);
+  }
+}
+
+// ── Flush pending events after login ─────────────────────────
+async function flushPendingEvents() {
+  const pending = LS.get('pendingEvents') || [];
+  if (!pending.length || !currentUser) return;
+  dbg('SYNC', 'flushing pending events', pending.length);
+  LS.set('pendingEvents', []);
+  for (const ev of pending) {
+    await writeEvent(ev.type, ev.ts, ev.meta);
+  }
+}
+
+// ── Event replay: reconstruct state from today's events ───────
+function replayEvents(events) {
+  // Events are sorted ascending by ts
+  const midnight = new Date(); midnight.setHours(0,0,0,0);
+  const midnightTs = midnight.getTime();
+  const nowTs = Date.now();
+  const td = today();
+
+  // ── Fast state ────────────────────────────────────────────
+  let fastRunning = false;
+  let fastStartTs = null;
+  let fastOrigTs  = null;
+  let fastTotal   = 0; // accumulated secs from completed fasts today
+
+  // ── Moment state ──────────────────────────────────────────
+  const momentTimers = { purposeful:0, wasteful:0, nourishing:0, training:0, recovering:0 };
+  let momentActive  = 'wasteful';
+  let momentStartTs = midnightTs; // default: wasteful started at midnight
+
+  // ── Feeding state ─────────────────────────────────────────
+  let feedingStartTs   = midnightTs; // started feeding at midnight by default
+  let feedingTotalSecs = 0;
+  let feedingPaused    = false;
+  let feedingPauseTs   = null;
+
+  dbg('SYNC', 'replaying events', events.length + ' events');
+
+  for (const ev of events) {
+    const ts = ev.ts;
+    const meta = ev.meta || {};
+
+    switch (ev.type) {
+
+      case 'fast_start': {
+        // Snapshot feeding time up to this point
+        if (!feedingPaused && feedingStartTs) {
+          feedingTotalSecs += Math.floor((ts - feedingStartTs) / 1000);
+        }
+        feedingPaused  = true;
+        feedingPauseTs = ts;
+        // Snapshot moment timer up to this point
+        if (momentActive && momentStartTs) {
+          momentTimers[momentActive] = (momentTimers[momentActive] || 0) +
+            Math.floor((ts - momentStartTs) / 1000);
+          momentStartTs = ts;
+        }
+        fastRunning = true;
+        fastStartTs = ts;
+        fastOrigTs  = ts;
+        dbg('SYNC', 'replay: fast_start', new Date(ts).toLocaleTimeString());
+        break;
+      }
+
+      case 'fast_end': {
+        if (fastRunning && fastStartTs) {
+          fastTotal  += Math.floor((ts - fastStartTs) / 1000);
+          fastRunning = false;
+          fastStartTs = null;
+        }
+        // Resume feeding
+        feedingPaused    = false;
+        feedingStartTs   = ts;
+        feedingPauseTs   = null;
+        // Snapshot moment
+        if (momentActive && momentStartTs) {
+          momentTimers[momentActive] = (momentTimers[momentActive] || 0) +
+            Math.floor((ts - momentStartTs) / 1000);
+          momentStartTs = ts;
+        }
+        dbg('SYNC', 'replay: fast_end', new Date(ts).toLocaleTimeString());
+        break;
+      }
+
+      case 'moment_switch': {
+        const toState = meta.to;
+        if (!toState) break;
+        // Close out previous state
+        if (momentActive && momentStartTs) {
+          momentTimers[momentActive] = (momentTimers[momentActive] || 0) +
+            Math.floor((ts - momentStartTs) / 1000);
+        }
+        if (meta.snapshot) {
+          // Snapshot event (from signout) — close session, reset anchor
+          // State stays the same, startTs advances to snapshot time
+          momentStartTs = ts;
+          dbg('SYNC', 'replay: moment snapshot', momentActive + ' @ ' + new Date(ts).toLocaleTimeString());
+        } else {
+          momentActive  = toState;
+          momentStartTs = ts;
+          dbg('SYNC', 'replay: moment_switch', meta.from + ' → ' + toState + ' @ ' + new Date(ts).toLocaleTimeString());
+        }
+        break;
+      }
+
+      case 'fast_ffwd': {
+        // Admin time injection — add seconds to fast
+        const addSecs = meta.addSecs || 0;
+        if (fastRunning) {
+          fastTotal  += addSecs;
+          fastStartTs = ts; // reset anchor
+        }
+        dbg('SYNC', 'replay: fast_ffwd', '+' + addSecs + 's');
+        break;
+      }
+
+      case 'day_reset': {
+        // Explicit reset — zero everything
+        feedingTotalSecs = 0;
+        feedingStartTs   = ts;
+        feedingPaused    = fastRunning;
+        Object.keys(momentTimers).forEach(k => momentTimers[k] = 0);
+        momentStartTs = ts;
+        dbg('SYNC', 'replay: day_reset');
+        break;
+      }
     }
   }
-  isSyncing = false;
-}
 
-window.addEventListener('online',  () => { drainQueue(); });
-window.addEventListener('offline', () => { /* writes still go to LS */ });
+  // ── Apply live session (event still open) ─────────────────
+  // Fast: if still running, count from startTs to now
+  const liveFastSecs = fastRunning && fastStartTs
+    ? Math.floor((nowTs - fastStartTs) / 1000)
+    : 0;
 
-/* ── Push state to Supabase ────────────────────────────────── */
-function pushAppState() {
-  if (!currentUser) return;
-  // Store moment_timers WITHOUT the live session baked in.
-  // getStateElapsed adds live on top — so we just store the frozen totals.
-  // On any device: elapsed = timers[s] + (active===s ? Date.now()-startTs : 0)
-  const payload = {
-    fast_running:       fastState.running,
-    fast_start_ts:      fastState.startTs,
-    fast_original_ts:   fastState.originalStartTs,
-    fast_total_secs:    fastState.totalSecs || 0,
-    feeding_start_ts:   feedingState.startTs,
-    feeding_total_secs: feedingState.totalSecs || 0,  // frozen total only
-    feeding_last_date:  feedingState.lastDate,
-    moment_active:      momentState.active,
-    moment_start_ts:    momentState.startTs,
-    moment_timers:      momentState.timers,            // frozen totals only
+  // Moment: current active state still running
+  if (momentActive && momentStartTs) {
+    momentTimers[momentActive] = (momentTimers[momentActive] || 0) +
+      Math.floor((nowTs - momentStartTs) / 1000);
+  }
+
+  // Feeding: if not paused, count from feedingStartTs to now
+  let liveFeedingSecs = 0;
+  if (!feedingPaused && feedingStartTs) {
+    liveFeedingSecs = Math.floor((nowTs - feedingStartTs) / 1000);
+  }
+
+  dbg('SYNC', 'replay result', {
+    fastRunning, fastTotal, liveFastSecs,
+    momentActive, momentTimers,
+    feedingTotal: feedingTotalSecs + liveFeedingSecs
+  });
+
+  // ── Write reconstructed state to local vars + LS ──────────
+  fastState = {
+    running:         fastRunning,
+    startTs:         fastRunning ? fastStartTs : null,
+    originalStartTs: fastRunning ? fastOrigTs  : null,
+    totalSecs:       fastTotal, // completed fast secs (live added by getFastElapsed)
+    log:             fastState.log || [],
+    _savedAt:        nowTs,
   };
-  // updated_at is set by DB trigger, but we include it explicitly
-  // so the remote timestamp comparison in pullAppState works correctly
-  payload.updated_at = new Date().toISOString();
-  enqueue('app_state', payload);
+  LS.set('fast', fastState);
+
+  // Moment timers are already accumulated — remove live session
+  // so getStateElapsed can add it back correctly
+  const frozenTimers = Object.assign({}, momentTimers);
+  if (momentActive && momentStartTs) {
+    // Subtract the live portion we added above — getStateElapsed re-adds it
+    frozenTimers[momentActive] = (frozenTimers[momentActive] || 0) -
+      Math.floor((nowTs - momentStartTs) / 1000);
+    if (frozenTimers[momentActive] < 0) frozenTimers[momentActive] = 0;
+  }
+  momentState = {
+    active:   momentActive,
+    startTs:  momentStartTs,
+    timers:   frozenTimers,
+    lastDate: td,
+    _savedAt: nowTs,
+  };
+  LS.set('moment', momentState);
+
+  feedingState = {
+    startTs:   feedingPaused ? null : (feedingStartTs || Date.now()),
+    totalSecs: feedingTotalSecs,
+    lastDate:  td,
+    _savedAt:  nowTs,
+  };
+  LS.set('feeding', feedingState);
 }
 
-function pushFast(secs, stage, stageIdx, startTs, endTs) {
-  enqueue('fasts', {
-    date: today(), secs, stage, stage_idx: stageIdx,
-    start_ts: startTs, end_ts: endTs,
-  });
-}
-
-function pushFeeding(date, secs) {
-  enqueue('feeding', { date, secs });
-}
-
-function pushMoment(state, secs, startTs, endTs) {
-  enqueue('moments', {
-    date: today(), state, secs,
-    start_ts: startTs, end_ts: endTs,
-  });
-}
-
-function pushHabit(h, cat) {
+// ── Habit push (direct upsert, no queue) ──────────────────────
+async function pushHabit(h, cat) {
+  if (!currentUser) return;
   const payload = {
-    cat, name: h.name, streak: h.streak || 0,
+    user_id:     currentUser.id,
+    cat,
+    name:        h.name,
+    streak:      h.streak || 0,
     done_date:   h.done   ? today() : null,
     broken_date: h.broken || null,
     sort_order:  0,
   };
-  // If we have a Supabase UUID from pullHabits, include it for clean upsert
-  // Otherwise the unique(user_id, cat, name) constraint handles dedup
   if (h.id && h.id.length > 8) payload.id = h.id;
-  enqueue('habits', payload);
+  try {
+    const { error } = await sb.from('habits').upsert(payload, { onConflict: 'user_id,cat,name' });
+    if (error) dbg('ERR', 'pushHabit failed', { name: h.name, error: error.message });
+    else dbg('SYNC', 'pushHabit ok', h.name);
+  } catch(e) {
+    dbg('ERR', 'pushHabit exception', e.message);
+  }
 }
 
-function pushHabitBreak(h, cat, reason, prevStreak) {
-  enqueue('habit_breaks', {
-    cat, name: h.name, reason,
-    prev_streak: prevStreak, date: today(),
+async function pushHabitBreak(h, cat, reason, prevStreak) {
+  if (!currentUser) return;
+  try {
+    await sb.from('habit_breaks').insert({
+      user_id:     currentUser.id,
+      cat,
+      name:        h.name,
+      reason,
+      prev_streak: prevStreak,
+      date:        today(),
+    });
+  } catch(e) {
+    dbg('ERR', 'pushHabitBreak failed', e.message);
+  }
+}
+
+// ── Legacy stubs (called from various places, now no-ops or redirected)
+function enqueue(table, data) {} // no-op — replaced by event model
+async function drainQueue() {}   // no-op — replaced by event model
+function pushAppState() { /* events replace this */ }
+function pushFast(secs, stage, stageIdx, startTs, endTs) {
+  // Still write to fasts table for stats
+  if (!currentUser) return;
+  sb.from('fasts').upsert({
+    user_id:   currentUser.id,
+    date:      today(),
+    secs, stage,
+    stage_idx: stageIdx,
+    start_ts:  startTs,
+    end_ts:    endTs,
+  }, { onConflict: 'user_id,start_ts' }).then(({ error }) => {
+    if (error) dbg('ERR', 'pushFast failed', error.message);
   });
 }
+function pushFeeding(date, secs) {} // feeding reconstructed from events
+function pushMoment(state, secs, startTs, endTs) {} // moments reconstructed from events
 
 /* ── Pull & merge remote state ─────────────────────────────── */
 async function loadUserData() {
   if (!currentUser) { dbg('SYNC', 'loadUserData skipped — no user'); return; }
   dbg('SYNC', 'loadUserData starting pull');
   try {
-    await Promise.all([pullAppState(), pullFasts(), pullHabits()]);
-    dbg('SYNC', 'pull complete', { fast: fastState.running ? 'running' : 'stopped', totalSecs: fastState.totalSecs, momentActive: momentState.active });
+    await Promise.all([pullAndReplayEvents(), pullFasts(), pullHabits()]);
+    dbg('SYNC', 'pull complete', {
+      fast: fastState.running ? 'RUNNING' : 'stopped',
+      fastSecs: getFastElapsed(),
+      momentActive: momentState.active,
+      momentSecs: getStateElapsed(momentState.active),
+      feedSecs: getFeedingElapsed()
+    });
     renderHabitTabs();
     renderHabitList();
     updateFastUI();
@@ -3626,140 +3830,51 @@ async function loadUserData() {
   }
 }
 
-async function pullAppState() {
-  const { data, error } = await sb
-    .from('app_state')
-    .select('*')
-    .eq('user_id', currentUser.id)
-    .single();
+async function pullAndReplayEvents() {
+  if (!currentUser) return;
+  // Pull today's events from Supabase
+  const midnight = new Date(); midnight.setHours(0,0,0,0);
+  const midnightIso = midnight.toISOString();
 
-  if (error || !data) {
-    dbg('SYNC', 'pullAppState — no remote row, pushing local state up');
-    const hasMeaningful = fastState.running ||
-      fastState.totalSecs > 0 ||
-      Object.values(momentState.timers || {}).some(function(v){ return v > 0; });
-    if (hasMeaningful) pushAppState();
-    return;
-  }
+  try {
+    const { data, error } = await sb
+      .from('events')
+      .select('type, ts, meta')
+      .eq('user_id', currentUser.id)
+      .gte('ts', midnight.getTime())
+      .order('ts', { ascending: true });
 
-  const remoteTs     = new Date(data.updated_at).getTime();
-  const remoteFastSecs   = data.fast_total_secs || 0;
-  const remoteFastRunning = data.fast_running || false;
-  const remoteMomentTimers = data.moment_timers || {};
-  const localFastSecs  = fastState.totalSecs || 0;
-  const localMomentTotal = Object.values(momentState.timers || {}).reduce(function(a,b){ return a+b; }, 0);
-  const remoteMomentTotal = Object.values(remoteMomentTimers).reduce(function(a,b){ return a+b; }, 0);
-
-  dbg('SYNC', 'pullAppState — comparing', {
-    remoteTs: new Date(remoteTs).toLocaleTimeString(),
-    remoteFastSecs: remoteFastSecs,
-    remoteFastRunning: remoteFastRunning,
-    remoteMomentTotal: remoteMomentTotal,
-    localFastSecs: localFastSecs,
-    localFastRunning: fastState.running,
-    localMomentTotal: localMomentTotal
-  });
-
-  // ── FAST merge: remote wins only if it has MORE data or is currently running ──
-  // Never let remote zero out a local fast that has real data
-  var fastRemoteWins = false;
-  if (remoteFastRunning && !fastState.running) {
-    // Remote has a running fast, local doesn't — remote wins
-    fastRemoteWins = true;
-    dbg('SYNC', 'fast → remote wins: remote is running, local is not');
-  } else if (!remoteFastRunning && !fastState.running && remoteFastSecs > localFastSecs) {
-    // Neither running but remote has more history
-    fastRemoteWins = true;
-    dbg('SYNC', 'fast → remote wins: more history');
-  } else if (remoteFastSecs === 0 && !remoteFastRunning && (fastState.running || localFastSecs > 0)) {
-    // Remote is zeroed but local has real data — local wins
-    fastRemoteWins = false;
-    dbg('SYNC', 'fast → local wins: remote zeroed, local has data — pushing local up');
-    pushAppState(); // push local up so remote catches up
-  } else if (remoteTs > (fastState._savedAt || 0)) {
-    // Remote is newer and has data — remote wins
-    fastRemoteWins = true;
-    dbg('SYNC', 'fast → remote wins: newer timestamp');
-  } else {
-    dbg('SYNC', 'fast → local wins: local is newer or equal');
-  }
-
-  if (fastRemoteWins) {
-    fastState = {
-      running:         remoteFastRunning,
-      startTs:         data.fast_start_ts,
-      originalStartTs: data.fast_original_ts,
-      totalSecs:       remoteFastSecs,
-      log:             fastState.log || [],
-      _savedAt:        remoteTs,
-    };
-    LS.set('fast', fastState);
-    dbg('SYNC', 'fast restored from remote', { running: fastState.running, totalSecs: fastState.totalSecs });
-  } else {
-    // Keep local but stamp _savedAt so next comparison works
-    fastState._savedAt = fastState._savedAt || Date.now();
-    LS.set('fast', fastState);
-  }
-
-  // ── FEEDING merge ───────────────────────────────────────────────────
-  const td = today();
-  if (fastRemoteWins) {
-    if (data.feeding_last_date === td) {
-      feedingState = {
-        startTs:   data.feeding_start_ts,
-        totalSecs: data.feeding_total_secs || 0,
-        lastDate:  td,
-        _savedAt:  remoteTs,
-      };
-      if (!fastState.running && !feedingState.startTs) {
-        feedingState.startTs = Date.now();
-      }
-    } else {
-      feedingState = {
-        startTs:   fastState.running ? null : Date.now(),
-        totalSecs: fastState.running ? 0 : secsSinceMidnight(),
-        lastDate:  td,
-      };
+    if (error) {
+      dbg('ERR', 'pullAndReplayEvents failed', error.message);
+      return;
     }
-    LS.set('feeding', feedingState);
-    dbg('SYNC', 'feeding restored from remote', { totalSecs: feedingState.totalSecs });
-  }
 
-  // ── MOMENT merge: take whichever has MORE accumulated time ──────────
-  // Remote is only trusted if it has more total time than local
-  var momentRemoteWins = false;
-  if (remoteMomentTotal > localMomentTotal && remoteMomentTotal > 60) {
-    momentRemoteWins = true;
-    dbg('SYNC', 'moment → remote wins: more total time', { remote: remoteMomentTotal, local: localMomentTotal });
-  } else if (localMomentTotal > 0 && remoteMomentTotal === 0) {
-    momentRemoteWins = false;
-    dbg('SYNC', 'moment → local wins: remote empty, pushing local up');
-    pushAppState();
-  } else if (remoteMomentTotal > 0 && remoteMomentTotal === localMomentTotal) {
-    // Equal — keep local (it's live)
-    momentRemoteWins = false;
-    dbg('SYNC', 'moment → local wins: equal totals, keeping live local');
-  } else {
-    momentRemoteWins = remoteMomentTotal > localMomentTotal;
-    dbg('SYNC', 'moment → ' + (momentRemoteWins ? 'remote' : 'local') + ' wins by default');
-  }
+    const events = data || [];
+    dbg('SYNC', 'pulled events', events.length + ' today');
 
-  if (momentRemoteWins) {
-    var midnight = new Date();
-    midnight.setHours(0,0,0,0);
-    momentState = {
-      active:   data.moment_active || 'wasteful',
-      startTs:  (data.moment_start_ts && data.moment_start_ts > midnight.getTime()) ? data.moment_start_ts : Date.now(),
-      timers:   remoteMomentTimers,
-      lastDate: td,
-      _savedAt: remoteTs,
-    };
-    LS.set('moment', momentState);
-    dbg('SYNC', 'moment restored from remote', { active: momentState.active, total: remoteMomentTotal });
-  } else {
-    momentState._savedAt = momentState._savedAt || Date.now();
-    momentState.lastDate = td;
-    LS.set('moment', momentState);
+    if (events.length === 0) {
+      // No events today — local state is source of truth
+      // If we have a running fast locally, write a fast_start event
+      // so other devices can pick it up
+      if (fastState.running && fastState.startTs) {
+        dbg('SYNC', 'no remote events — pushing local fast_start');
+        await writeEvent('fast_start', fastState.startTs, {});
+      }
+      // Write current moment as a switch event if not wasteful
+      if (momentState.active && momentState.active !== 'wasteful' && momentState.startTs) {
+        dbg('SYNC', 'no remote events — pushing local moment state');
+        await writeEvent('moment_switch', momentState.startTs, {
+          from: 'wasteful', to: momentState.active
+        });
+      }
+      return;
+    }
+
+    // Replay events to reconstruct state
+    replayEvents(events);
+
+  } catch(e) {
+    dbg('ERR', 'pullAndReplayEvents exception', e.message);
   }
 }
 
@@ -3814,9 +3929,9 @@ async function pullHabits() {
     // No remote habits — push local if we have any
     const hasLocal = Object.values(habits).some(a => a.length > 0);
     if (hasLocal) {
-      Object.entries(habits).forEach(([cat, list]) => {
-        list.forEach(h => pushHabit(h, cat));
-      });
+      for (const [cat, list] of Object.entries(habits)) {
+        for (const h of list) { await pushHabit(h, cat); }
+      }
       LS.set('habits', habits);
     }
     return;
@@ -3864,13 +3979,11 @@ async function pullHabits() {
     // Do NOT overwrite local with empty — that's how habits disappear.
     const hasLocal = Object.values(habits).some(a => a.length > 0);
     if (hasLocal) {
-      Object.entries(habits).forEach(([cat, list]) => {
-        list.forEach(h => pushHabit(h, cat));
-      });
-      // Re-save local to LS (unchanged)
+      for (const [cat, list] of Object.entries(habits)) {
+        for (const h of list) { await pushHabit(h, cat); }
+      }
       LS.set('habits', habits);
     }
-    // If truly no habits anywhere — leave habits as-is (empty or whatever was in LS)
   }
 }
 
@@ -4155,20 +4268,22 @@ async function signOutUser() {
   // Push current state to Supabase BEFORE clearing localStorage
   // so the next login can restore exactly where we left off
   if (currentUser) {
-    // Freeze live moment timer before push
+    // On signout: the event log in Supabase already has everything.
+    // We just need to ensure the CURRENT moment session is captured
+    // by writing a snapshot event so replay on next login is accurate.
+    const now = Date.now();
     if (momentState.active && momentState.startTs) {
-      momentState.timers[momentState.active] = getStateElapsed(momentState.active);
-      // Keep startTs so it resumes correctly on next login
+      // Write a moment_switch to self — forces a snapshot of elapsed time
+      // On replay: closes the session at this timestamp
+      await writeEvent('moment_switch', now, {
+        from: momentState.active,
+        to:   momentState.active,
+        snapshot: true
+      });
+      dbg('SYNC', 'signout snapshot event written', momentState.active);
     }
-    // Freeze live feeding timer
-    if (!fastState.running && feedingState.startTs) {
-      feedingState.totalSecs = getFeedingElapsed();
-      // Keep startTs null — will resume from totalSecs on next login
-      feedingState.startTs = null;
-    }
-    pushAppState();
-    // Drain synchronously — give it a moment to flush before sign out
-    await drainQueue();
+    // Small delay to let the write complete
+    await new Promise(r => setTimeout(r, 400));
   }
 
   LS.set('fast',    null);
