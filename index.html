@@ -1342,6 +1342,13 @@
       cursor:pointer;transition:background .2s;" id="gate-theme-btn">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg>
     </button>
+    <button onclick="dbgShowToggle()" title="Debug log" id="gate-dbg-btn" style="
+      width:36px;height:36px;border-radius:50%;
+      background:var(--surface2);border:1px solid var(--border);
+      color:var(--text2);display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:background .2s,color .2s;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg>
+    </button>
   </div>
   <div class="gate-inner">
     <div class="gate-logo" id="gate-logo">MINDFUL <span>RHYTHM</span></div>
@@ -3421,11 +3428,12 @@ function dbgToggle() {
   if (chevron) chevron.textContent = _dbgOpen ? '▲' : '▼';
 }
 
-// Show/hide entire panel — triggered by triple-tap on MINDFUL logo
+// Show/hide entire debug panel — triggered by gate debug button only
 var _dbgVisible = false;
 function dbgShowToggle() {
   _dbgVisible = !_dbgVisible;
   var panel = document.getElementById('dbg-panel');
+  var btn   = document.getElementById('gate-dbg-btn');
   if (!panel) return;
   if (_dbgVisible) {
     panel.style.display = 'flex';
@@ -3433,41 +3441,15 @@ function dbgShowToggle() {
     panel.style.maxHeight = 'calc(40vh - 56px)';
     var chevron = document.getElementById('dbg-chevron');
     if (chevron) chevron.textContent = '▲';
+    if (btn) btn.style.color = '#7C3AED';
   } else {
     panel.style.display = 'none';
     _dbgOpen = false;
+    if (btn) btn.style.color = '';
   }
 }
 
-// Triple-tap gate BACKGROUND to show/hide debug panel
-// Ignores taps on buttons/links so sign-in still works normally
-(function() {
-  var tapCount = 0;
-  var tapTimer = null;
 
-  function handleGateTap(e) {
-    // Ignore if tapping a button, anchor, input, or their children
-    var t = e.target;
-    while (t && t !== e.currentTarget) {
-      if (t.tagName === 'BUTTON' || t.tagName === 'A' || t.tagName === 'INPUT') return;
-      t = t.parentElement;
-    }
-    tapCount++;
-    clearTimeout(tapTimer);
-    tapTimer = setTimeout(function() { tapCount = 0; }, 600);
-    if (tapCount >= 3) {
-      tapCount = 0;
-      clearTimeout(tapTimer);
-      dbgShowToggle();
-    }
-  }
-
-  var gate = document.getElementById('auth-gate');
-  if (gate) {
-    gate.addEventListener('click',      handleGateTap);
-    gate.addEventListener('touchstart', handleGateTap, { passive: true });
-  }
-})();
 
 function dbgClear() {
   _dbgLog = []; _dbgCount = 0;
