@@ -805,6 +805,15 @@
     color: var(--text); font-family: var(--font-body); font-size: 13px;
     outline: none; resize: none;
   }
+  .brk-cfg-select {
+    width: 100%; padding: 12px 14px;
+    background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text);
+    font-family: var(--font-cond); font-size: 15px; letter-spacing: .04em;
+    outline: none; cursor: pointer;
+    transition: border-color .2s;
+  }
+  .brk-cfg-select:focus { border-color: var(--accent); }
   .brk-cfg-emoji-inp:focus,
   .brk-cfg-msg-inp:focus { border-color: var(--accent); }
 
@@ -1367,10 +1376,14 @@
 
       <!-- Friction screens -->
       <div>
-        <div class="brk-cfg-label">Friction Screens <span id="brk-cfg-count" style="color:var(--accent)">1</span></div>
-        <input type="range" min="1" max="5" value="1" id="brk-cfg-slider"
-          oninput="brkUpdateFrictionCount(this.value)"
-          style="width:100%;accent-color:var(--accent);">
+        <div class="brk-cfg-label">Number of Friction Screens</div>
+        <select id="brk-cfg-slider" onchange="brkUpdateFrictionCount(this.value)" class="brk-cfg-select">
+          <option value="1">1 — Just one question</option>
+          <option value="2">2 — Two chances to reconsider</option>
+          <option value="3">3 — Three screens</option>
+          <option value="4">4 — Four screens</option>
+          <option value="5">5 — Maximum friction</option>
+        </select>
       </div>
 
       <div id="brk-cfg-frictions"></div>
@@ -3608,8 +3621,7 @@ function brkOpenConfig(idx) {
 
   document.getElementById('brk-cfg-title').textContent  = isNew ? 'New Habit' : 'Edit Habit';
   document.getElementById('brk-cfg-name').value         = h.name || '';
-  document.getElementById('brk-cfg-slider').value       = (h.frictions || []).length || 1;
-  document.getElementById('brk-cfg-count').textContent  = (h.frictions || []).length || 1;
+  document.getElementById('brk-cfg-slider').value = (h.frictions || []).length || 1;
   document.getElementById('brk-cfg-delete-wrap').style.display = isNew ? 'none' : 'block';
   brkRenderFrictionInputs(h.frictions || [{ emoji: '🤔', message: '' }]);
 
@@ -3624,7 +3636,6 @@ function brkCloseConfig() {
 }
 
 function brkUpdateFrictionCount(val) {
-  document.getElementById('brk-cfg-count').textContent = val;
   const current = brkGetCurrentFrictions();
   const target  = parseInt(val);
   while (current.length < target) current.push({ emoji: '🤔', message: '' });
