@@ -690,96 +690,7 @@
   /* ════════════════════════════════════════════════════════════
      HABIT TRACKER
   ════════════════════════════════════════════════════════════ */
-  .habit-tabs {
-    display: flex; gap: 6px;
-    padding: 0 16px;
-    overflow-x: auto; scrollbar-width: none;
-  }
-  .habit-tabs::-webkit-scrollbar { display: none; }
-  .habit-tab {
-    flex-shrink: 0;
-    padding: 7px 14px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    font-family: var(--font-cond); font-size: 12px; font-weight: 600;
-    letter-spacing: .06em; text-transform: uppercase;
-    color: var(--text2); transition: all .2s;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .habit-tab.active {
-    background: var(--accent); border-color: var(--accent); color: #fff;
-  }
-  .tab-pulse {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--success); flex-shrink: 0;
-  }
-  .tab-pulse.warn  { background: var(--warn); }
-  .tab-pulse.alert { background: var(--danger); }
-  .habit-list {
-    padding: 10px 16px 0;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .habit-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 10px 12px;
-    display: flex; align-items: center; gap: 10px;
-    transition: border-color .2s;
-    position: relative;
-  }
-  .habit-item.done { border-color: var(--success); }
-  .habit-item.editing-mode { border-color: var(--accent); }
-  .habit-check {
-    width: 22px; height: 22px; border-radius: 6px;
-    border: 2px solid var(--border);
-    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: all .2s; background: var(--surface2);
-  }
-  .habit-check.done { background: var(--success); border-color: var(--success); }
-  .habit-check svg { display: none; }
-  .habit-check.done svg { display: block; }
-  .habit-name {
-    flex: 1; font-size: 14px; color: var(--text);
-    background: none; border: none; outline: none;
-    caret-color: var(--accent); min-width: 0;
-  }
-  .habit-name.editing {
-    border-bottom: 1.5px solid var(--accent);
-    padding-bottom: 1px;
-  }
-  .habit-streak {
-    display: flex; align-items: center; gap: 3px;
-    font-family: var(--font-cond); font-size: 12px; font-weight: 600;
-    color: var(--warn); flex-shrink: 0;
-  }
-  .habit-actions {
-    display: flex; gap: 4px; flex-shrink: 0;
-  }
-  .habit-action-btn {
-    width: 28px; height: 28px; border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--surface2); color: var(--text3);
-    transition: all .15s; cursor: pointer; flex-shrink: 0;
-    border: none;
-  }
-  .habit-action-btn:hover { background: var(--border); color: var(--text); }
-  .habit-action-btn.edit:hover { background: rgba(124,58,237,0.15); color: var(--accent); }
-  .habit-action-btn.delete:hover { background: rgba(224,92,122,0.15); color: var(--danger); }
-  .habit-action-btn svg { pointer-events: none; }
-  .add-habit-btn {
-    margin: 10px 16px 0;
-    padding: 12px;
-    border-radius: var(--radius-sm);
-    border: 1px dashed var(--border);
-    background: transparent; color: var(--text3);
-    font-family: var(--font-cond); font-weight: 600;
-    font-size: 13px; letter-spacing: .06em; text-transform: uppercase;
-    width: calc(100% - 32px); transition: all .2s;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .add-habit-btn:hover { border-color: var(--accent); color: var(--accent); }
+
 
   /* ════════════════════════════════════════════════════════════
      WEEKLY / MONTHLY VIEWS
@@ -877,14 +788,7 @@
   .wk-legend-dot {
     width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0;
   }
-  .wk-break-section { margin-top: 14px; }
-  .wk-break-title {
-    font-family: var(--font-cond); font-size: 10px; font-weight: 700;
-    letter-spacing: .1em; text-transform: uppercase;
-    color: var(--text3); margin-bottom: 8px;
-  }
 
-  /* ─── STATS SECTIONS ──────────────────────────────────── */
   .stats-section {
     padding: 0 16px; margin-top: 20px;
   }
@@ -1049,55 +953,7 @@
   }
   .modal-cancel:hover { background: var(--border); }
 
-  /* ─── BREAK HABIT MODAL ──────────────────────────────────── */
-  #break-modal-overlay {
-    position: fixed; inset: 0; z-index: 200;
-    background: rgba(0,0,0,.55);
-    backdrop-filter: blur(4px);
-    display: none; align-items: flex-end; justify-content: center;
-    padding-bottom: env(safe-area-inset-bottom, 0);
-  }
-  #break-modal-overlay.open { display: flex; }
-  .break-reason-label {
-    font-family: var(--font-cond); font-size: 11px; font-weight: 700;
-    letter-spacing: .1em; text-transform: uppercase;
-    color: var(--text3); margin-bottom: 10px;
-  }
-  .break-tags {
-    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
-  }
-  .break-tag {
-    padding: 7px 12px; border-radius: 20px;
-    border: 1.5px solid var(--border);
-    background: var(--surface2); color: var(--text2);
-    font-family: var(--font-cond); font-size: 12px; font-weight: 600;
-    letter-spacing: .04em; cursor: pointer; transition: all .15s;
-  }
-  .break-tag:hover { border-color: var(--danger); color: var(--danger); }
-  .break-tag.selected {
-    background: rgba(224,92,122,0.15);
-    border-color: var(--danger); color: var(--danger);
-  }
-  .break-reason-input {
-    width: 100%; padding: 11px 14px;
-    border-radius: var(--radius-sm);
-    border: 1.5px solid var(--border);
-    background: var(--surface2); color: var(--text);
-    font-family: var(--font-body); font-size: 14px;
-    outline: none; transition: border-color .2s;
-  }
-  .break-reason-input:focus { border-color: var(--danger); }
 
-  /* Broken state on habit item */
-  .habit-item.broken {
-    border-color: var(--danger);
-    background: rgba(224,92,122,0.04);
-  }
-  .habit-check.broken {
-    background: rgba(224,92,122,0.15);
-    border-color: var(--danger);
-  }
-  .habit-streak.broken { color: var(--danger); }
 
   /* ─── TOAST ───────────────────────────────────────────────── */
   #toast {
@@ -1304,13 +1160,7 @@
 
     </div><!-- /hero-duo -->
 
-    <!-- HABITS -->
-    <div class="section-pad" style="margin-top:4px;">
-      <div class="section-title">Habits</div>
-    </div>
-    <div class="habit-tabs" id="habit-tabs"></div>
-    <div class="habit-list" id="habit-list"></div>
-    <button class="add-habit-btn" onclick="addHabit()">＋ Add Habit</button>
+
 
     <div class="spacer"></div>
   </div>
@@ -1370,16 +1220,6 @@
         <div class="wk-chart-legend" id="wk-chart-legend"></div>
       </div>
 
-      <!-- HABITS -->
-      <div class="stats-section stats-col">
-        <div class="stats-section-title">Habits</div>
-        <div class="state-bar-list" id="wk-habit-cat-bars"></div>
-        <div class="wk-break-section">
-          <div class="wk-break-title">Break Reasons</div>
-          <div class="state-bar-list" id="wk-break-reason-bars"></div>
-        </div>
-      </div>
-
     </div><!-- /stats-trio -->
 
     <div class="spacer"></div>
@@ -1437,16 +1277,6 @@
           <canvas id="mo-moment-chart"></canvas>
         </div>
         <div class="wk-chart-legend" id="mo-chart-legend"></div>
-      </div>
-
-      <!-- HABITS -->
-      <div class="stats-section stats-col">
-        <div class="stats-section-title">Habits</div>
-        <div class="state-bar-list" id="mo-habit-cat-bars"></div>
-        <div class="wk-break-section">
-          <div class="wk-break-title">Break Reasons</div>
-          <div class="state-bar-list" id="mo-break-reason-bars"></div>
-        </div>
       </div>
 
     </div><!-- /stats-trio -->
@@ -1512,7 +1342,111 @@
     <div class="gate-logo">MINDFUL <span>RHYTHM</span></div>
     <div class="gate-tagline">Live the Moment</div>
     <div class="gate-ring" id="gate-ring-icon">⏳</div>
-    <div class="gate-desc">Track your fasting journey, own your time,<br>build intentional habits.</div>
+    <div class="gate-desc">Track your fasting journey and own your time.</div>
+    <button class="gate-btn" onclick="signInGoogle()">
+      <img src="https://www.google.com/favicon.ico" width="18" height="18" alt="">
+      Continue with Google
+    </button>
+    <div class="gate-footer">
+      Your data is private and synced across devices.
+      <br>
+      <a href="/privacy.html" target="_blank" style="
+        color:var(--text3);font-size:10px;text-decoration:none;
+        border-bottom:1px solid var(--border);padding-bottom:1px;
+        transition:color .2s;
+      " onmouseover="this.style.color='var(--accent)'"
+         onmouseout="this.style.color='var(--text3)'">Privacy Policy</a>
+      &nbsp;·&nbsp;
+      <a href="/terms.html" target="_blank" style="
+        color:var(--text3);font-size:10px;text-decoration:none;
+        border-bottom:1px solid var(--border);padding-bottom:1px;
+        transition:color .2s;
+      " onmouseover="this.style.color='var(--accent)'"
+         onmouseout="this.style.color='var(--text3)'">Terms of Service</a>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- DEBUG LOG PANEL -->
+<div id="dbg-panel" style="
+  position:fixed; bottom:56px; left:0; right:0; z-index:200;
+  background:#0a0818; border-top:2px solid #7C3AED;
+  font-family:monospace; font-size:11px;
+  display:flex; flex-direction:column;
+  max-height:32px; transition:max-height .3s ease;
+  box-shadow:0 -4px 24px rgba(0,0,0,.6);
+">
+  <div id="dbg-header" style="
+    display:flex; align-items:center; gap:8px;
+    padding:6px 10px; background:#16112A;
+    border-bottom:1px solid #2C2448; flex-shrink:0; cursor:pointer;
+  " onclick="dbgToggle()">
+    <span style="color:#7C3AED;font-weight:700;letter-spacing:.08em;font-size:10px;">⬡ DEBUG LOG</span>
+    <span id="dbg-count" style="
+      background:#7C3AED;color:#fff;border-radius:10px;
+      padding:1px 7px;font-size:9px;font-weight:700;
+    ">0</span>
+    <span style="margin-left:auto;display:flex;gap:6px;">
+      <button onclick="event.stopPropagation();dbgCopy()" style="
+        padding:2px 8px;border-radius:6px;border:1px solid #2C2448;
+        background:#1E1836;color:#9E95B8;font-family:monospace;
+        font-size:9px;cursor:pointer;letter-spacing:.04em;
+      " id="dbg-copy-btn">COPY</button>
+      <button onclick="event.stopPropagation();dbgClear()" style="
+        padding:2px 8px;border-radius:6px;border:1px solid #2C2448;
+        background:#1E1836;color:#9E95B8;font-family:monospace;
+        font-size:9px;cursor:pointer;
+      ">CLR</button>
+      <span id="dbg-chevron" style="color:#4E4668;font-size:14px;">▼</span>
+    </span>
+  </div>
+  <div id="dbg-body" style="
+    overflow-y:auto; padding:6px 8px; flex:1;
+    display:flex; flex-direction:column; gap:1px;
+  "></div>
+</div>
+
+<!-- FRICTION MODAL -->
+<div id="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">End Fast?</div>
+    <div class="modal-body" id="modal-body">
+      You've been fasting for <strong id="modal-time">—</strong> and reached <strong id="modal-stage">—</strong>. Ending will return you to your feeding window.
+    </div>
+    <div class="modal-btns">
+      <button class="modal-confirm" onclick="confirmEndFast()">Yes, End Fast</button>
+      <button class="modal-cancel" onclick="closeModal()">Keep Going 💪</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH GATE -->
+<div id="auth-gate">
+  <!-- Gate utility buttons — top right -->
+  <div style="position:absolute;top:16px;right:16px;display:flex;gap:8px;">
+    <button onclick="toggleFullscreen()" title="Fullscreen" style="
+      width:36px;height:36px;border-radius:50%;
+      background:var(--surface2);border:1px solid var(--border);
+      color:var(--text2);display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:background .2s;" id="gate-fs-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+    </button>
+    <button onclick="toggleTheme()" title="Toggle theme" style="
+      width:36px;height:36px;border-radius:50%;
+      background:var(--surface2);border:1px solid var(--border);
+      color:var(--text2);display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:background .2s;" id="gate-theme-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg>
+    </button>
+  </div>
+  <div class="gate-inner">
+    <div class="gate-logo">MINDFUL <span>RHYTHM</span></div>
+    <div class="gate-tagline">Live the Moment</div>
+    <div class="gate-ring" id="gate-ring-icon">⏳</div>
+    <div class="gate-desc">Track your fasting journey and own your time.</div>
     <button class="gate-btn" onclick="signInGoogle()">
       <img src="https://www.google.com/favicon.ico" width="18" height="18" alt="">
       Continue with Google
@@ -1579,38 +1513,215 @@
 </div>
 
 <!-- BREAK HABIT MODAL -->
-<div id="break-modal-overlay" onclick="closeBreakModal(event)">
-  <div class="modal-sheet" onclick="event.stopPropagation()">
+<!-- FRICTION MODAL -->
+<div id="modal-overlay">
+  <div class="modal-sheet">
     <div class="modal-handle"></div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-      <div style="font-size:24px">💔</div>
-      <div class="modal-title" style="margin-bottom:0">Break Habit?</div>
+    <div class="modal-title">End Fast?</div>
+    <div class="modal-body" id="modal-body">
+      You've been fasting for <strong id="modal-time">—</strong> and reached <strong id="modal-stage">—</strong>. Ending will return you to your feeding window.
     </div>
-    <div class="modal-body">
-      You're about to break <strong id="break-habit-name">—</strong>.
-      Your streak of <strong id="break-habit-streak">—</strong> days will reset to zero.
-    </div>
-
-    <!-- Reason tags -->
-    <div class="break-reason-label">Why are you breaking it?</div>
-    <div class="break-tags" id="break-tags">
-      <button class="break-tag" onclick="selectBreakTag(this)">😴 Tired</button>
-      <button class="break-tag" onclick="selectBreakTag(this)">👥 Social</button>
-      <button class="break-tag" onclick="selectBreakTag(this)">⏰ No time</button>
-      <button class="break-tag" onclick="selectBreakTag(this)">😣 Stressed</button>
-      <button class="break-tag" onclick="selectBreakTag(this)">🤒 Unwell</button>
-      <button class="break-tag" onclick="selectBreakTag(this)">🌀 Distracted</button>
-    </div>
-    <input id="break-reason-input" class="break-reason-input" placeholder="Or type your reason..." maxlength="120">
-
-    <div class="modal-btns" style="margin-top:20px">
-      <button class="modal-confirm" style="background:var(--danger)" onclick="confirmBreakHabit()">
-        Break Habit — Reset Streak
-      </button>
-      <button class="modal-cancel" onclick="closeBreakModal()">Keep the Streak 🔥</button>
+    <div class="modal-btns">
+      <button class="modal-confirm" onclick="confirmEndFast()">Yes, End Fast</button>
+      <button class="modal-cancel" onclick="closeModal()">Keep Going 💪</button>
     </div>
   </div>
 </div>
+
+<!-- AUTH GATE -->
+<div id="auth-gate">
+  <!-- Gate utility buttons — top right -->
+  <div style="position:absolute;top:16px;right:16px;display:flex;gap:8px;">
+    <button onclick="toggleFullscreen()" title="Fullscreen" style="
+      width:36px;height:36px;border-radius:50%;
+      background:var(--surface2);border:1px solid var(--border);
+      color:var(--text2);display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:background .2s;" id="gate-fs-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+    </button>
+    <button onclick="toggleTheme()" title="Toggle theme" style="
+      width:36px;height:36px;border-radius:50%;
+      background:var(--surface2);border:1px solid var(--border);
+      color:var(--text2);display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:background .2s;" id="gate-theme-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg>
+    </button>
+  </div>
+  <div class="gate-inner">
+    <div class="gate-logo">MINDFUL <span>RHYTHM</span></div>
+    <div class="gate-tagline">Live the Moment</div>
+    <div class="gate-ring" id="gate-ring-icon">⏳</div>
+    <div class="gate-desc">Track your fasting journey and own your time.</div>
+    <button class="gate-btn" onclick="signInGoogle()">
+      <img src="https://www.google.com/favicon.ico" width="18" height="18" alt="">
+      Continue with Google
+    </button>
+    <div class="gate-footer">
+      Your data is private and synced across devices.
+      <br>
+      <a href="/privacy.html" target="_blank" style="
+        color:var(--text3);font-size:10px;text-decoration:none;
+        border-bottom:1px solid var(--border);padding-bottom:1px;
+        transition:color .2s;
+      " onmouseover="this.style.color='var(--accent)'"
+         onmouseout="this.style.color='var(--text3)'">Privacy Policy</a>
+      &nbsp;·&nbsp;
+      <a href="/terms.html" target="_blank" style="
+        color:var(--text3);font-size:10px;text-decoration:none;
+        border-bottom:1px solid var(--border);padding-bottom:1px;
+        transition:color .2s;
+      " onmouseover="this.style.color='var(--accent)'"
+         onmouseout="this.style.color='var(--text3)'">Terms of Service</a>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- DEBUG LOG PANEL -->
+<div id="dbg-panel" style="
+  position:fixed; bottom:56px; left:0; right:0; z-index:200;
+  background:#0a0818; border-top:2px solid #7C3AED;
+  font-family:monospace; font-size:11px;
+  display:flex; flex-direction:column;
+  max-height:32px; transition:max-height .3s ease;
+  box-shadow:0 -4px 24px rgba(0,0,0,.6);
+">
+  <div id="dbg-header" style="
+    display:flex; align-items:center; gap:8px;
+    padding:6px 10px; background:#16112A;
+    border-bottom:1px solid #2C2448; flex-shrink:0; cursor:pointer;
+  " onclick="dbgToggle()">
+    <span style="color:#7C3AED;font-weight:700;letter-spacing:.08em;font-size:10px;">⬡ DEBUG LOG</span>
+    <span id="dbg-count" style="
+      background:#7C3AED;color:#fff;border-radius:10px;
+      padding:1px 7px;font-size:9px;font-weight:700;
+    ">0</span>
+    <span style="margin-left:auto;display:flex;gap:6px;">
+      <button onclick="event.stopPropagation();dbgCopy()" style="
+        padding:2px 8px;border-radius:6px;border:1px solid #2C2448;
+        background:#1E1836;color:#9E95B8;font-family:monospace;
+        font-size:9px;cursor:pointer;letter-spacing:.04em;
+      " id="dbg-copy-btn">COPY</button>
+      <button onclick="event.stopPropagation();dbgClear()" style="
+        padding:2px 8px;border-radius:6px;border:1px solid #2C2448;
+        background:#1E1836;color:#9E95B8;font-family:monospace;
+        font-size:9px;cursor:pointer;
+      ">CLR</button>
+      <span id="dbg-chevron" style="color:#4E4668;font-size:14px;">▼</span>
+    </span>
+  </div>
+  <div id="dbg-body" style="
+    overflow-y:auto; padding:6px 8px; flex:1;
+    display:flex; flex-direction:column; gap:1px;
+  "></div>
+</div>
+
+<!-- FRICTION MODAL -->
+<div id="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">End Fast?</div>
+    <div class="modal-body" id="modal-body">
+      You've been fasting for <strong id="modal-time">—</strong> and reached <strong id="modal-stage">—</strong>. Ending will return you to your feeding window.
+    </div>
+    <div class="modal-btns">
+      <button class="modal-confirm" onclick="confirmEndFast()">Yes, End Fast</button>
+      <button class="modal-cancel" onclick="closeModal()">Keep Going 💪</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH GATE -->
+<div id="auth-gate">
+  <!-- Gate utility buttons — top right -->
+  <div style="position:absolute;top:16px;right:16px;display:flex;gap:8px;">
+    <button onclick="toggleFullscreen()" title="Fullscreen" style="
+      width:36px;height:36px;border-radius:50%;
+      background:var(--surface2);border:1px solid var(--border);
+      color:var(--text2);display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:background .2s;" id="gate-fs-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+    </button>
+    <button onclick="toggleTheme()" title="Toggle theme" style="
+      width:36px;height:36px;border-radius:50%;
+      background:var(--surface2);border:1px solid var(--border);
+      color:var(--text2);display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:background .2s;" id="gate-theme-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg>
+    </button>
+  </div>
+  <div class="gate-inner">
+    <div class="gate-logo">MINDFUL <span>RHYTHM</span></div>
+    <div class="gate-tagline">Live the Moment</div>
+    <div class="gate-ring" id="gate-ring-icon">⏳</div>
+    <div class="gate-desc">Track your fasting journey and own your time.</div>
+    <button class="gate-btn" onclick="signInGoogle()">
+      <img src="https://www.google.com/favicon.ico" width="18" height="18" alt="">
+      Continue with Google
+    </button>
+    <div class="gate-footer">
+      Your data is private and synced across devices.
+      <br>
+      <a href="/privacy.html" target="_blank" style="
+        color:var(--text3);font-size:10px;text-decoration:none;
+        border-bottom:1px solid var(--border);padding-bottom:1px;
+        transition:color .2s;
+      " onmouseover="this.style.color='var(--accent)'"
+         onmouseout="this.style.color='var(--text3)'">Privacy Policy</a>
+      &nbsp;·&nbsp;
+      <a href="/terms.html" target="_blank" style="
+        color:var(--text3);font-size:10px;text-decoration:none;
+        border-bottom:1px solid var(--border);padding-bottom:1px;
+        transition:color .2s;
+      " onmouseover="this.style.color='var(--accent)'"
+         onmouseout="this.style.color='var(--text3)'">Terms of Service</a>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- DEBUG LOG PANEL -->
+<div id="dbg-panel" style="
+  position:fixed; bottom:56px; left:0; right:0; z-index:200;
+  background:#0a0818; border-top:2px solid #7C3AED;
+  font-family:monospace; font-size:11px;
+  display:flex; flex-direction:column;
+  max-height:32px; transition:max-height .3s ease;
+  box-shadow:0 -4px 24px rgba(0,0,0,.6);
+">
+  <div id="dbg-header" style="
+    display:flex; align-items:center; gap:8px;
+    padding:6px 10px; background:#16112A;
+    border-bottom:1px solid #2C2448; flex-shrink:0; cursor:pointer;
+  " onclick="dbgToggle()">
+    <span style="color:#7C3AED;font-weight:700;letter-spacing:.08em;font-size:10px;">⬡ DEBUG LOG</span>
+    <span id="dbg-count" style="
+      background:#7C3AED;color:#fff;border-radius:10px;
+      padding:1px 7px;font-size:9px;font-weight:700;
+    ">0</span>
+    <span style="margin-left:auto;display:flex;gap:6px;">
+      <button onclick="event.stopPropagation();dbgCopy()" style="
+        padding:2px 8px;border-radius:6px;border:1px solid #2C2448;
+        background:#1E1836;color:#9E95B8;font-family:monospace;
+        font-size:9px;cursor:pointer;letter-spacing:.04em;
+      " id="dbg-copy-btn">COPY</button>
+      <button onclick="event.stopPropagation();dbgClear()" style="
+        padding:2px 8px;border-radius:6px;border:1px solid #2C2448;
+        background:#1E1836;color:#9E95B8;font-family:monospace;
+        font-size:9px;cursor:pointer;
+      ">CLR</button>
+      <span id="dbg-chevron" style="color:#4E4668;font-size:14px;">▼</span>
+    </span>
+  </div>
+  <div id="dbg-body" style="
+    overflow-y:auto; padding:6px 8px; flex:1;
+    display:flex; flex-direction:column; gap:1px;
+  "></div>
+</div>
+
+
 
 <!-- PROFILE DROPDOWN -->
 <div id="profile-dropdown">
@@ -1695,10 +1806,7 @@ let momentState = LS.get('moment') || (() => {
 if (!momentState._savedAt && Object.values(momentState.timers || {}).some(function(v){ return v > 0; })) {
   momentState._savedAt = Date.now();
 }
-let habits = LS.get('habits') || {
-  purposeful: [], nourishing: [], training: [], recovering: [], wasteful: [],
-};
-let activeHabitCat = 'purposeful';
+
 
 function showApp() {
   const gate = document.getElementById('auth-gate');
@@ -2481,256 +2589,6 @@ function buildDayTracker() {
 /* ═══════════════════════════════════════════════════════════════
    HABITS
 ═══════════════════════════════════════════════════════════════ */
-const HABIT_CATS = ['purposeful','nourishing','training','recovering','wasteful'];
-// Empty by default — new users start fresh.
-// pullHabits() populates from Supabase after login.
-// Logged-out users start with a truly empty list.
-
-function getCatStatus(cat) {
-  const list = habits[cat] || [];
-  if (!list.length) return 'neutral';
-  const done = list.filter(h=>h.done).length;
-  const pct  = done/list.length;
-  if (pct === 1) return 'green';
-  if (pct >= 0.5) return 'warn';
-  return 'red';
-}
-
-function renderHabitTabs() {
-  const tabs = document.getElementById('habit-tabs');
-  tabs.innerHTML = '';
-  HABIT_CATS.forEach(cat => {
-    const status = getCatStatus(cat);
-    const dotCls = status === 'green' ? '' : (status === 'warn' ? ' warn' : ' alert');
-    const btn = document.createElement('button');
-    btn.className = 'habit-tab' + (cat === activeHabitCat ? ' active' : '');
-    btn.innerHTML = `<span class="tab-pulse${dotCls}"></span>${STATE_LABELS[cat]}`;
-    btn.onclick = () => { activeHabitCat = cat; renderHabitTabs(); renderHabitList(); };
-    tabs.appendChild(btn);
-  });
-}
-
-const BREAK_SVG  = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>`;
-const EDIT_SVG   = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
-const DEL_SVG    = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
-const SAVE_SVG   = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
-const CANCEL_SVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
-
-function renderHabitList() {
-  const list = document.getElementById('habit-list');
-  list.innerHTML = '';
-  const items = habits[activeHabitCat] || [];
-  items.forEach((h, i) => {
-    const div = document.createElement('div');
-    const isBroken = h.broken === today();
-    const itemClass = h.done ? ' done' : (isBroken ? ' broken' : '');
-    const checkClass = h.done ? ' done' : (isBroken ? ' broken' : '');
-    const streakIcon = isBroken ? '💔' : '🔥';
-    const streakClass = isBroken ? 'habit-streak broken' : 'habit-streak';
-    div.className = 'habit-item' + itemClass;
-    div.dataset.idx = i;
-    div.innerHTML = `
-      <div class="habit-check${checkClass}" onclick="toggleHabit('${activeHabitCat}',${i})">
-        ${isBroken
-          ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
-          : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`}
-      </div>
-      <input class="habit-name" value="${h.name.replace(/"/g,'&quot;')}" readonly
-        onkeydown="if(event.key==='Enter')saveHabitName('${activeHabitCat}',${i},this);if(event.key==='Escape')cancelHabitEdit(this,'${activeHabitCat}',${i})">
-      <div class="${streakClass}">${streakIcon} ${h.streak}</div>
-      <div class="habit-actions">
-        ${!isBroken && !h.done ? `<button class="habit-action-btn" title="Break habit" onclick="openBreakModal('${activeHabitCat}',${i})" style="color:var(--danger);opacity:.7">${BREAK_SVG}</button>` : ''}
-        <button class="habit-action-btn edit" title="Edit" onclick="startHabitEdit('${activeHabitCat}',${i},this)">${EDIT_SVG}</button>
-        <button class="habit-action-btn delete" title="Delete" onclick="deleteHabit('${activeHabitCat}',${i})">${DEL_SVG}</button>
-      </div>`;
-    list.appendChild(div);
-  });
-}
-
-function toggleHabit(cat, i) {
-  const h = habits[cat][i];
-  // Can't toggle a broken habit — it's a conscious decision
-  if (h.broken === today()) {
-    toast('💔 This habit was intentionally broken today');
-    return;
-  }
-  h.done = !h.done;
-  if (h.done) h.streak = (h.streak || 0) + 1;
-  else if (h.streak > 0) h.streak--;
-  LS.set('habits', habits);
-  renderHabitTabs();
-  renderHabitList();
-  if (currentUser) {
-    pushHabit(habits[cat][i], cat).then(row => {
-      if (row && row.id && !UUID_RE.test(habits[cat][i].id)) {
-        habits[cat][i].id = row.id;
-        LS.set('habits', habits);
-      }
-    });
-  }
-}
-
-function startHabitEdit(cat, i, btn) {
-  const item  = btn.closest('.habit-item');
-  const input = item.querySelector('.habit-name');
-  const acts  = item.querySelector('.habit-actions');
-  input.removeAttribute('readonly');
-  input.classList.add('editing');
-  input.focus(); input.select();
-  item.classList.add('editing-mode');
-  // Swap buttons to Save / Cancel
-  acts.innerHTML = `
-    <button class="habit-action-btn edit" title="Save" onclick="saveHabitName('${cat}',${i},this.closest('.habit-item').querySelector('.habit-name'))" style="color:var(--success)">${SAVE_SVG}</button>
-    <button class="habit-action-btn delete" title="Cancel" onclick="cancelHabitEdit(this.closest('.habit-item').querySelector('.habit-name'),'${cat}',${i})">${CANCEL_SVG}</button>`;
-}
-
-async function saveHabitName(cat, i, input) {
-  const trimmed = input.value.trim();
-  habits[cat][i].name = trimmed || habits[cat][i].name;
-  LS.set('habits', habits);
-  renderHabitList();
-  if (currentUser) {
-    const row = await pushHabit(habits[cat][i], cat);
-    if (row && row.id && !UUID_RE.test(habits[cat][i].id)) {
-      habits[cat][i].id = row.id;
-      LS.set('habits', habits);
-    }
-  }
-}
-
-function cancelHabitEdit(input, cat, i) {
-  input.value = habits[cat][i].name;
-  input.setAttribute('readonly','');
-  input.classList.remove('editing');
-  const item = input.closest('.habit-item');
-  if (item) item.classList.remove('editing-mode');
-  renderHabitList();
-}
-
-function deleteHabit(cat, i) {
-  const name = habits[cat][i].name;
-  // Confirm via inline swap — replace item with a confirm row
-  const list  = document.getElementById('habit-list');
-  const items = list.querySelectorAll('.habit-item');
-  const item  = items[i];
-  if (!item) return;
-  item.style.borderColor = 'var(--danger)';
-  item.style.background  = 'rgba(224,92,122,0.06)';
-  item.innerHTML = `
-    <span style="flex:1;font-size:13px;color:var(--danger);font-family:var(--font-cond);font-weight:600;letter-spacing:.04em">
-      Delete "${name}"?
-    </span>
-    <div class="habit-actions">
-      <button class="habit-action-btn delete" onclick="confirmDeleteHabit('${cat}',${i})" style="color:var(--danger);background:rgba(224,92,122,0.12)">
-        ${DEL_SVG}
-      </button>
-      <button class="habit-action-btn" onclick="renderHabitList()" style="color:var(--text3)">
-        ${CANCEL_SVG}
-      </button>
-    </div>`;
-}
-
-async function confirmDeleteHabit(cat, i) {
-  const h = habits[cat][i];
-  const isUUID = h && h.id && UUID_RE.test(h.id);
-  habits[cat].splice(i, 1);
-  LS.set('habits', habits);
-  renderHabitTabs();
-  renderHabitList();
-  toast('Habit deleted');
-  if (currentUser && h) {
-    try {
-      if (isUUID) {
-        // Delete by UUID — clean and precise
-        const { error } = await sb.from('habits').delete().eq('id', h.id).eq('user_id', currentUser.id);
-        if (error) dbg('ERR', 'delete habit failed', error.message);
-        else dbg('SYNC', 'habit deleted from DB', h.name);
-      } else {
-        // No UUID — delete by name+cat
-        const { error } = await sb.from('habits').delete()
-          .eq('user_id', currentUser.id).eq('cat', cat).eq('name', h.name);
-        if (error) dbg('ERR', 'delete habit by name failed', error.message);
-      }
-    } catch(e) {
-      dbg('ERR', 'confirmDeleteHabit exception', e.message);
-    }
-  }
-}
-
-async function addHabit() {
-  const newH = { name:'New Habit', done:false, streak:0 };
-  habits[activeHabitCat].push(newH);
-  LS.set('habits', habits);
-  renderHabitList();
-  // Auto-focus last item
-  setTimeout(() => {
-    const inputs = document.querySelectorAll('#habit-list .habit-name');
-    const last = inputs[inputs.length-1];
-    if (last) { last.removeAttribute('readonly'); last.classList.add('editing'); last.focus(); last.select(); }
-  }, 50);
-  // Push and store Supabase UUID on local object
-  if (currentUser) {
-    const row = await pushHabit(newH, activeHabitCat);
-    if (row && row.id) {
-      newH.id = row.id; // store UUID so future pushes use id conflict key
-      LS.set('habits', habits);
-      dbg('SYNC', 'addHabit UUID stored', row.id.slice(0,8));
-    }
-  }
-}
-
-/* ─── BREAK HABIT MODAL ──────────────────────────────────── */
-let breakTarget = { cat: null, idx: null };
-
-function openBreakModal(cat, i) {
-  const h = habits[cat][i];
-  breakTarget = { cat, idx: i };
-  document.getElementById('break-habit-name').textContent   = h.name;
-  document.getElementById('break-habit-streak').textContent = h.streak;
-  document.getElementById('break-reason-input').value = '';
-  // Clear tag selections
-  document.querySelectorAll('.break-tag').forEach(t => t.classList.remove('selected'));
-  document.getElementById('break-modal-overlay').classList.add('open');
-}
-
-function selectBreakTag(btn) {
-  // Toggle selection — allow one or clear
-  const wasSelected = btn.classList.contains('selected');
-  document.querySelectorAll('.break-tag').forEach(t => t.classList.remove('selected'));
-  if (!wasSelected) btn.classList.add('selected');
-}
-
-function closeBreakModal(e) {
-  if (e && e.target !== document.getElementById('break-modal-overlay')) return;
-  document.getElementById('break-modal-overlay').classList.remove('open');
-}
-
-function confirmBreakHabit() {
-  const { cat, idx } = breakTarget;
-  if (cat === null || idx === null) return;
-
-  const h = habits[cat][idx];
-  const selectedTag = document.querySelector('.break-tag.selected')?.textContent || '';
-  const typedReason = document.getElementById('break-reason-input').value.trim();
-  const reason = typedReason || selectedTag || 'No reason given';
-
-  // Mark broken, reset streak
-  const prevStreak = h.streak;
-  h.broken  = today();
-  h.done    = false;
-  h.streak  = 0;
-  h.breakLog = h.breakLog || [];
-  h.breakLog.unshift({ date: today(), reason, prevStreak });
-
-  LS.set('habits', habits);
-  document.getElementById('break-modal-overlay').classList.remove('open');
-  renderHabitTabs();
-  renderHabitList();
-  toast(`💔 Streak reset. Reason: ${reason}`);
-  pushHabitBreak(h, cat, reason, prevStreak);
-  pushHabit(h, cat);
-}
-
 /* ═══════════════════════════════════════════════════════════════
    WEEKLY VIEW
 ═══════════════════════════════════════════════════════════════ */
@@ -2937,80 +2795,6 @@ function renderWeekly() {
       empty: !list.length,
     });
   });
-
-  // Render category completion bars
-  const catEl = document.getElementById('wk-habit-cat-bars');
-  if (catEl) {
-    catEl.innerHTML = '';
-    catBars.forEach(r => {
-      const div = document.createElement('div');
-      div.className = 'sbl-row';
-      div.innerHTML = `
-        <span class="sbl-icon">${r.icon}</span>
-        <span class="sbl-name">${r.name}</span>
-        <div class="sbl-bar-wrap">
-          <div class="sbl-bar" style="width:${r.pct}%;background:${r.color}"></div>
-        </div>
-        <span class="sbl-time" style="font-size:10px">${r.empty ? '—' : `${r.done||0}/${r.total||0}`}</span>
-        <span class="sbl-pct" style="color:${r.empty ? 'var(--text3)' : r.color}">${r.empty ? '—' : (r.pct||0)+'%'}</span>`;
-      div.style.opacity = r.empty ? '0.35' : '1';
-      catEl.appendChild(div);
-
-      // Break sub-row if any broken
-      if (r.broken > 0) {
-        const bd = document.createElement('div');
-        bd.className = 'sbl-row';
-        bd.style.paddingLeft = '28px';
-        bd.innerHTML = `
-          <span class="sbl-icon" style="font-size:11px">💔</span>
-          <span class="sbl-name" style="font-size:11px;color:var(--text3)">broken</span>
-          <div class="sbl-bar-wrap">
-            <div class="sbl-bar" style="width:${r.brokenPct}%;background:var(--danger)"></div>
-          </div>
-          <span class="sbl-time" style="font-size:10px">${r.broken}/${r.total}</span>
-          <span class="sbl-pct" style="color:var(--danger)">${r.brokenPct}%</span>`;
-        catEl.appendChild(bd);
-      }
-    });
-  }
-
-  // Break reasons
-  const allHabits = Object.values(habits).flat();
-  const reasonCounts = {};
-  allHabits.forEach(h => {
-    (h.breakLog||[]).forEach(b => {
-      if (!b.date || !dates.some(d => {
-        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        return ds === b.date;
-      })) return;
-      const r = b.reason || 'No reason';
-      reasonCounts[r] = (reasonCounts[r]||0) + 1;
-    });
-  });
-  const totalReasons = Object.values(reasonCounts).reduce((a,b)=>a+b,0)||1;
-  const reasonEl = document.getElementById('wk-break-reason-bars');
-  if (reasonEl) {
-    reasonEl.innerHTML = '';
-    const sorted = Object.entries(reasonCounts).sort((a,b)=>b[1]-a[1]);
-    if (!sorted.length) {
-      reasonEl.innerHTML = `<div style="font-family:var(--font-cond);font-size:12px;color:var(--text3)">No breaks this week 🔥</div>`;
-    } else {
-      sorted.forEach(([reason, count]) => {
-        const pct = Math.round(count/totalReasons*100);
-        const div = document.createElement('div');
-        div.className = 'sbl-row';
-        div.innerHTML = `
-          <span class="sbl-icon" style="font-size:11px">—</span>
-          <span class="sbl-name" style="font-size:11px">${reason}</span>
-          <div class="sbl-bar-wrap">
-            <div class="sbl-bar" style="width:${pct}%;background:var(--danger)"></div>
-          </div>
-          <span class="sbl-time" style="font-size:10px">${count}x</span>
-          <span class="sbl-pct" style="color:var(--danger)">${pct}%</span>`;
-        reasonEl.appendChild(div);
-      });
-    }
-  }
 }
 
 /* ─── STACKED BAR CHART FOR MOMENTS ─────────────────────── */
@@ -3155,71 +2939,10 @@ function renderMonthly() {
 
   // ── Habits — exact mirror of weekly habits section ───────────
   const CATS = ['purposeful','nourishing','training','recovering','wasteful'];
-  const moCatEl = document.getElementById('mo-habit-cat-bars');
-  if (moCatEl) {
-    moCatEl.innerHTML = '';
-    CATS.forEach(cat=>{
-      const sd   = STATE_DEFS.find(s=>s.key===cat);
-      const list = habits[cat]||[];
-      const done  = list.filter(h=>h.done).length;
-      const broke = list.filter(h=>h.broken&&h.broken.startsWith(moStr)).length;
-      const pct   = list.length ? Math.round((done||0)/list.length*100) : 0;
-      const bpct  = list.length ? Math.round((broke||0)/list.length*100) : 0;
-      const row = document.createElement('div');
-      row.className = 'sbl-row';
-      row.style.opacity = list.length ? '1' : '0.35';
-      row.innerHTML = `
-        <span class="sbl-icon">${sd?.icon||''}</span>
-        <span class="sbl-name">${sd?.label||cat}</span>
-        <div class="sbl-bar-wrap"><div class="sbl-bar" style="width:${pct}%;background:${sd?.color||'var(--accent)'}"></div></div>
-        <span class="sbl-time" style="font-size:10px">${list.length ? `${done||0}/${list.length}` : '—'}</span>
-        <span class="sbl-pct" style="color:${list.length ? (sd?.color||'var(--accent)') : 'var(--text3)'}">${list.length ? pct+'%' : '—'}</span>`;
-      moCatEl.appendChild(row);
-      if (broke>0){
-        const bd=document.createElement('div');
-        bd.className='sbl-row'; bd.style.paddingLeft='28px';
-        bd.innerHTML=`
-          <span class="sbl-icon" style="font-size:11px">💔</span>
-          <span class="sbl-name" style="font-size:11px;color:var(--text3)">broken</span>
-          <div class="sbl-bar-wrap"><div class="sbl-bar" style="width:${bpct}%;background:var(--danger)"></div></div>
-          <span class="sbl-time" style="font-size:10px">${broke}/${list.length}</span>
-          <span class="sbl-pct" style="color:var(--danger)">${bpct}%</span>`;
-        moCatEl.appendChild(bd);
-      }
-    });
-  }
+
 
   // Break reasons this month
-  const allH = Object.values(habits).flat();
-  const moReasonCounts = {};
-  allH.forEach(h=>{
-    (h.breakLog||[]).forEach(b=>{
-      if (b.date && b.date.startsWith(moStr)) {
-        const r=b.reason||'No reason'; moReasonCounts[r]=(moReasonCounts[r]||0)+1;
-      }
-    });
-  });
-  const moReasonEl = document.getElementById('mo-break-reason-bars');
-  if (moReasonEl) {
-    moReasonEl.innerHTML='';
-    const total=Object.values(moReasonCounts).reduce((a,b)=>a+b,0)||1;
-    const sorted=Object.entries(moReasonCounts).sort((a,b)=>b[1]-a[1]);
-    if (!sorted.length) {
-      moReasonEl.innerHTML=`<div style="font-family:var(--font-cond);font-size:12px;color:var(--text3)">No breaks this month 🔥</div>`;
-    } else {
-      sorted.forEach(([reason,count])=>{
-        const pct=Math.round(count/total*100);
-        const div=document.createElement('div'); div.className='sbl-row';
-        div.innerHTML=`
-          <span class="sbl-icon" style="font-size:11px">—</span>
-          <span class="sbl-name" style="font-size:11px">${reason}</span>
-          <div class="sbl-bar-wrap"><div class="sbl-bar" style="width:${pct}%;background:var(--danger)"></div></div>
-          <span class="sbl-time" style="font-size:10px">${count}x</span>
-          <span class="sbl-pct" style="color:var(--danger)">${pct}%</span>`;
-        moReasonEl.appendChild(div);
-      });
-    }
-  }
+
 }
 
 /* ─── MONTHLY MOMENT CHART — stacked by week ─────────────── */
@@ -3513,56 +3236,6 @@ function replayEvents(events) {
 }
 
 // ── Habit push (direct upsert, no queue) ──────────────────────
-async function pushHabit(h, cat) {
-  if (!currentUser) return null;
-  const isUUID = h.id && UUID_RE.test(h.id);
-  const payload = {
-    user_id:     currentUser.id,
-    cat,
-    name:        h.name,
-    streak:      h.streak || 0,
-    done_date:   h.done   ? today() : null,
-    broken_date: h.broken || null,
-    sort_order:  h.sort_order || 0,
-  };
-  // If we have a real Supabase UUID, include it — conflict on id → UPDATE in place
-  // This handles renames correctly: same row updated, name changed
-  if (isUUID) payload.id = h.id;
-
-  const conflictKey = isUUID ? 'id' : 'user_id,cat,name';
-  try {
-    const { data, error } = await sb.from('habits')
-      .upsert(payload, { onConflict: conflictKey })
-      .select('id')
-      .single();
-    if (error) {
-      dbg('ERR', 'pushHabit failed', { name: h.name, error: error.message });
-      return null;
-    }
-    dbg('SYNC', 'pushHabit ok', h.name + ' id:' + (data && data.id ? data.id.slice(0,8) : '?'));
-    return data; // caller stores data.id as h.id
-  } catch(e) {
-    dbg('ERR', 'pushHabit exception', e.message);
-    return null;
-  }
-}
-
-async function pushHabitBreak(h, cat, reason, prevStreak) {
-  if (!currentUser) return;
-  try {
-    await sb.from('habit_breaks').insert({
-      user_id:     currentUser.id,
-      cat,
-      name:        h.name,
-      reason,
-      prev_streak: prevStreak,
-      date:        today(),
-    });
-  } catch(e) {
-    dbg('ERR', 'pushHabitBreak failed', e.message);
-  }
-}
-
 // ── Legacy stubs (called from various places, now no-ops or redirected)
 function enqueue(table, data) {} // no-op — replaced by event model
 async function drainQueue() {}   // no-op — replaced by event model
@@ -3589,7 +3262,7 @@ async function loadUserData() {
   if (!currentUser) { dbg('SYNC', 'loadUserData skipped — no user'); return; }
   dbg('SYNC', 'loadUserData starting pull');
   try {
-    await Promise.all([pullAndReplayEvents(), pullFasts(), pullHabits()]);
+    await Promise.all([pullAndReplayEvents(), pullFasts()]);
     dbg('SYNC', 'pull complete', {
       fast: fastState.running ? 'RUNNING' : 'stopped',
       fastSecs: getFastElapsed(),
@@ -3597,8 +3270,6 @@ async function loadUserData() {
       momentSecs: getStateElapsed(momentState.active),
       feedSecs: getFeedingElapsed()
     });
-    renderHabitTabs();
-    renderHabitList();
     updateFastUI();
     updateStateUI();
     buildDayTracker();
@@ -3684,97 +3355,6 @@ async function pullFasts() {
   LS.set('fast', fastState);
 }
 
-async function pullHabits() {
-  // Pull habits and break log in parallel
-  const [habitsRes, breaksRes] = await Promise.all([
-    sb.from('habits')
-      .select('*')
-      .eq('user_id', currentUser.id)
-      .order('sort_order'),
-    sb.from('habit_breaks')
-      .select('*')
-      .eq('user_id', currentUser.id)
-      .order('created_at', { ascending: false })
-      .limit(200),
-  ]);
-
-  // If there's a real error, bail. But empty data is NOT an error —
-  // it means no habits in Supabase yet, which we handle below.
-  if (habitsRes.error) {
-    dbg('ERR', 'pullHabits error', habitsRes.error.message);
-    return;
-  }
-  dbg('SYNC', 'pullHabits remote rows', (habitsRes.data || []).length);
-  if (!habitsRes.data?.length) {
-    // No remote habits — push local if we have any, then re-pull to get UUIDs
-    const hasLocal = Object.values(habits).some(a => a.length > 0);
-    if (hasLocal) {
-      dbg('SYNC', 'no remote habits — pushing local up');
-      for (const [cat, list] of Object.entries(habits)) {
-        for (const h of list) {
-          const row = await pushHabit(h, cat);
-          if (row && row.id) h.id = row.id; // store UUID
-        }
-      }
-      LS.set('habits', habits);
-      dbg('SYNC', 'local habits pushed, UUIDs stored');
-    }
-    return;
-  }
-
-  const td = today();
-  const breaks = breaksRes.data || [];
-
-  // Build break log per habit name+cat from Supabase
-  const breakLogMap = {};
-  breaks.forEach(b => {
-    const key = `${b.cat}::${b.name}`;
-    if (!breakLogMap[key]) breakLogMap[key] = [];
-    breakLogMap[key].push({
-      date:       b.date,
-      reason:     b.reason,
-      prevStreak: b.prev_streak,
-    });
-  });
-
-  // Rebuild habits object
-  const rebuilt = { purposeful:[], nourishing:[], training:[], recovering:[], wasteful:[] };
-  habitsRes.data.forEach(r => {
-    if (!rebuilt[r.cat]) return;
-    const key = `${r.cat}::${r.name}`;
-    rebuilt[r.cat].push({
-      id:       r.id,
-      name:     r.name,
-      streak:   r.streak || 0,
-      done:     r.done_date   === td,
-      broken:   r.broken_date === td ? td : null,
-      breakLog: breakLogMap[key] || [],
-    });
-  });
-
-  const hasRemote = Object.values(rebuilt).some(a => a.length > 0);
-
-  if (hasRemote) {
-    habits = rebuilt;
-    LS.set('habits', habits);
-    const total = Object.values(habits).reduce((s,a) => s+a.length, 0);
-    dbg('SYNC', 'pullHabits restored from remote', total + ' habits');
-  } else {
-    // No remote habits — push local if we have any
-    const hasLocal = Object.values(habits).some(a => a.length > 0);
-    if (hasLocal) {
-      dbg('SYNC', 'no remote habits (post-rebuild) — pushing local');
-      for (const [cat, list] of Object.entries(habits)) {
-        for (const h of list) {
-          const row = await pushHabit(h, cat);
-          if (row && row.id) h.id = row.id;
-        }
-      }
-      LS.set('habits', habits);
-    }
-  }
-}
-
 /* ── Realtime subscription — app_state ─────────────────────── */
 let realtimeChannel = null;
 
@@ -3846,8 +3426,6 @@ function saveToSupabase(table, data) {
   // Legacy shim — route to proper push functions
   if (table === 'fasts')        return; // handled by pushFast in confirmEndFast
   if (table === 'moments')      return; // handled by pushMoment in switchState
-  if (table === 'habits')       return; // handled by pushHabit
-  if (table === 'habit_breaks') return; // handled by pushHabitBreak
   enqueue(table, data);
 }
 
@@ -3902,8 +3480,7 @@ async function signOutUser() {
   LS.set('feeding',   null);
   LS.set('moment',    null);
   LS.set('syncQueue', null);
-  // Habits deliberately NOT wiped — they survive in LS as fallback
-  // pullHabits on next login will refresh from Supabase as source of truth
+
   await sb.auth.signOut();
   clearUser();
   toast('Signed out. See you soon 👋');
@@ -4178,8 +3755,6 @@ function init() {
   initAuth();
   if (!fastState.running) startFeedingTimer();
   startWasteful();
-  renderHabitTabs();
-  renderHabitList();
   initStageScroller(0);
   initQuotes();
   tick();
