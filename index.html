@@ -1167,6 +1167,11 @@
     <div id="auth-area">
       <button id="login-btn" onclick="signInGoogle()">Sign In</button>
     </div>
+    <button id="diag-trigger" onclick="diagToggle()" title="Diagnostics"
+      style="display:none;width:28px;height:28px;border-radius:50%;
+      background:rgba(124,58,237,0.15);border:1px solid #7C3AED;
+      color:#7C3AED;font-size:10px;cursor:pointer;flex-shrink:0;
+      align-items:center;justify-content:center;">⬡</button>
   </div>
 
 </div>
@@ -1618,6 +1623,27 @@
   </div>
 </div>
 
+<!-- DIAGNOSTICS PANEL — only for authorized user, only after login -->
+<div id="diag-panel" style="display:none;position:fixed;bottom:72px;right:12px;z-index:9000;
+  width:320px;max-height:70vh;background:#0E0A1A;border:1.5px solid #7C3AED;
+  border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,0.7);
+  font-family:monospace;font-size:11px;display:none;flex-direction:column;overflow:hidden;">
+  <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;
+    background:#16112A;border-bottom:1px solid #2C2448;flex-shrink:0;">
+    <span style="color:#7C3AED;font-weight:700;font-size:10px;letter-spacing:.1em;">⬡ DIAGNOSTICS</span>
+    <button onclick="diagClear()" style="margin-left:auto;background:none;border:1px solid #2C2448;
+      border-radius:6px;color:#4E4668;font-family:monospace;font-size:9px;
+      padding:2px 8px;cursor:pointer;">CLR</button>
+    <button onclick="diagCopy()" id="diag-copy-btn" style="background:none;border:1px solid #2C2448;
+      border-radius:6px;color:#4E4668;font-family:monospace;font-size:9px;
+      padding:2px 8px;cursor:pointer;">COPY</button>
+    <button onclick="diagHide()" style="background:none;border:none;color:#4E4668;
+      font-size:16px;cursor:pointer;line-height:1;padding:0 2px;">✕</button>
+  </div>
+  <div id="diag-body" style="overflow-y:auto;padding:6px 8px;flex:1;
+    display:flex;flex-direction:column;gap:1px;"></div>
+</div>
+
 <!-- TOAST -->
 <div id="toast"></div>
 
@@ -1748,12 +1774,18 @@ function setUser(user) {
   const pe = document.getElementById('profile-email');
   if (pe) pe.textContent = user.email || '';
 
+  diagSetUser(user.email || '');
+  diagLog('AUTH', 'setUser', {email: user.email, id: user.id ? user.id.slice(0,8) : '?'});
   showApp();
   flushPendingEvents().then(() => loadUserData());
   subscribeRealtime();
 }
 
 function clearUser() {
+  diagLog('AUTH', 'clearUser — signed out');
+  var btn = document.getElementById('diag-trigger');
+  if (btn) btn.style.display = 'none';
+  diagHide();
   currentUser    = null;
   _currentUserId = null;
   unsubscribeRealtime();
@@ -3123,6 +3155,7 @@ function pushMoment(state, secs, startTs, endTs) {} // moments reconstructed fro
 /* ── Pull & merge remote state ─────────────────────────────── */
 async function loadUserData() {
   if (!currentUser) { return; }
+  diagLog('SYNC', 'loadUserData starting', currentUser.email);
   try {
     await Promise.all([pullAndReplayEvents(), pullFasts(), pullBreakHabits()]);
 
@@ -3730,11 +3763,18 @@ async function pullBreakHabits() {
     const { data, error } = await sb.from('break_habits')
       .select('*').eq('user_id', currentUser.id).order('sort_order');
     if (error || !data) {
-      // No remote — push local up
+      diagLog('ERR', 'pullBreakHabits error', error ? error.message : 'no data');
       for (const h of breakHabits) await pushBreakHabit(h);
       return;
     }
+    diagLog('BRK', 'pullBreakHabits', {rows: data.length, user: currentUser.id.slice(0,8)});
     if (data.length > 0) {
+      // Log each row's user_id to detect RLS leakage
+      data.forEach(function(r) {
+        if (r.user_id !== currentUser.id) {
+          diagLog('ERR', 'RLS LEAK — row belongs to different user!', {row_user: r.user_id.slice(0,8), me: currentUser.id.slice(0,8)});
+        }
+      });
       breakHabits = data.map(r => ({
         id:        r.id,
         name:      r.name,
@@ -3745,6 +3785,79 @@ async function pullBreakHabits() {
       for (const h of breakHabits) await pushBreakHabit(h);
     }
   } catch(e) {}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DIAGNOSTICS — only for authorized dev user, survives user switches
+═══════════════════════════════════════════════════════════════ */
+const DIAG_USER = 'frederick.esparagoza@gmail.com';
+var _diagLog = []; // persists across login/logout in memory
+
+function diagLog(category, msg, data) {
+  var ts  = new Date().toLocaleTimeString('en-US', {hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  var ms  = String(new Date().getMilliseconds()).padStart(3,'0');
+  var col = {AUTH:'#34C98A',SYNC:'#9E95B8',FAST:'#E8A838',BRK:'#E05C7A',ERR:'#EF4444',INFO:'#5B9CF6'}[category]||'#4E4668';
+  _diagLog.push({ts:ts+'.'+ms, category, msg, data:data||null, col});
+
+  var body = document.getElementById('diag-body');
+  if (!body) return;
+  var row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:6px;padding:1px 0;border-bottom:1px solid #0a0818;';
+  var ds = data ? ' → '+(typeof data==='object'?JSON.stringify(data):data) : '';
+  row.innerHTML =
+    '<span style="color:#2C2448;flex-shrink:0">'+ts+'</span>'+
+    '<span style="color:'+col+';flex-shrink:0;min-width:44px;font-weight:700">['+category+']</span>'+
+    '<span style="color:#9E95B8;word-break:break-all">'+msg+
+    '<span style="color:#2C2448">'+ds+'</span></span>';
+  body.appendChild(row);
+  body.scrollTop = body.scrollHeight;
+}
+
+function diagToggle() {
+  var p = document.getElementById('diag-panel');
+  if (!p) return;
+  p.style.display = p.style.display === 'none' ? 'flex' : 'none';
+}
+
+function diagHide() {
+  var p = document.getElementById('diag-panel');
+  if (p) p.style.display = 'none';
+}
+
+function diagClear() {
+  _diagLog = [];
+  var body = document.getElementById('diag-body');
+  if (body) body.innerHTML = '';
+}
+
+function diagCopy() {
+  var lines = _diagLog.map(function(l){
+    var d = l.data ? ' → '+(typeof l.data==='object'?JSON.stringify(l.data):l.data) : '';
+    return l.ts+'  ['+l.category+']  '+l.msg+d;
+  });
+  var text = '=== MINDFUL RHYTHM DIAGNOSTICS ===\n'+new Date().toLocaleString()+'\n\n'+lines.join('\n');
+  var btn = document.getElementById('diag-copy-btn');
+  navigator.clipboard.writeText(text).then(function(){
+    if (btn) { btn.textContent='COPIED'; setTimeout(function(){btn.textContent='COPY';},2000); }
+  }).catch(function(){
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    if (btn) { btn.textContent='COPIED'; setTimeout(function(){btn.textContent='COPY';},2000); }
+  });
+}
+
+function diagSetUser(email) {
+  var btn = document.getElementById('diag-trigger');
+  if (!btn) return;
+  if (email === DIAG_USER) {
+    btn.style.display = 'flex';
+    diagLog('AUTH', 'Dev user detected — diagnostics enabled', email);
+  } else {
+    btn.style.display = 'none';
+    diagHide();
+    if (email) diagLog('AUTH', 'Non-dev user — diagnostics hidden', email);
+  }
 }
 
 function init() {
