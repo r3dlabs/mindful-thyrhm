@@ -1782,10 +1782,11 @@ function setUser(user) {
 }
 
 function clearUser() {
-  diagLog('AUTH', 'clearUser — signed out');
+  diagLog('AUTH', 'clearUser — signed out, wiping local breakHabits');
   var btn = document.getElementById('diag-trigger');
   if (btn) btn.style.display = 'none';
   diagHide();
+  breakHabits    = [];   // wipe in-memory so next user starts clean
   currentUser    = null;
   _currentUserId = null;
   unsubscribeRealtime();
@@ -3357,10 +3358,11 @@ async function signOutUser() {
     await new Promise(r => setTimeout(r, 400));
   }
 
-  LS.set('fast',      null);
-  LS.set('feeding',   null);
-  LS.set('moment',    null);
-  LS.set('syncQueue', null);
+  LS.set('fast',         null);
+  LS.set('feeding',      null);
+  LS.set('moment',       null);
+  LS.set('syncQueue',    null);
+  LS.set('breakHabits',  null);  // CRITICAL: never let one user's habits leak to next
 
   await sb.auth.signOut();
   clearUser();
@@ -3771,9 +3773,13 @@ async function pullBreakHabits() {
     if (data.length > 0) {
       // Log each row's user_id to detect RLS leakage
       data.forEach(function(r) {
-        if (r.user_id !== currentUser.id) {
-          diagLog('ERR', 'RLS LEAK — row belongs to different user!', {row_user: r.user_id.slice(0,8), me: currentUser.id.slice(0,8)});
-        }
+        var mine = r.user_id === currentUser.id;
+        diagLog('BRK', mine ? 'row OK' : '⚠️ RLS LEAK', {
+          name: r.name,
+          row_user: r.user_id.slice(0,8),
+          me: currentUser.id.slice(0,8),
+          match: mine
+        });
       });
       breakHabits = data.map(r => ({
         id:        r.id,
@@ -3791,13 +3797,17 @@ async function pullBreakHabits() {
    DIAGNOSTICS — only for authorized dev user, survives user switches
 ═══════════════════════════════════════════════════════════════ */
 const DIAG_USER = 'frederick.esparagoza@gmail.com';
-var _diagLog = []; // persists across login/logout in memory
+// Restore log from sessionStorage if available (survives sign-out/in, not page reload)
+var _diagLog = (function() {
+  try { return JSON.parse(sessionStorage.getItem('mr_diagLog') || '[]'); } catch(e) { return []; }
+})();
 
 function diagLog(category, msg, data) {
   var ts  = new Date().toLocaleTimeString('en-US', {hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
   var ms  = String(new Date().getMilliseconds()).padStart(3,'0');
   var col = {AUTH:'#34C98A',SYNC:'#9E95B8',FAST:'#E8A838',BRK:'#E05C7A',ERR:'#EF4444',INFO:'#5B9CF6'}[category]||'#4E4668';
   _diagLog.push({ts:ts+'.'+ms, category, msg, data:data||null, col});
+  try { sessionStorage.setItem('mr_diagLog', JSON.stringify(_diagLog.slice(-200))); } catch(e) {}
 
   var body = document.getElementById('diag-body');
   if (!body) return;
@@ -3852,11 +3862,26 @@ function diagSetUser(email) {
   if (!btn) return;
   if (email === DIAG_USER) {
     btn.style.display = 'flex';
-    diagLog('AUTH', 'Dev user detected — diagnostics enabled', email);
+    // Restore any previously logged entries to the UI
+    var body = document.getElementById('diag-body');
+    if (body && body.children.length === 0 && _diagLog.length > 0) {
+      _diagLog.forEach(function(l) {
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex;gap:6px;padding:1px 0;border-bottom:1px solid #0a0818;';
+        var ds = l.data ? ' → '+(typeof l.data==='object'?JSON.stringify(l.data):l.data) : '';
+        row.innerHTML = '<span style="color:#2C2448;flex-shrink:0">'+l.ts+'</span>'+
+          '<span style="color:'+(l.col||'#4E4668')+';flex-shrink:0;min-width:44px;font-weight:700">['+l.category+']</span>'+
+          '<span style="color:#9E95B8;word-break:break-all">'+l.msg+
+          '<span style="color:#2C2448">'+ds+'</span></span>';
+        body.appendChild(row);
+      });
+      body.scrollTop = body.scrollHeight;
+    }
+    diagLog('AUTH', 'Dev user signed in — log restored', {entries: _diagLog.length, email: email});
   } else {
     btn.style.display = 'none';
     diagHide();
-    if (email) diagLog('AUTH', 'Non-dev user — diagnostics hidden', email);
+    if (email) diagLog('AUTH', 'Non-dev user signed in', email);
   }
 }
 
