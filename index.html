@@ -1381,6 +1381,76 @@
 
 
 
+<!-- DEBUG PASSWORD MODAL -->
+<div id="dbg-pw-overlay" style="
+  display:none; position:fixed; inset:0; z-index:20000;
+  background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);
+  align-items:center; justify-content:center; padding:24px;
+">
+  <div style="
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius); padding:28px 24px;
+    width:100%; max-width:300px;
+    box-shadow:0 8px 40px rgba(0,0,0,0.5);
+    display:flex; flex-direction:column; gap:16px;
+  ">
+    <div style="text-align:center;">
+      <div style="
+        font-family:var(--font-cond); font-size:11px; font-weight:700;
+        letter-spacing:.14em; text-transform:uppercase;
+        color:var(--accent); margin-bottom:8px;
+      ">Developer Console</div>
+      <div style="
+        font-family:var(--font-cond); font-size:22px; font-weight:800;
+        color:var(--text); letter-spacing:.04em;
+      ">Enter Password</div>
+    </div>
+    <div style="position:relative;">
+      <input id="dbg-pw-input" type="password"
+        placeholder="Password"
+        onkeydown="if(event.key==='Enter')dbgPwSubmit()"
+        style="
+          width:100%; padding:14px 44px 14px 16px;
+          background:var(--surface2); border:1.5px solid var(--border);
+          border-radius:var(--radius-sm); color:var(--text);
+          font-family:var(--font-cond); font-size:15px; letter-spacing:.06em;
+          outline:none; box-sizing:border-box; transition:border-color .2s;
+        "
+        onfocus="this.style.borderColor='var(--accent)'"
+        onblur="this.style.borderColor='var(--border)'"
+      >
+      <span onclick="dbgPwToggleVis()" style="
+        position:absolute; right:12px; top:50%; transform:translateY(-50%);
+        cursor:pointer; color:var(--text3); line-height:0;
+      " id="dbg-pw-eye">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </span>
+    </div>
+    <div id="dbg-pw-err" style="
+      font-family:var(--font-cond); font-size:12px; color:var(--danger);
+      text-align:center; min-height:16px; letter-spacing:.04em;
+    "></div>
+    <button onclick="dbgPwSubmit()" style="
+      width:100%; padding:14px;
+      background:var(--accent); color:#fff; border:none;
+      border-radius:var(--radius-sm); cursor:pointer;
+      font-family:var(--font-cond); font-weight:700;
+      font-size:15px; letter-spacing:.06em;
+      transition:opacity .2s;
+    " onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+      Unlock
+    </button>
+    <button onclick="dbgPwClose()" style="
+      width:100%; padding:10px; background:none; border:none;
+      color:var(--text3); cursor:pointer;
+      font-family:var(--font-cond); font-size:13px; letter-spacing:.06em;
+      transition:color .2s;
+    " onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text3)'">
+      Cancel
+    </button>
+  </div>
+</div>
+
 <!-- DEBUG LOG PANEL -->
 <div id="dbg-panel" style="
   position:fixed; bottom:56px; left:0; right:0; z-index:200;
@@ -3434,17 +3504,54 @@ var _dbgUnlocked = false;
 
 function dbgAuth() {
   if (_dbgUnlocked) {
-    // Already unlocked — toggle visibility
     dbgShowToggle();
     return;
   }
-  var pw = prompt('Console password:');
-  if (pw === null) return; // cancelled
-  if (pw === 'rEd') {
-    _dbgUnlocked = true;
-    dbgShowToggle();
+  // Show custom password modal
+  var overlay = document.getElementById('dbg-pw-overlay');
+  if (overlay) {
+    overlay.style.display = 'flex';
+    var inp = document.getElementById('dbg-pw-input');
+    if (inp) { inp.value = ''; setTimeout(function(){ inp.focus(); }, 80); }
+    document.getElementById('dbg-pw-err').textContent = '';
   }
-  // Wrong password — silent fail, no hint
+}
+
+function dbgPwSubmit() {
+  var inp = document.getElementById('dbg-pw-input');
+  var err = document.getElementById('dbg-pw-err');
+  if (!inp) return;
+  if (inp.value === 'rEd') {
+    _dbgUnlocked = true;
+    dbgPwClose();
+    dbgShowToggle();
+  } else {
+    inp.value = '';
+    err.textContent = 'Incorrect password.';
+    inp.style.borderColor = 'var(--danger)';
+    setTimeout(function(){
+      inp.style.borderColor = 'var(--border)';
+      err.textContent = '';
+    }, 1800);
+  }
+}
+
+function dbgPwClose() {
+  var overlay = document.getElementById('dbg-pw-overlay');
+  if (overlay) overlay.style.display = 'none';
+  var inp = document.getElementById('dbg-pw-input');
+  if (inp) inp.value = '';
+}
+
+function dbgPwToggleVis() {
+  var inp = document.getElementById('dbg-pw-input');
+  var eye = document.getElementById('dbg-pw-eye');
+  if (!inp) return;
+  var show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  eye.innerHTML = show
+    ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+    : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 }
 
 function dbgShowToggle() {
