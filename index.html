@@ -162,8 +162,6 @@
     font-family: var(--font-cond); letter-spacing: .06em;
   }
 
-
-
   /* ─── SCROLLBAR ───────────────────────────────────────────── */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -290,7 +288,6 @@
     min-height: 100vh;
   }
   /* Extra bottom padding when debug panel is visible */
-
 
   .view { display: none; }
   .view.active { display: block; }
@@ -462,7 +459,6 @@
   .fast-btns { display: flex; gap: 10px; width: 100%; }
   /* ─── ADMIN PASSWORD MODAL ───────────────────────────────── */
 
-
   /* ─── DAY STATE LIST ──────────────────────────────────── */
   .day-tracker {
     flex: 1; display: flex; flex-direction: column;
@@ -496,7 +492,6 @@
   .btn-start:hover { opacity: .9; }
   .btn-start:active { transform: scale(.98); }
   .btn-start.danger { background: var(--danger); }
-
 
   /* Stage description block */
   .stage-desc-block {
@@ -560,8 +555,6 @@
     color: var(--accent); letter-spacing: .04em;
   }
 
-
-
   /* ════════════════════════════════════════════════════════════
      MOMENT STATES
   ════════════════════════════════════════════════════════════ */
@@ -606,7 +599,6 @@
     opacity: 1; transform: translateY(0);
     position: relative;
   }
-
 
   /* ── Two-col layout: states left, ring right ──────────── */
   .moment-row {
@@ -695,7 +687,6 @@
      HABIT TRACKER
   ════════════════════════════════════════════════════════════ */
 
-
   /* ════════════════════════════════════════════════════════════
      WEEKLY / MONTHLY VIEWS
   ════════════════════════════════════════════════════════════ */
@@ -724,8 +715,6 @@
     background: var(--ring-bg); overflow: hidden;
   }
   .wday-fill { height: 100%; border-radius: 2px; background: var(--accent); }
-
-
 
   /* ─── STATS TRIO LAYOUT ──────────────────────────────── */
   .stats-trio {
@@ -861,7 +850,6 @@
 
   /* ─── FAST LOG TABLE ──────────────────────────────────── */
 
-
   .month-grid {
     display: grid; grid-template-columns: repeat(7,1fr);
     gap: 4px; padding: 0 16px;
@@ -957,8 +945,6 @@
   }
   .modal-cancel:hover { background: var(--border); }
 
-
-
   /* ─── TOAST ───────────────────────────────────────────────── */
   #toast {
     position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
@@ -969,7 +955,6 @@
     z-index: 300;
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
 
   /* ─── DATE HEADER ─────────────────────────────────────────── */
   .date-header {
@@ -1164,8 +1149,6 @@
 
     </div><!-- /hero-duo -->
 
-
-
     <div class="spacer"></div>
   </div>
 
@@ -1306,8 +1289,6 @@
   </button>
 </nav>
 
-
-
 <!-- FRICTION MODAL -->
 <div id="modal-overlay">
   <div class="modal-sheet">
@@ -1342,13 +1323,7 @@
       cursor:pointer;transition:background .2s;" id="gate-theme-btn">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg>
     </button>
-    <button onclick="dbgAuth()" title="Console" id="gate-dbg-btn" style="
-      width:36px;height:36px;border-radius:50%;
-      background:var(--surface2);border:1px solid var(--border);
-      color:var(--text2);display:flex;align-items:center;justify-content:center;
-      cursor:pointer;transition:background .2s,color .2s;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-    </button>
+
   </div>
   <div class="gate-inner">
     <div class="gate-logo" id="gate-logo">MINDFUL <span>RHYTHM</span></div>
@@ -1378,119 +1353,6 @@
     </div>
   </div>
 </div>
-
-
-
-<!-- DEBUG PASSWORD MODAL -->
-<div id="dbg-pw-overlay" style="
-  display:none; position:fixed; inset:0; z-index:20000;
-  background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);
-  align-items:center; justify-content:center; padding:24px;
-">
-  <div style="
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:var(--radius); padding:28px 24px;
-    width:100%; max-width:300px;
-    box-shadow:0 8px 40px rgba(0,0,0,0.5);
-    display:flex; flex-direction:column; gap:16px;
-  ">
-    <div style="text-align:center;">
-      <div style="
-        font-family:var(--font-cond); font-size:11px; font-weight:700;
-        letter-spacing:.14em; text-transform:uppercase;
-        color:var(--accent); margin-bottom:8px;
-      ">Developer Console</div>
-      <div style="
-        font-family:var(--font-cond); font-size:22px; font-weight:800;
-        color:var(--text); letter-spacing:.04em;
-      ">Enter Password</div>
-    </div>
-    <div style="position:relative;">
-      <input id="dbg-pw-input" type="password"
-        placeholder="Password"
-        onkeydown="if(event.key==='Enter')dbgPwSubmit()"
-        style="
-          width:100%; padding:14px 44px 14px 16px;
-          background:var(--surface2); border:1.5px solid var(--border);
-          border-radius:var(--radius-sm); color:var(--text);
-          font-family:var(--font-cond); font-size:15px; letter-spacing:.06em;
-          outline:none; box-sizing:border-box; transition:border-color .2s;
-        "
-        onfocus="this.style.borderColor='var(--accent)'"
-        onblur="this.style.borderColor='var(--border)'"
-      >
-      <span onclick="dbgPwToggleVis()" style="
-        position:absolute; right:12px; top:50%; transform:translateY(-50%);
-        cursor:pointer; color:var(--text3); line-height:0;
-      " id="dbg-pw-eye">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-      </span>
-    </div>
-    <div id="dbg-pw-err" style="
-      font-family:var(--font-cond); font-size:12px; color:var(--danger);
-      text-align:center; min-height:16px; letter-spacing:.04em;
-    "></div>
-    <button onclick="dbgPwSubmit()" style="
-      width:100%; padding:14px;
-      background:var(--accent); color:#fff; border:none;
-      border-radius:var(--radius-sm); cursor:pointer;
-      font-family:var(--font-cond); font-weight:700;
-      font-size:15px; letter-spacing:.06em;
-      transition:opacity .2s;
-    " onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
-      Unlock
-    </button>
-    <button onclick="dbgPwClose()" style="
-      width:100%; padding:10px; background:none; border:none;
-      color:var(--text3); cursor:pointer;
-      font-family:var(--font-cond); font-size:13px; letter-spacing:.06em;
-      transition:color .2s;
-    " onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text3)'">
-      Cancel
-    </button>
-  </div>
-</div>
-
-<!-- DEBUG LOG PANEL -->
-<div id="dbg-panel" style="
-  position:fixed; bottom:56px; left:0; right:0; z-index:200;
-  background:#0a0818; border-top:2px solid #7C3AED;
-  font-family:monospace; font-size:11px;
-  display:none; flex-direction:column;
-  max-height:32px; transition:max-height .3s ease;
-  box-shadow:0 -4px 24px rgba(0,0,0,.6);
-">
-  <div id="dbg-header" style="
-    display:flex; align-items:center; gap:8px;
-    padding:6px 10px; background:#16112A;
-    border-bottom:1px solid #2C2448; flex-shrink:0; cursor:pointer;
-  " onclick="dbgToggle()">
-    <span style="color:#7C3AED;font-weight:700;letter-spacing:.08em;font-size:10px;">⬡ DEBUG LOG</span>
-    <span id="dbg-count" style="
-      background:#7C3AED;color:#fff;border-radius:10px;
-      padding:1px 7px;font-size:9px;font-weight:700;
-    ">0</span>
-    <span style="margin-left:auto;display:flex;gap:6px;">
-      <button onclick="event.stopPropagation();dbgCopy()" style="
-        padding:2px 8px;border-radius:6px;border:1px solid #2C2448;
-        background:#1E1836;color:#9E95B8;font-family:monospace;
-        font-size:9px;cursor:pointer;letter-spacing:.04em;
-      " id="dbg-copy-btn">COPY</button>
-      <button onclick="event.stopPropagation();dbgClear()" style="
-        padding:2px 8px;border-radius:6px;border:1px solid #2C2448;
-        background:#1E1836;color:#9E95B8;font-family:monospace;
-        font-size:9px;cursor:pointer;
-      ">CLR</button>
-      <span id="dbg-chevron" style="color:#4E4668;font-size:14px;">▼</span>
-    </span>
-  </div>
-  <div id="dbg-body" style="
-    overflow-y:auto; padding:6px 8px; flex:1;
-    display:flex; flex-direction:column; gap:1px;
-  "></div>
-</div>
-
-
 
 <!-- TOAST -->
 <div id="toast"></div>
@@ -1576,7 +1438,6 @@ if (!momentState._savedAt && Object.values(momentState.timers || {}).some(functi
   momentState._savedAt = Date.now();
 }
 
-
 function showApp() {
   const gate = document.getElementById('auth-gate');
   if (gate) gate.classList.add('hidden');
@@ -1588,16 +1449,13 @@ function showGate() {
 }
 
 function initAuth() {
-  dbg('AUTH', 'initAuth — registering listener');
   sb.auth.onAuthStateChange((event, session) => {
-    dbg('AUTH', 'onAuthStateChange', { event: event, user: session && session.user ? session.user.email : 'none' });
     if (session && session.user) setUser(session.user);
     else if (event === 'SIGNED_OUT') clearUser();
   });
 
   sb.auth.getSession().then(function(res) {
     var session = res && res.data && res.data.session;
-    dbg('AUTH', 'getSession result', { user: session && session.user ? session.user.email : 'none' });
     if (session && session.user) setUser(session.user);
   });
 }
@@ -1606,8 +1464,7 @@ let _currentUserId = null;
 
 function setUser(user) {
   // Dedupe — called by both getSession and onAuthStateChange
-  if (_currentUserId === user.id) { dbg('AUTH', 'setUser deduped (already set)', user.email); return; }
-  dbg('AUTH', 'setUser called', user.email);
+  if (_currentUserId === user.id) { return; }
   _currentUserId = user.id;
   currentUser    = user;
 
@@ -1633,7 +1490,6 @@ function setUser(user) {
 }
 
 function clearUser() {
-  dbg('AUTH', 'clearUser called — signing out');
   currentUser    = null;
   _currentUserId = null;
   unsubscribeRealtime();
@@ -1641,8 +1497,6 @@ function clearUser() {
   if (area) area.innerHTML = '<button id="login-btn" onclick="signInGoogle()">Sign In</button>';
   showGate();
 }
-
-
 
 async function signInGoogle() {
   await sb.auth.signInWithOAuth({
@@ -1907,7 +1761,6 @@ function getFeedingElapsed() {
 }
 
 function startFeedingTimer() {
-  dbg('FEED', 'startFeedingTimer', { totalSecs: feedingState.totalSecs, lastDate: feedingState.lastDate });
   const td = today();
   feedingState.startTs  = Date.now();
   feedingState.lastDate = td;
@@ -1919,7 +1772,6 @@ function pauseFeedingTimer() {
   feedingState.startTs   = null;
   LS.set('feeding', feedingState);
 }
-
 
 function getFastElapsed() {
   if (!fastState.running || !fastState.startTs) return fastState.totalSecs || 0;
@@ -1998,7 +1850,6 @@ function updateFastUI() {
 
 /* ── Button handlers ─────────────────────────────────────────── */
 function handleFastBtn() {
-  dbg('FAST', 'handleFastBtn', { running: fastState.running, totalSecs: fastState.totalSecs });
   if (fastState.running) {
     // Show friction modal
     const secs = getFastElapsed();
@@ -2018,13 +1869,12 @@ function handleFastBtn() {
     fastState._savedAt        = nowTs;
     LS.set('fast', fastState);
     writeEvent('fast_start', nowTs, {});
-    dbg('FAST', 'fast_start event written', new Date(nowTs).toLocaleTimeString());
+
     toast('Fast started — entering Fed state 🚀');
   }
 }
 
 /* ─── ADMIN ──────────────────────────────────────────────────*/
-
 
 function toggleTheme() {
   darkMode = !darkMode;
@@ -2032,18 +1882,8 @@ function toggleTheme() {
   applyTheme();
 }
 
-
-
-
-
-
-
-
-
-
-
 function confirmEndFast() {
-  dbg('FAST', 'confirmEndFast — ending fast', { totalSecs: getFastElapsed() });
+
   const secs    = getFastElapsed();
   const stIdx   = getFastingStageIdx(secs / 3600);
   const st      = STAGES[stIdx];
@@ -2059,17 +1899,13 @@ function confirmEndFast() {
   LS.set('fast', fastState);
   writeEvent('fast_end', endTs, { secs, stage: st.name });
   pushFast(secs, st.name, stIdx, startTs, endTs);
-  dbg('FAST', 'fast_end event written', { secs, stage: st.name });
   // Resume feeding window — restore pre-fast feeding total (don't reset to 0)
   // feedingState.totalSecs was saved by pauseFeedingTimer() when fast started
   // so feeding continues accumulating from where it left off
   startFeedingTimer();
-  dbg('FEED', 'feeding resumed after fast', { totalSecs: feedingState.totalSecs });
   closeModal();
   toast('Fast ended. Welcome back to your feeding window 🍴');
 }
-
-
 
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
@@ -2092,7 +1928,6 @@ function getStateElapsed(s) {
 }
 
 function switchState(s) {
-  dbg('MOMENT', 'switchState', { from: momentState.active, to: s });
   if (momentState.active === s) return;
 
   const now = Date.now();
@@ -2111,7 +1946,6 @@ function switchState(s) {
 
   // Write moment_switch event — replay will reconstruct timers
   writeEvent('moment_switch', now, { from: prevState, to: s });
-  dbg('MOMENT', 'moment_switch event written', { from: prevState, to: s });
 
   stopAudio();
   playAudio(s);
@@ -2226,7 +2060,6 @@ function playAudio(state) {
 function stopAudio() {
   if (activeAudio) { try { activeAudio.pause(); activeAudio = null; } catch(e){} }
 }
-
 
 /* ─── DAY STATE LIST ─────────────────────────────────────── */
 /* ─── helpers ────────────────────────────────────────────────
@@ -2364,7 +2197,6 @@ function buildDayTracker() {
     el.appendChild(row);
   });
 }
-
 
 /* ═══════════════════════════════════════════════════════════════
    HABITS
@@ -2720,7 +2552,6 @@ function renderMonthly() {
   // ── Habits — exact mirror of weekly habits section ───────────
   const CATS = ['purposeful','nourishing','training','recovering','wasteful'];
 
-
   // Break reasons this month
 
 }
@@ -2817,7 +2648,7 @@ async function writeEvent(type, ts, meta) {
     const pending = LS.get('pendingEvents') || [];
     pending.push({ type, ts, meta: meta || {} });
     LS.set('pendingEvents', pending);
-    dbg('SYNC', 'writeEvent queued (no user)', type);
+
     return;
   }
   try {
@@ -2828,16 +2659,14 @@ async function writeEvent(type, ts, meta) {
       meta:    meta || {},
     }, { onConflict: 'user_id,type,ts' });
     if (error) {
-      dbg('ERR', 'writeEvent failed', { type, error: error.message });
       // Queue for retry
       const pending = LS.get('pendingEvents') || [];
       pending.push({ type, ts, meta: meta || {} });
       LS.set('pendingEvents', pending);
     } else {
-      dbg('SYNC', 'writeEvent ok', type + ' @ ' + new Date(ts).toLocaleTimeString());
+
     }
   } catch(e) {
-    dbg('ERR', 'writeEvent exception', e.message);
     const pending = LS.get('pendingEvents') || [];
     pending.push({ type, ts, meta: meta || {} });
     LS.set('pendingEvents', pending);
@@ -2848,7 +2677,6 @@ async function writeEvent(type, ts, meta) {
 async function flushPendingEvents() {
   const pending = LS.get('pendingEvents') || [];
   if (!pending.length || !currentUser) return;
-  dbg('SYNC', 'flushing pending events', pending.length);
   LS.set('pendingEvents', []);
   for (const ev of pending) {
     await writeEvent(ev.type, ev.ts, ev.meta);
@@ -2880,8 +2708,6 @@ function replayEvents(events) {
   let feedingPaused    = false;
   let feedingPauseTs   = null;
 
-  dbg('SYNC', 'replaying events', events.length + ' events');
-
   for (const ev of events) {
     const ts = ev.ts;
     const meta = ev.meta || {};
@@ -2904,7 +2730,7 @@ function replayEvents(events) {
         fastRunning = true;
         fastStartTs = ts;
         fastOrigTs  = ts;
-        dbg('SYNC', 'replay: fast_start', new Date(ts).toLocaleTimeString());
+
         break;
       }
 
@@ -2924,7 +2750,7 @@ function replayEvents(events) {
             Math.floor((ts - momentStartTs) / 1000);
           momentStartTs = ts;
         }
-        dbg('SYNC', 'replay: fast_end', new Date(ts).toLocaleTimeString());
+
         break;
       }
 
@@ -2940,15 +2766,14 @@ function replayEvents(events) {
           // Snapshot event (from signout) — close session, reset anchor
           // State stays the same, startTs advances to snapshot time
           momentStartTs = ts;
-          dbg('SYNC', 'replay: moment snapshot', momentActive + ' @ ' + new Date(ts).toLocaleTimeString());
+
         } else {
           momentActive  = toState;
           momentStartTs = ts;
-          dbg('SYNC', 'replay: moment_switch', meta.from + ' → ' + toState + ' @ ' + new Date(ts).toLocaleTimeString());
+
         }
         break;
       }
-
 
     }
   }
@@ -2970,12 +2795,6 @@ function replayEvents(events) {
   if (!feedingPaused && feedingStartTs) {
     liveFeedingSecs = Math.floor((nowTs - feedingStartTs) / 1000);
   }
-
-  dbg('SYNC', 'replay result', {
-    fastRunning, fastTotal, liveFastSecs,
-    momentActive, momentTimers,
-    feedingTotal: feedingTotalSecs + liveFeedingSecs
-  });
 
   // ── Write reconstructed state to local vars + LS ──────────
   fastState = {
@@ -3031,7 +2850,6 @@ function pushFast(secs, stage, stageIdx, startTs, endTs) {
     start_ts:  startTs,
     end_ts:    endTs,
   }, { onConflict: 'user_id,start_ts' }).then(({ error }) => {
-    if (error) dbg('ERR', 'pushFast failed', error.message);
   });
 }
 function pushFeeding(date, secs) {} // feeding reconstructed from events
@@ -3039,23 +2857,15 @@ function pushMoment(state, secs, startTs, endTs) {} // moments reconstructed fro
 
 /* ── Pull & merge remote state ─────────────────────────────── */
 async function loadUserData() {
-  if (!currentUser) { dbg('SYNC', 'loadUserData skipped — no user'); return; }
-  dbg('SYNC', 'loadUserData starting pull');
+  if (!currentUser) { return; }
   try {
     await Promise.all([pullAndReplayEvents(), pullFasts()]);
-    dbg('SYNC', 'pull complete', {
-      fast: fastState.running ? 'RUNNING' : 'stopped',
-      fastSecs: getFastElapsed(),
-      momentActive: momentState.active,
-      momentSecs: getStateElapsed(momentState.active),
-      feedSecs: getFeedingElapsed()
-    });
+
     updateFastUI();
     updateStateUI();
     buildDayTracker();
     toast('✅ Synced');
   } catch(e) {
-    dbg('ERR', 'loadUserData error', e.message);
     console.warn('loadUserData error:', e.message);
   }
 }
@@ -3075,24 +2885,22 @@ async function pullAndReplayEvents() {
       .order('ts', { ascending: true });
 
     if (error) {
-      dbg('ERR', 'pullAndReplayEvents failed', error.message);
       return;
     }
 
     const events = data || [];
-    dbg('SYNC', 'pulled events', events.length + ' today');
 
     if (events.length === 0) {
       // No events today — local state is source of truth
       // If we have a running fast locally, write a fast_start event
       // so other devices can pick it up
       if (fastState.running && fastState.startTs) {
-        dbg('SYNC', 'no remote events — pushing local fast_start');
+
         await writeEvent('fast_start', fastState.startTs, {});
       }
       // Write current moment as a switch event if not wasteful
       if (momentState.active && momentState.active !== 'wasteful' && momentState.startTs) {
-        dbg('SYNC', 'no remote events — pushing local moment state');
+
         await writeEvent('moment_switch', momentState.startTs, {
           from: 'wasteful', to: momentState.active
         });
@@ -3104,7 +2912,6 @@ async function pullAndReplayEvents() {
     replayEvents(events);
 
   } catch(e) {
-    dbg('ERR', 'pullAndReplayEvents exception', e.message);
   }
 }
 
@@ -3213,9 +3020,6 @@ function saveToSupabase(table, data) {
    DIAGNOSTICS
 ═══════════════════════════════════════════════════════════════ */
 
-
-
-
 function toggleProfileDropdown() {
   const dd = document.getElementById('profile-dropdown');
   dd.classList.toggle('open');
@@ -3250,7 +3054,6 @@ async function signOutUser() {
         to:   momentState.active,
         snapshot: true
       });
-      dbg('SYNC', 'signout snapshot event written', momentState.active);
     }
     // Small delay to let the write complete
     await new Promise(r => setTimeout(r, 400));
@@ -3291,18 +3094,7 @@ function toast(msg) {
 /* ═══════════════════════════════════════════════════════════════
    MAIN LOOP
 ═══════════════════════════════════════════════════════════════ */
-var _tickCount = 0;
 function tick() {
-  _tickCount++;
-  if (_tickCount % 10 === 0) {
-    dbg('TICK', 'tick@'+_tickCount, {
-      fastRunning: fastState.running,
-      fastSecs: getFastElapsed(),
-      feedSecs: getFeedingElapsed ? getFeedingElapsed() : '?',
-      momentActive: momentState.active,
-      momentSecs: momentState.active ? getStateElapsed(momentState.active) : 0
-    });
-  }
   updateFastUI();
   updateStateUI();
   buildDayTracker();
@@ -3455,158 +3247,6 @@ function initQuotes() {
   quoteIdx = 1;
   setInterval(renderQuote, 8000);
 }
-
-/* ═══════════════════════════════════════════════════════════
-   DEBUG LOG — persistent across auth, survives sign in/out
-   Triple-tap header to toggle. COPY button exports full log.
-═══════════════════════════════════════════════════════════ */
-var _dbgLog   = [];
-var _dbgOpen  = false;  // hidden by default — triple-tap MINDFUL to reveal
-var _dbgCount = 0;
-
-function dbg(category, msg, data) {
-  var ts   = new Date().toLocaleTimeString('en-US', { hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit' });
-  var ms   = String(new Date().getMilliseconds()).padStart(3,'0');
-  var cats = { AUTH:'#34C98A', FAST:'#E8A838', FEED:'#5B9CF6', MOMENT:'#7C3AED', HABIT:'#E05C7A', SYNC:'#9E95B8', TICK:'#2C2448', ERR:'#EF4444', INFO:'#4E4668' };
-  var col  = cats[category] || '#4E4668';
-  var line = { ts: ts+'.'+ms, category: category, msg: msg, data: data || null, col: col };
-  _dbgLog.push(line);
-  _dbgCount++;
-
-  var body = document.getElementById('dbg-body');
-  var cnt  = document.getElementById('dbg-count');
-  if (cnt) cnt.textContent = _dbgCount;
-  if (!body) return;
-
-  var row = document.createElement('div');
-  row.style.cssText = 'display:flex;gap:6px;padding:1px 0;border-bottom:1px solid #16112A;';
-  var dataStr = data ? ' → ' + (typeof data === 'object' ? JSON.stringify(data) : data) : '';
-  row.innerHTML =
-    '<span style="color:#4E4668;flex-shrink:0">' + ts + '</span>' +
-    '<span style="color:' + col + ';flex-shrink:0;min-width:52px;font-weight:700">[' + category + ']</span>' +
-    '<span style="color:#9E95B8;word-break:break-all">' + msg + '<span style="color:#4E4668">' + dataStr + '</span></span>';
-  body.appendChild(row);
-  if (_dbgOpen) body.scrollTop = body.scrollHeight;
-}
-
-// Expand/collapse panel content — triggered by header bar single tap
-function dbgToggle() {
-  _dbgOpen = !_dbgOpen;
-  var panel   = document.getElementById('dbg-panel');
-  var chevron = document.getElementById('dbg-chevron');
-  panel.style.maxHeight = _dbgOpen ? 'calc(40vh - 56px)' : '32px';
-  if (chevron) chevron.textContent = _dbgOpen ? '▲' : '▼';
-}
-
-// Debug console — password protected, gate only
-var _dbgVisible = false;
-var _dbgUnlocked = false;
-
-function dbgAuth() {
-  if (_dbgUnlocked) {
-    dbgShowToggle();
-    return;
-  }
-  // Show custom password modal
-  var overlay = document.getElementById('dbg-pw-overlay');
-  if (overlay) {
-    overlay.style.display = 'flex';
-    var inp = document.getElementById('dbg-pw-input');
-    if (inp) { inp.value = ''; setTimeout(function(){ inp.focus(); }, 80); }
-    document.getElementById('dbg-pw-err').textContent = '';
-  }
-}
-
-function dbgPwSubmit() {
-  var inp = document.getElementById('dbg-pw-input');
-  var err = document.getElementById('dbg-pw-err');
-  if (!inp) return;
-  if (inp.value === 'rEd') {
-    _dbgUnlocked = true;
-    dbgPwClose();
-    dbgShowToggle();
-  } else {
-    inp.value = '';
-    err.textContent = 'Incorrect password.';
-    inp.style.borderColor = 'var(--danger)';
-    setTimeout(function(){
-      inp.style.borderColor = 'var(--border)';
-      err.textContent = '';
-    }, 1800);
-  }
-}
-
-function dbgPwClose() {
-  var overlay = document.getElementById('dbg-pw-overlay');
-  if (overlay) overlay.style.display = 'none';
-  var inp = document.getElementById('dbg-pw-input');
-  if (inp) inp.value = '';
-}
-
-function dbgPwToggleVis() {
-  var inp = document.getElementById('dbg-pw-input');
-  var eye = document.getElementById('dbg-pw-eye');
-  if (!inp) return;
-  var show = inp.type === 'password';
-  inp.type = show ? 'text' : 'password';
-  eye.innerHTML = show
-    ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
-    : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-}
-
-function dbgShowToggle() {
-  _dbgVisible = !_dbgVisible;
-  var panel = document.getElementById('dbg-panel');
-  var btn   = document.getElementById('gate-dbg-btn');
-  if (!panel) return;
-  if (_dbgVisible) {
-    panel.style.display = 'flex';
-    _dbgOpen = true;
-    panel.style.maxHeight = 'calc(40vh - 56px)';
-    var chevron = document.getElementById('dbg-chevron');
-    if (chevron) chevron.textContent = '▲';
-    if (btn) btn.style.color = '#7C3AED';
-  } else {
-    panel.style.display = 'none';
-    _dbgOpen = false;
-    if (btn) btn.style.color = '';
-  }
-}
-
-
-
-function dbgClear() {
-  _dbgLog = []; _dbgCount = 0;
-  var body = document.getElementById('dbg-body');
-  var cnt  = document.getElementById('dbg-count');
-  if (body) body.innerHTML = '';
-  if (cnt)  cnt.textContent = '0';
-}
-
-function dbgCopy() {
-  var lines = _dbgLog.map(function(l) {
-    var d = l.data ? ' → ' + (typeof l.data === 'object' ? JSON.stringify(l.data) : l.data) : '';
-    return l.ts + '  [' + l.category + ']  ' + l.msg + d;
-  });
-  var text = '=== MINDFUL RHYTHM DEBUG LOG ===\n' + new Date().toLocaleString() + '\n\n' + lines.join('\n');
-  var btn = document.getElementById('dbg-copy-btn');
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(function() {
-      if (btn) { btn.textContent = 'COPIED'; setTimeout(function(){ btn.textContent = 'COPY'; }, 2000); }
-    });
-  } else {
-    var ta = document.createElement('textarea');
-    ta.value = text; document.body.appendChild(ta); ta.select();
-    document.execCommand('copy'); document.body.removeChild(ta);
-    if (btn) { btn.textContent = 'COPIED'; setTimeout(function(){ btn.textContent = 'COPY'; }, 2000); }
-  }
-}
-
-// Boot log
-dbg('INFO', 'Page loaded', { url: location.href, hash: location.hash || 'none' });
-dbg('INFO', 'fastState init', { running: fastState.running, totalSecs: fastState.totalSecs, startTs: fastState.startTs });
-dbg('INFO', 'momentState init', { active: momentState.active, startTs: momentState.startTs, timers: momentState.timers });
-dbg('INFO', 'feedingState init', { startTs: feedingState.startTs, totalSecs: feedingState.totalSecs });
 
 function init() {
   initAuth();
