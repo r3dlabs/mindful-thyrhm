@@ -1787,6 +1787,10 @@ function secsSinceMidnight() {
 /* ── Helper needed by feedingState init ── */
 /* ── State — declared before everything else ── */
 let fastState    = LS.get('fast') || { running: false, startTs: null, totalSecs: 0, log: [] };
+// If loaded from LS, ensure _savedAt exists so remote-wins comparison works
+if (!fastState._savedAt && (fastState.running || fastState.totalSecs > 0)) {
+  fastState._savedAt = Date.now();
+}
 let feedingState = LS.get('feeding') || (() => {
   const preload = fastState.running ? 0 : secsSinceMidnight();
   return { startTs: fastState.running ? null : Date.now(), totalSecs: preload, lastDate: today() };
@@ -1802,6 +1806,9 @@ let momentState = LS.get('moment') || (() => {
     lastDate: today()
   };
 })();
+if (!momentState._savedAt && Object.values(momentState.timers || {}).some(function(v){ return v > 0; })) {
+  momentState._savedAt = Date.now();
+}
 let habits = LS.get('habits') || {
   purposeful: [], nourishing: [], training: [], recovering: [], wasteful: [],
 };
@@ -3625,37 +3632,78 @@ async function pullAppState() {
     .select('*')
     .eq('user_id', currentUser.id)
     .single();
+
   if (error || !data) {
-    // No remote row yet — this is a first login or the row was never pushed.
-    // Push whatever local state we have up to Supabase so future logins restore it.
-    // Only push if we have meaningful local state (fast running, or timers > 0)
-    const hasMeaningfulState = fastState.running ||
+    dbg('SYNC', 'pullAppState — no remote row, pushing local state up');
+    const hasMeaningful = fastState.running ||
       fastState.totalSecs > 0 ||
-      Object.values(momentState.timers || {}).some(v => v > 0);
-    if (hasMeaningfulState) {
-      pushAppState();
-    }
+      Object.values(momentState.timers || {}).some(function(v){ return v > 0; });
+    if (hasMeaningful) pushAppState();
     return;
   }
 
-  // Remote wins if it was updated more recently than local LS write
-  const remoteTs = new Date(data.updated_at).getTime();
-  const localTs  = fastState._savedAt || 0;
+  const remoteTs     = new Date(data.updated_at).getTime();
+  const remoteFastSecs   = data.fast_total_secs || 0;
+  const remoteFastRunning = data.fast_running || false;
+  const remoteMomentTimers = data.moment_timers || {};
+  const localFastSecs  = fastState.totalSecs || 0;
+  const localMomentTotal = Object.values(momentState.timers || {}).reduce(function(a,b){ return a+b; }, 0);
+  const remoteMomentTotal = Object.values(remoteMomentTimers).reduce(function(a,b){ return a+b; }, 0);
 
-  if (remoteTs > localTs) {
-    // Restore fasting
+  dbg('SYNC', 'pullAppState — comparing', {
+    remoteTs: new Date(remoteTs).toLocaleTimeString(),
+    remoteFastSecs: remoteFastSecs,
+    remoteFastRunning: remoteFastRunning,
+    remoteMomentTotal: remoteMomentTotal,
+    localFastSecs: localFastSecs,
+    localFastRunning: fastState.running,
+    localMomentTotal: localMomentTotal
+  });
+
+  // ── FAST merge: remote wins only if it has MORE data or is currently running ──
+  // Never let remote zero out a local fast that has real data
+  var fastRemoteWins = false;
+  if (remoteFastRunning && !fastState.running) {
+    // Remote has a running fast, local doesn't — remote wins
+    fastRemoteWins = true;
+    dbg('SYNC', 'fast → remote wins: remote is running, local is not');
+  } else if (!remoteFastRunning && !fastState.running && remoteFastSecs > localFastSecs) {
+    // Neither running but remote has more history
+    fastRemoteWins = true;
+    dbg('SYNC', 'fast → remote wins: more history');
+  } else if (remoteFastSecs === 0 && !remoteFastRunning && (fastState.running || localFastSecs > 0)) {
+    // Remote is zeroed but local has real data — local wins
+    fastRemoteWins = false;
+    dbg('SYNC', 'fast → local wins: remote zeroed, local has data — pushing local up');
+    pushAppState(); // push local up so remote catches up
+  } else if (remoteTs > (fastState._savedAt || 0)) {
+    // Remote is newer and has data — remote wins
+    fastRemoteWins = true;
+    dbg('SYNC', 'fast → remote wins: newer timestamp');
+  } else {
+    dbg('SYNC', 'fast → local wins: local is newer or equal');
+  }
+
+  if (fastRemoteWins) {
     fastState = {
-      running:         data.fast_running,
+      running:         remoteFastRunning,
       startTs:         data.fast_start_ts,
       originalStartTs: data.fast_original_ts,
-      totalSecs:       data.fast_total_secs || 0,
-      log:             fastState.log || [],  // keep local log
+      totalSecs:       remoteFastSecs,
+      log:             fastState.log || [],
       _savedAt:        remoteTs,
     };
     LS.set('fast', fastState);
+    dbg('SYNC', 'fast restored from remote', { running: fastState.running, totalSecs: fastState.totalSecs });
+  } else {
+    // Keep local but stamp _savedAt so next comparison works
+    fastState._savedAt = fastState._savedAt || Date.now();
+    LS.set('fast', fastState);
+  }
 
-    // Restore feeding — use remote startTs exactly so both devices compute same elapsed
-    const td = today();
+  // ── FEEDING merge ───────────────────────────────────────────────────
+  const td = today();
+  if (fastRemoteWins) {
     if (data.feeding_last_date === td) {
       feedingState = {
         startTs:   data.feeding_start_ts,
@@ -3663,13 +3711,10 @@ async function pullAppState() {
         lastDate:  td,
         _savedAt:  remoteTs,
       };
-      // If feeding was paused (fast was running) but we're now not fasting, resume
       if (!fastState.running && !feedingState.startTs) {
-        // Resume from where totalSecs left off — do NOT re-seed from midnight
         feedingState.startTs = Date.now();
       }
     } else {
-      // Different day — reset with today's preload
       feedingState = {
         startTs:   fastState.running ? null : Date.now(),
         totalSecs: fastState.running ? 0 : secsSinceMidnight(),
@@ -3677,21 +3722,43 @@ async function pullAppState() {
       };
     }
     LS.set('feeding', feedingState);
+    dbg('SYNC', 'feeding restored from remote', { totalSecs: feedingState.totalSecs });
+  }
 
-    // Restore moment state
-    const todayStr2 = today();
+  // ── MOMENT merge: take whichever has MORE accumulated time ──────────
+  // Remote is only trusted if it has more total time than local
+  var momentRemoteWins = false;
+  if (remoteMomentTotal > localMomentTotal && remoteMomentTotal > 60) {
+    momentRemoteWins = true;
+    dbg('SYNC', 'moment → remote wins: more total time', { remote: remoteMomentTotal, local: localMomentTotal });
+  } else if (localMomentTotal > 0 && remoteMomentTotal === 0) {
+    momentRemoteWins = false;
+    dbg('SYNC', 'moment → local wins: remote empty, pushing local up');
+    pushAppState();
+  } else if (remoteMomentTotal > 0 && remoteMomentTotal === localMomentTotal) {
+    // Equal — keep local (it's live)
+    momentRemoteWins = false;
+    dbg('SYNC', 'moment → local wins: equal totals, keeping live local');
+  } else {
+    momentRemoteWins = remoteMomentTotal > localMomentTotal;
+    dbg('SYNC', 'moment → ' + (momentRemoteWins ? 'remote' : 'local') + ' wins by default');
+  }
+
+  if (momentRemoteWins) {
+    var midnight = new Date();
+    midnight.setHours(0,0,0,0);
     momentState = {
       active:   data.moment_active || 'wasteful',
-      startTs:  data.moment_start_ts || Date.now(),
-      timers:   data.moment_timers  || { purposeful:0, wasteful:0, nourishing:0, training:0, recovering:0 },
-      lastDate: todayStr2,
+      startTs:  (data.moment_start_ts && data.moment_start_ts > midnight.getTime()) ? data.moment_start_ts : Date.now(),
+      timers:   remoteMomentTimers,
+      lastDate: td,
       _savedAt: remoteTs,
     };
-    // If the saved moment startTs is from a previous day, reset it to now
-    // so we don't accumulate stale time from yesterday's session
-    if (momentState.startTs && momentState.startTs < new Date().setHours(0,0,0,0)) {
-      momentState.startTs = Date.now();
-    }
+    LS.set('moment', momentState);
+    dbg('SYNC', 'moment restored from remote', { active: momentState.active, total: remoteMomentTotal });
+  } else {
+    momentState._savedAt = momentState._savedAt || Date.now();
+    momentState.lastDate = td;
     LS.set('moment', momentState);
   }
 }
