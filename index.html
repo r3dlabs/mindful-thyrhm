@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mindful Rhythm | Live the Moment</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏳</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -11,45 +12,46 @@
 <style>
   /* ─── TOKENS ─────────────────────────────────────────────── */
   :root {
-    --bg:           #F4F5F7;
+    --bg:           #F5F3FA;
     --surface:      #FFFFFF;
-    --surface2:     #ECEDF0;
-    --border:       #D8DAE0;
-    --text:         #111318;
-    --text2:        #5A5F72;
-    --text3:        #9298AA;
-    --accent:       #2563EB;
-    --accent-glow:  rgba(37,99,235,0.18);
-    --danger:       #EF4444;
-    --success:      #22C55E;
-    --warn:         #F59E0B;
-    --ring-bg:      #E2E4EB;
-    --shadow:       0 2px 16px rgba(0,0,0,0.08);
-    --shadow-lg:    0 8px 40px rgba(0,0,0,0.14);
+    --surface2:     #EDE9F6;
+    --border:       #D9D3EE;
+    --text:         #1A1428;
+    --text2:        #5E5378;
+    --text3:        #9E95B8;
+    --accent:       #7C3AED;
+    --accent-lt:    #9D6CF5;
+    --accent-glow:  rgba(124,58,237,0.15);
+    --danger:       #E05C7A;
+    --success:      #34C98A;
+    --warn:         #E8A838;
+    --ring-bg:      #E3DDF2;
+    --shadow:       0 2px 16px rgba(60,20,120,0.08);
+    --shadow-lg:    0 8px 40px rgba(60,20,120,0.14);
     --radius:       16px;
     --radius-sm:    10px;
     --font-cond:    'Barlow Condensed', sans-serif;
     --font-body:    'Barlow', sans-serif;
 
-    /* State colors */
-    --purposeful:   #2563EB;
-    --wasteful:     #EF4444;
-    --nourishing:   #22C55E;
-    --training:     #F59E0B;
-    --recovering:   #A855F7;
+    /* State colors — purple-anchored zen palette */
+    --purposeful:   #7C3AED;
+    --wasteful:     #E05C7A;
+    --nourishing:   #34C98A;
+    --training:     #E8A838;
+    --recovering:   #5B9CF6;
   }
   [data-theme="dark"] {
-    --bg:           #111318;
-    --surface:      #1C1E26;
-    --surface2:     #252830;
-    --border:       #2E3140;
-    --text:         #F0F1F5;
-    --text2:        #9298AA;
-    --text3:        #555B70;
-    --ring-bg:      #252830;
-    --shadow:       0 2px 16px rgba(0,0,0,0.4);
-    --shadow-lg:    0 8px 40px rgba(0,0,0,0.6);
-    --accent-glow:  rgba(37,99,235,0.25);
+    --bg:           #0E0A1A;
+    --surface:      #16112A;
+    --surface2:     #1E1836;
+    --border:       #2C2448;
+    --text:         #EDE8FF;
+    --text2:        #9E95B8;
+    --text3:        #4E4668;
+    --ring-bg:      #1E1836;
+    --shadow:       0 2px 16px rgba(0,0,0,0.5);
+    --shadow-lg:    0 8px 40px rgba(0,0,0,0.7);
+    --accent-glow:  rgba(124,58,237,0.28);
   }
 
   /* ─── RESET ──────────────────────────────────────────────── */
@@ -63,8 +65,100 @@
     transition: background .3s, color .3s;
     -webkit-font-smoothing: antialiased;
   }
+  [data-theme="dark"] body {
+    background-image: radial-gradient(ellipse 80% 40% at 50% -10%, rgba(124,58,237,0.12) 0%, transparent 70%);
+  }
   button { font-family: var(--font-body); cursor: pointer; border: none; background: none; }
   input, textarea { font-family: var(--font-body); }
+
+  /* ─── AUTH GATE ─────────────────────────────────────────── */
+  #auth-gate {
+    position: fixed; inset: 0; z-index: 10000;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px 24px 180px; /* bottom padding clears debug panel */
+  }
+  #auth-gate.hidden { display: none; }
+  .gate-inner {
+    display: flex; flex-direction: column;
+    align-items: center; text-align: center;
+    max-width: 320px; width: 100%;
+  }
+  .gate-logo {
+    font-family: var(--font-cond); font-weight: 800;
+    font-size: 28px; letter-spacing: .08em;
+    color: var(--text); margin-bottom: 4px;
+  }
+  .gate-logo span { color: var(--accent); }
+  .gate-tagline {
+    font-family: var(--font-cond); font-size: 11px;
+    letter-spacing: .18em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 36px;
+  }
+  /* ── Glowing ring icon ── */
+  .gate-ring {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    border: 3px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 44px;
+    margin-bottom: 36px;
+    position: relative;
+    animation: gate-ring-pulse 3s ease-in-out infinite;
+  }
+  .gate-ring::before {
+    content: '';
+    position: absolute; inset: -8px;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    opacity: 0;
+    animation: gate-ring-outer 3s ease-in-out infinite;
+  }
+  .gate-ring::after {
+    content: '';
+    position: absolute; inset: -18px;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    opacity: 0;
+    animation: gate-ring-outer 3s ease-in-out infinite .4s;
+  }
+  @keyframes gate-ring-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(124,58,237,0); border-color: var(--border); }
+    50%       { box-shadow: 0 0 32px 4px rgba(124,58,237,0.18); border-color: rgba(124,58,237,0.5); }
+  }
+  @keyframes gate-ring-outer {
+    0%   { transform: scale(1); opacity: 0; }
+    30%  { opacity: 0.3; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+  .gate-desc {
+    font-size: 13px; color: var(--text2);
+    line-height: 1.8; margin-bottom: 32px;
+    max-width: 260px;
+  }
+  .gate-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 16px 24px;
+    border-radius: var(--radius-sm);
+    background: var(--surface); border: 1.5px solid var(--border);
+    color: var(--text); cursor: pointer;
+    font-family: var(--font-cond); font-weight: 700;
+    font-size: 15px; letter-spacing: .05em;
+    transition: border-color .2s, box-shadow .2s;
+    box-shadow: var(--shadow);
+  }
+  .gate-btn:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+  }
+  .gate-btn img { border-radius: 50%; }
+  .gate-footer {
+    margin-top: 20px;
+    font-size: 11px; color: var(--text3);
+    font-family: var(--font-cond); letter-spacing: .06em;
+  }
+
+
 
   /* ─── SCROLLBAR ───────────────────────────────────────────── */
   ::-webkit-scrollbar { width: 4px; }
@@ -91,21 +185,66 @@
   }
   .brand span { color: var(--accent); }
   .topbar-right { display: flex; align-items: center; gap: 12px; }
-  #theme-btn {
+  #theme-btn, #fs-btn {
     width: 36px; height: 36px; border-radius: 50%;
     background: var(--surface2); color: var(--text2);
     display: flex; align-items: center; justify-content: center;
-    font-size: 16px; transition: background .2s;
+    transition: background .2s;
   }
-  #theme-btn:hover { background: var(--border); }
+  #theme-btn:hover, #fs-btn:hover { background: var(--border); }
   .user-avatar {
     width: 36px; height: 36px; border-radius: 50%;
     background: var(--accent); color: #fff;
     display: flex; align-items: center; justify-content: center;
     font-family: var(--font-cond); font-weight: 700; font-size: 15px;
     overflow: hidden; cursor: pointer;
+    position: relative;
   }
   .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* ─── PROFILE DROPDOWN ────────────────────────────────── */
+  #profile-dropdown {
+    position: fixed; top: 64px; right: 12px; z-index: 150;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px;
+    min-width: 200px; box-shadow: var(--shadow-lg);
+    display: none; flex-direction: column; gap: 4px;
+    animation: slideDown .18s ease;
+  }
+  #profile-dropdown.open { display: flex; }
+  .profile-user-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .profile-avatar-sm {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-cond); font-weight: 700; font-size: 13px;
+    overflow: hidden; flex-shrink: 0;
+  }
+  .profile-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
+  .profile-name {
+    font-family: var(--font-cond); font-size: 13px; font-weight: 600;
+    color: var(--text); white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .profile-email {
+    font-size: 11px; color: var(--text3);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .profile-menu-btn {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 10px; border-radius: 8px;
+    font-family: var(--font-cond); font-size: 13px; font-weight: 600;
+    color: var(--text2); cursor: pointer; transition: background .15s;
+    text-align: left; width: 100%;
+  }
+  .profile-menu-btn:hover { background: var(--surface2); }
+  .profile-menu-btn.danger { color: var(--danger); }
+  .profile-menu-btn.danger:hover { background: rgba(224,92,122,0.1); }
   #login-btn {
     padding: 6px 16px; border-radius: 8px;
     background: var(--accent); color: #fff;
@@ -146,11 +285,18 @@
     padding-bottom: 80px;
     min-height: 100vh;
   }
+  /* Extra bottom padding when debug panel is visible */
+
+
   .view { display: none; }
   .view.active { display: block; }
 
   /* ─── SECTION ─────────────────────────────────────────────── */
   .section-pad { padding: 16px 16px 0; }
+  @media (min-width: 768px)  { .section-pad { padding: 16px 24px 0; } }
+  @media (min-width: 1024px) { .section-pad { padding: 20px 32px 0; } }
+  @media (min-width: 1280px) { .section-pad { padding: 20px 40px 0; } }
+  @media (min-width: 1600px) { .section-pad { padding: 24px 60px 0; } }
   .section-title {
     font-family: var(--font-cond); font-weight: 700;
     font-size: 13px; letter-spacing: .12em; text-transform: uppercase;
@@ -169,11 +315,80 @@
   /* ════════════════════════════════════════════════════════════
      FASTING HERO
   ════════════════════════════════════════════════════════════ */
+  /* ─── HERO DUO LAYOUT ────────────────────────────────────── */
+  .hero-duo {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  @media (min-width: 768px) {
+    .hero-duo {
+      flex-direction: row;
+      align-items: stretch;
+      gap: 12px;
+      padding: 16px 24px 0;
+    }
+    .hero-duo #fasting-hero,
+    .hero-duo #moment-hero {
+      flex: 1;
+      margin: 0;
+      min-width: 0;
+      border-radius: var(--radius);
+    }
+    /* On tablet — stack ring above list inside each card */
+    .hero-duo .hero-row,
+    .hero-duo .moment-row {
+      flex-direction: column;
+      align-items: center;
+    }
+    .hero-duo .day-tracker,
+    .hero-duo .moment-state-list {
+      width: 100%;
+    }
+    .hero-duo .ring-wrap,
+    .hero-duo #moment-ring-wrap {
+      width: 150px;
+      height: 150px;
+    }
+    .hero-duo #fast-hhmm,
+    .hero-duo #moment-hhmm { font-size: 30px; }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-duo { gap: 20px; padding: 20px 32px 0; }
+    /* On desktop keep ring + list side by side inside each card */
+    .hero-duo .hero-row,
+    .hero-duo .moment-row {
+      flex-direction: row;
+      align-items: center;
+    }
+    .hero-duo .ring-wrap,
+    .hero-duo #moment-ring-wrap {
+      width: 160px;
+      height: 160px;
+    }
+    .hero-duo #fast-hhmm,
+    .hero-duo #moment-hhmm { font-size: 32px; }
+  }
+
+  @media (min-width: 1280px) {
+    .hero-duo { padding: 20px 40px 0; }
+  }
+
+  @media (min-width: 1600px) {
+    .hero-duo { gap: 24px; padding: 24px 60px 0; }
+  }
+
   #fasting-hero {
     margin: 16px 16px 0;
-    padding: 28px 20px 24px;
+    padding: 20px 20px 20px;
     display: flex; flex-direction: column; align-items: center;
     position: relative; overflow: hidden;
+  }
+  .hero-row {
+    display: flex; align-items: center; gap: 16px;
+    width: 100%;
   }
   #fasting-hero::before {
     content: '';
@@ -183,63 +398,89 @@
   }
   .ring-wrap {
     position: relative;
-    width: 200px; height: 200px;
-    margin-bottom: 20px;
+    width: 170px; height: 170px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
   }
-  #ring-svg {
-    width: 200px; height: 200px;
-    transform: rotate(-90deg);
+  #ring-svg-glow {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    overflow: visible;
   }
-  .ring-track {
-    fill: none; stroke: var(--ring-bg); stroke-width: 14;
+  .ring-track-bg {
+    fill: none;
+    stroke: var(--ring-bg);
+    stroke-width: 18;
   }
-  .ring-progress {
-    fill: none; stroke: var(--accent); stroke-width: 14;
+  .ring-live {
+    fill: none;
+    stroke-width: 18;
     stroke-linecap: round;
-    stroke-dasharray: 502;
-    stroke-dashoffset: 502;
-    transition: stroke-dashoffset .8s ease, stroke .8s ease;
+    /* color set via JS */
+    transition: stroke 1s ease;
+    /* Always full circle — glow effect only */
+    stroke-dasharray: none;
+  }
+  @keyframes ring-pulse {
+    0%   { opacity: 1;   filter: drop-shadow(0 0  6px var(--rc, rgba(124,58,237,0.6))); }
+    50%  { opacity: 0.7; filter: drop-shadow(0 0 22px var(--rc, rgba(124,58,237,0.9))); }
+    100% { opacity: 1;   filter: drop-shadow(0 0  6px var(--rc, rgba(124,58,237,0.6))); }
+  }
+  .ring-live {
+    animation: ring-pulse 2.8s ease-in-out infinite;
   }
   .ring-center {
-    position: absolute; inset: 0;
+    position: relative; z-index: 1;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    gap: 2px;
+    gap: 0;
+  }
+  #fast-stage-emoji {
+    font-size: 28px; line-height: 1; margin-bottom: 6px;
+    transition: transform .4s ease;
+  }
+  #fast-stage-ring {
+    font-family: var(--font-cond); font-weight: 700;
+    font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 8px;
+    transition: color .6s;
   }
   #fast-hhmm {
     font-family: var(--font-cond); font-weight: 700;
-    font-size: 42px; line-height: 1;
-    color: var(--text); letter-spacing: -.01em;
+    font-size: 34px; line-height: 1;
+    color: var(--text); letter-spacing: -.02em;
   }
   #fast-seconds {
-    font-family: var(--font-cond); font-size: 18px;
-    color: var(--text3); font-weight: 500;
+    font-family: var(--font-cond); font-size: 15px;
+    color: var(--text3); font-weight: 500; margin-top: 3px;
+    letter-spacing: .06em;
   }
-  #fast-stage-ring {
-    font-family: var(--font-cond); font-weight: 600;
-    font-size: 13px; letter-spacing: .08em; text-transform: uppercase;
-    color: var(--accent); margin-top: 2px;
+  .fast-btns { display: flex; gap: 10px; width: 100%; }
+  /* ─── ADMIN PASSWORD MODAL ───────────────────────────────── */
+
+
+  /* ─── DAY STATE LIST ──────────────────────────────────── */
+  .day-tracker {
+    flex: 1; display: flex; flex-direction: column;
+    justify-content: center; gap: 6px; min-width: 0;
   }
-  .fasting-meta {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px; width: 100%; margin-bottom: 20px;
+  .dst-row {
+    display: flex; align-items: center; gap: 7px;
   }
-  .meta-cell {
-    background: var(--surface2);
-    border-radius: var(--radius-sm);
-    padding: 10px 8px;
-    text-align: center;
+  .dst-icon { font-size: 14px; flex-shrink: 0; width: 20px; text-align: center; line-height: 1; }
+  .dst-name {
+    flex: 1; font-family: var(--font-cond); font-size: 12px;
+    font-weight: 600; letter-spacing: .04em; color: var(--text2);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .meta-label {
-    font-family: var(--font-cond); font-size: 10px;
-    letter-spacing: .1em; text-transform: uppercase;
-    color: var(--text3); margin-bottom: 4px;
+  .dst-time {
+    font-family: var(--font-cond); font-size: 12px; font-weight: 600;
+    color: var(--text3); flex-shrink: 0; min-width: 38px; text-align: right;
   }
-  .meta-val {
-    font-family: var(--font-cond); font-weight: 700;
-    font-size: 16px; color: var(--text);
+  .dst-pct {
+    font-family: var(--font-cond); font-size: 12px; font-weight: 700;
+    flex-shrink: 0; min-width: 30px; text-align: right;
   }
-  .fast-btns { display: flex; gap: 12px; width: 100%; }
   .btn-start {
     flex: 1; padding: 14px;
     border-radius: var(--radius-sm);
@@ -251,149 +492,199 @@
   .btn-start:hover { opacity: .9; }
   .btn-start:active { transform: scale(.98); }
   .btn-start.danger { background: var(--danger); }
-  .btn-ghost {
-    padding: 14px 18px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    background: var(--surface2); color: var(--text2);
-    font-family: var(--font-cond); font-weight: 600;
-    font-size: 14px; letter-spacing: .04em;
-    transition: background .2s;
-  }
-  .btn-ghost:hover { background: var(--border); }
 
-  /* Stage badge strip */
-  .stage-strip {
-    display: flex; gap: 6px; width: 100%; margin-top: 16px;
-    overflow-x: auto; scrollbar-width: none; padding-bottom: 2px;
+
+  /* Stage description block */
+  .stage-desc-block {
+    width: 100%; text-align: center;
+    padding: 2px 4px 14px;
+    display: flex; flex-direction: column; gap: 6px;
   }
-  .stage-strip::-webkit-scrollbar { display: none; }
-  .stage-badge {
-    flex-shrink: 0;
-    padding: 5px 10px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    font-family: var(--font-cond); font-size: 11px; font-weight: 600;
-    letter-spacing: .06em; text-transform: uppercase;
-    color: var(--text3); transition: all .4s;
+  .stage-nav {
+    display: flex; align-items: center; gap: 8px;
   }
-  .stage-badge.active {
-    background: var(--accent); border-color: var(--accent);
-    color: #fff;
+  .stage-nav-btn {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text3); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all .18s; font-size: 14px;
+    user-select: none;
   }
-  .stage-badge.passed {
-    background: var(--surface2); border-color: var(--success);
-    color: var(--success);
+  .stage-nav-btn:hover { background: var(--border); color: var(--text); }
+  .stage-nav-btn:disabled { opacity: .25; cursor: default; }
+  .stage-nav-content {
+    flex: 1; min-height: 52px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+  }
+  .stage-nav-text {
+    font-size: 12px; color: var(--text2); line-height: 1.55;
+    opacity: 0; transition: opacity .3s ease, transform .3s ease;
+    transform: translateX(20px); position: absolute; width: 100%;
+  }
+  .stage-nav-text.active {
+    opacity: 1; transform: translateX(0); position: relative;
+  }
+  .stage-nav-text.slide-left  { transform: translateX(-20px); }
+  .stage-nav-text.slide-right { transform: translateX(20px); }
+  .stage-nav-label {
+    font-family: var(--font-cond); font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    margin-bottom: 2px; display: block;
+  }
+  /* label color set inline per stage */
+  .stage-nav-dots {
+    display: flex; gap: 5px; justify-content: center; align-items: center;
+    margin-top: 4px;
+  }
+  .stage-nav-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--border); transition: background .3s, transform .3s;
+  }
+  .stage-nav-dot.active { transform: scale(1.3); }
+  .stage-next-line {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  #stage-next-label {
+    font-family: var(--font-cond); font-size: 12px; font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase; color: var(--text3);
+  }
+  .stage-next-eta {
+    font-family: var(--font-cond); font-size: 12px; font-weight: 700;
+    color: var(--accent); letter-spacing: .04em;
   }
 
-  /* ─── STAGE INFO CARD ─────────────────────────────────────── */
-  #stage-info-card {
-    margin: 12px 16px 0;
-    padding: 14px 16px;
-    display: flex; align-items: flex-start; gap: 12px;
-  }
-  .stage-icon { font-size: 26px; flex-shrink: 0; }
-  .stage-info-text {}
-  .stage-name {
-    font-family: var(--font-cond); font-weight: 700;
-    font-size: 15px; text-transform: uppercase; letter-spacing: .06em;
-    color: var(--text); margin-bottom: 3px;
-  }
-  .stage-desc {
-    font-size: 13px; color: var(--text2); line-height: 1.5;
-  }
-  .next-stage-row {
-    margin-top: 8px; display: flex; align-items: center; gap: 6px;
-  }
-  .next-label {
-    font-size: 11px; font-family: var(--font-cond);
-    text-transform: uppercase; letter-spacing: .08em; color: var(--text3);
-  }
-  .next-name {
-    font-size: 12px; font-family: var(--font-cond); font-weight: 600;
-    color: var(--accent);
-  }
+
 
   /* ════════════════════════════════════════════════════════════
      MOMENT STATES
   ════════════════════════════════════════════════════════════ */
-  .state-grid {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 10px; padding: 0 16px;
+
+  /* ── Moment hero card ─────────────────────────────────── */
+  #moment-hero {
+    margin: 12px 16px 0;
+    padding: 20px 20px 20px;
+    /* On tablet+ margin is handled by hero-duo */
+    display: flex; flex-direction: column; align-items: center;
+    position: relative; overflow: hidden;
   }
-  .state-btn {
-    padding: 18px 14px;
-    border-radius: var(--radius-sm);
-    border: 2px solid var(--border);
-    background: var(--surface);
-    display: flex; flex-direction: column; gap: 6px;
-    align-items: flex-start;
-    transition: all .2s; position: relative;
-    overflow: hidden;
-  }
-  .state-btn::before {
+  #moment-hero::before {
     content: '';
     position: absolute; inset: 0;
-    opacity: 0; transition: opacity .3s;
+    background: radial-gradient(ellipse at 50% 100%, var(--moment-glow, rgba(224,92,122,0.12)) 0%, transparent 70%);
+    pointer-events: none; transition: background .8s ease;
   }
-  .state-btn.purposeful { --sc: var(--purposeful); }
-  .state-btn.wasteful   { --sc: var(--wasteful); }
-  .state-btn.nourishing { --sc: var(--nourishing); }
-  .state-btn.training   { --sc: var(--training); }
-  .state-btn.recovering { --sc: var(--recovering); grid-column: span 2; }
-  .state-btn.active {
-    border-color: var(--sc);
-    background: var(--surface);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--sc) 15%, transparent);
+  .ltm-header {
+    font-family: var(--font-cond); font-weight: 800;
+    font-size: 13px; letter-spacing: .18em;
+    margin-bottom: 4px; text-align: center; width: 100%;
   }
-  .state-btn.active::before { opacity: 1; background: color-mix(in srgb, var(--sc) 8%, transparent); }
-  .state-icon { font-size: 22px; }
-  .state-name {
-    font-family: var(--font-cond); font-weight: 700;
-    font-size: 15px; letter-spacing: .04em; color: var(--text);
+  .ltm-live   { color: var(--text3); }
+  .ltm-moment { color: var(--accent); }
+
+  /* ── Quote scroller ───────────────────────────────────── */
+  .quote-scroller {
+    width: 100%; text-align: center;
+    min-height: 36px; margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
   }
-  .state-timer {
-    font-family: var(--font-cond); font-size: 13px;
-    color: var(--text3); font-weight: 500;
+  .quote-text {
+    font-size: 11px; color: var(--text3); line-height: 1.5;
+    font-style: italic; max-width: 280px;
+    position: absolute;
+    opacity: 0; transition: opacity .6s ease, transform .6s ease;
+    transform: translateY(8px);
   }
-  .state-btn.active .state-timer { color: var(--sc); }
-  .pulse-ring {
-    position: absolute; top: 10px; right: 10px;
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--sc);
-    display: none;
-  }
-  .state-btn.active .pulse-ring {
-    display: block;
-    animation: pulse 1.4s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%,100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--sc) 60%, transparent); }
-    50% { transform: scale(1.1); box-shadow: 0 0 0 6px transparent; }
+  .quote-text.active {
+    opacity: 1; transform: translateY(0);
+    position: relative;
   }
 
-  /* Donut wrap */
-  #donut-wrap {
-    margin: 12px 16px 0;
-    padding: 20px 16px;
+
+  /* ── Two-col layout: states left, ring right ──────────── */
+  .moment-row {
+    display: flex; align-items: center; gap: 16px; width: 100%;
   }
-  #donut-wrap canvas { max-height: 200px; }
-  .donut-legend {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 6px; margin-top: 14px;
+
+  /* ── State list (left) ────────────────────────────────── */
+  .moment-state-list {
+    flex: 1; display: flex; flex-direction: column;
+    gap: 7px; min-width: 0;
   }
-  .legend-row {
-    display: flex; align-items: center; gap: 7px;
-    font-size: 13px; color: var(--text2);
+  .mst-row {
+    display: flex; align-items: center; gap: 6px;
+    cursor: pointer; border-radius: 8px;
+    padding: 4px 6px; transition: background .15s;
   }
-  .legend-dot {
-    width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0;
+  .mst-row:hover { background: var(--surface2); }
+  .mst-row.active { background: color-mix(in srgb, var(--mst-color) 10%, transparent); }
+  .mst-icon { font-size: 14px; flex-shrink: 0; width: 18px; text-align: center; }
+  .mst-name {
+    flex: 1; font-family: var(--font-cond); font-size: 12px;
+    font-weight: 600; letter-spacing: .04em; color: var(--text2);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    min-width: 0;
   }
-  .legend-val {
-    margin-left: auto;
-    font-family: var(--font-cond); font-weight: 600; font-size: 13px;
-    color: var(--text);
+  .mst-row.active .mst-name { color: var(--mst-color); }
+  .mst-time {
+    font-family: var(--font-cond); font-size: 11px; font-weight: 600;
+    color: var(--text3); flex-shrink: 0; min-width: 34px; text-align: right;
+  }
+  .mst-pct {
+    font-family: var(--font-cond); font-size: 11px; font-weight: 700;
+    flex-shrink: 0; min-width: 26px; text-align: right;
+  }
+
+  /* Narrow screens: hide state names, icon + time + pct only */
+  @media (max-width: 380px) {
+    .mst-name { display: none; }
+    .mst-row  { gap: 4px; padding: 4px 4px; }
+    .mst-icon { font-size: 16px; width: 20px; }
+    .mst-time { font-size: 11px; min-width: 32px; }
+    .mst-pct  { font-size: 11px; min-width: 24px; }
+    #moment-ring-wrap { width: 150px; height: 150px; }
+    #moment-hhmm { font-size: 28px; }
+    /* Also hide state names on fasting day tracker */
+    .dst-name { display: none; }
+  }
+
+  /* ── Ring (right) ─────────────────────────────────────── */
+  #moment-ring-wrap {
+    position: relative;
+    width: 170px; height: 170px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  #moment-ring-svg {
+    position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible;
+  }
+  .moment-ring-track { fill: none; stroke: var(--ring-bg); stroke-width: 18; }
+  .moment-ring-live  {
+    fill: none; stroke-width: 18; stroke-linecap: round;
+    transition: stroke 1s ease;
+    animation: ring-pulse 2.8s ease-in-out infinite;
+  }
+  #moment-ring-center {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 0;
+  }
+  #moment-state-emoji { font-size: 26px; line-height: 1; margin-bottom: 5px; }
+  #moment-state-label {
+    font-family: var(--font-cond); font-weight: 700; font-size: 11px;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--text3);
+    margin-bottom: 6px; transition: color .6s;
+  }
+  #moment-hhmm {
+    font-family: var(--font-cond); font-weight: 700; font-size: 34px;
+    line-height: 1; color: var(--text); letter-spacing: -.02em;
+  }
+  #moment-ss {
+    font-family: var(--font-cond); font-size: 14px; font-weight: 500;
+    color: var(--text3); margin-top: 3px; letter-spacing: .06em;
   }
 
   /* ════════════════════════════════════════════════════════════
@@ -433,40 +724,50 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
-    padding: 12px 14px;
-    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    display: flex; align-items: center; gap: 10px;
     transition: border-color .2s;
+    position: relative;
   }
   .habit-item.done { border-color: var(--success); }
+  .habit-item.editing-mode { border-color: var(--accent); }
   .habit-check {
     width: 22px; height: 22px; border-radius: 6px;
     border: 2px solid var(--border);
     flex-shrink: 0; display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: all .2s; background: var(--surface2);
   }
-  .habit-check.done {
-    background: var(--success); border-color: var(--success);
-  }
+  .habit-check.done { background: var(--success); border-color: var(--success); }
   .habit-check svg { display: none; }
   .habit-check.done svg { display: block; }
   .habit-name {
-    flex: 1; font-size: 15px; color: var(--text);
+    flex: 1; font-size: 14px; color: var(--text);
     background: none; border: none; outline: none;
-    caret-color: var(--accent);
+    caret-color: var(--accent); min-width: 0;
   }
-  .habit-name.editing { border-bottom: 1px solid var(--accent); }
+  .habit-name.editing {
+    border-bottom: 1.5px solid var(--accent);
+    padding-bottom: 1px;
+  }
   .habit-streak {
-    display: flex; align-items: center; gap: 4px;
-    font-family: var(--font-cond); font-size: 13px; font-weight: 600;
-    color: var(--warn);
+    display: flex; align-items: center; gap: 3px;
+    font-family: var(--font-cond); font-size: 12px; font-weight: 600;
+    color: var(--warn); flex-shrink: 0;
   }
-  .habit-edit-btn {
+  .habit-actions {
+    display: flex; gap: 4px; flex-shrink: 0;
+  }
+  .habit-action-btn {
     width: 28px; height: 28px; border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
-    color: var(--text3); background: var(--surface2);
-    font-size: 13px; transition: background .2s;
+    background: var(--surface2); color: var(--text3);
+    transition: all .15s; cursor: pointer; flex-shrink: 0;
+    border: none;
   }
-  .habit-edit-btn:hover { background: var(--border); }
+  .habit-action-btn:hover { background: var(--border); color: var(--text); }
+  .habit-action-btn.edit:hover { background: rgba(124,58,237,0.15); color: var(--accent); }
+  .habit-action-btn.delete:hover { background: rgba(224,92,122,0.15); color: var(--danger); }
+  .habit-action-btn svg { pointer-events: none; }
   .add-habit-btn {
     margin: 10px 16px 0;
     padding: 12px;
@@ -508,6 +809,150 @@
     background: var(--ring-bg); overflow: hidden;
   }
   .wday-fill { height: 100%; border-radius: 2px; background: var(--accent); }
+
+
+
+  /* ─── STATS TRIO LAYOUT ──────────────────────────────── */
+  .stats-trio {
+    display: flex;
+    flex-direction: column;
+  }
+  .stats-col {
+    /* On mobile: full width, default stacking */
+  }
+
+  @media (min-width: 768px) {
+    .stats-trio {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px 24px 0;
+    }
+    .stats-col {
+      flex: 1; min-width: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .stats-trio .stats-section {
+      padding: 0;
+      margin-top: 0;
+    }
+    .stats-trio .wk-chart-wrap { height: 180px; }
+  }
+
+  @media (min-width: 1024px) {
+    .stats-trio { gap: 20px; padding: 20px 32px 0; }
+    .stats-col  { padding: 20px; }
+    .stats-trio .wk-chart-wrap { height: 200px; }
+  }
+
+  @media (min-width: 1280px) {
+    .stats-trio { padding: 20px 40px 0; }
+  }
+
+  @media (min-width: 1600px) {
+    .stats-trio { padding: 24px 60px 0; gap: 24px; }
+    .stats-col  { padding: 24px; }
+  }
+
+  /* ─── WEEKLY CHART ───────────────────────────────────── */
+  .wk-chart-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 16px;
+    margin-bottom: 10px; position: relative;
+    height: 200px;
+  }
+  .wk-chart-wrap canvas { width: 100% !important; height: 100% !important; }
+  .wk-chart-legend {
+    display: flex; flex-wrap: wrap; gap: 8px 14px;
+    margin-bottom: 4px;
+  }
+  .wk-legend-item {
+    display: flex; align-items: center; gap: 5px;
+    font-family: var(--font-cond); font-size: 11px; font-weight: 600;
+    color: var(--text2); letter-spacing: .04em;
+  }
+  .wk-legend-dot {
+    width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0;
+  }
+  .wk-break-section { margin-top: 14px; }
+  .wk-break-title {
+    font-family: var(--font-cond); font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 8px;
+  }
+
+  /* ─── STATS SECTIONS ──────────────────────────────────── */
+  .stats-section {
+    padding: 0 16px; margin-top: 20px;
+  }
+  .stats-section-title {
+    font-family: var(--font-cond); font-size: 11px; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stats-section-title::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* ─── KPI ROW ─────────────────────────────────────────── */
+  .kpi-row {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 8px; margin-bottom: 8px;
+  }
+  .kpi-row.cols3 { grid-template-columns: repeat(3, 1fr); }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+  }
+  .kpi-lbl {
+    font-family: var(--font-cond); font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 4px;
+  }
+  .kpi-val {
+    font-family: var(--font-cond); font-weight: 700;
+    font-size: 22px; line-height: 1; color: var(--text);
+  }
+  .kpi-sub {
+    font-size: 11px; color: var(--text3); margin-top: 3px;
+  }
+  .kpi-card.accent-border { border-color: var(--accent); }
+  .kpi-card.danger-border { border-color: var(--danger); }
+
+  /* ─── STATE BAR LIST ──────────────────────────────────── */
+  .state-bar-list {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .sbl-row {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sbl-icon { font-size: 14px; flex-shrink: 0; width: 20px; text-align: center; }
+  .sbl-name {
+    font-family: var(--font-cond); font-size: 12px; font-weight: 600;
+    letter-spacing: .04em; color: var(--text2); flex-shrink: 0; width: 80px;
+  }
+  .sbl-bar-wrap {
+    flex: 1; height: 6px; border-radius: 3px;
+    background: var(--surface2); overflow: hidden;
+  }
+  .sbl-bar { height: 100%; border-radius: 3px; transition: width .6s ease; }
+  .sbl-time {
+    font-family: var(--font-cond); font-size: 11px; font-weight: 600;
+    color: var(--text3); flex-shrink: 0; min-width: 36px; text-align: right;
+  }
+  .sbl-pct {
+    font-family: var(--font-cond); font-size: 11px; font-weight: 700;
+    flex-shrink: 0; min-width: 30px; text-align: right;
+  }
+
+  /* ─── FAST LOG TABLE ──────────────────────────────────── */
+
 
   .month-grid {
     display: grid; grid-template-columns: repeat(7,1fr);
@@ -596,13 +1041,63 @@
   }
   .modal-confirm:hover { opacity: .85; }
   .modal-cancel {
-    padding: 15px; border-radius: var(--font-cond);
+    padding: 15px; border-radius: var(--radius-sm);
     background: var(--surface2); color: var(--text2);
     font-family: var(--font-cond); font-weight: 600; font-size: 15px;
     letter-spacing: .04em; border-radius: var(--radius-sm);
     transition: background .2s;
   }
   .modal-cancel:hover { background: var(--border); }
+
+  /* ─── BREAK HABIT MODAL ──────────────────────────────────── */
+  #break-modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,.55);
+    backdrop-filter: blur(4px);
+    display: none; align-items: flex-end; justify-content: center;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  #break-modal-overlay.open { display: flex; }
+  .break-reason-label {
+    font-family: var(--font-cond); font-size: 11px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 10px;
+  }
+  .break-tags {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+  }
+  .break-tag {
+    padding: 7px 12px; border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--surface2); color: var(--text2);
+    font-family: var(--font-cond); font-size: 12px; font-weight: 600;
+    letter-spacing: .04em; cursor: pointer; transition: all .15s;
+  }
+  .break-tag:hover { border-color: var(--danger); color: var(--danger); }
+  .break-tag.selected {
+    background: rgba(224,92,122,0.15);
+    border-color: var(--danger); color: var(--danger);
+  }
+  .break-reason-input {
+    width: 100%; padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border);
+    background: var(--surface2); color: var(--text);
+    font-family: var(--font-body); font-size: 14px;
+    outline: none; transition: border-color .2s;
+  }
+  .break-reason-input:focus { border-color: var(--danger); }
+
+  /* Broken state on habit item */
+  .habit-item.broken {
+    border-color: var(--danger);
+    background: rgba(224,92,122,0.04);
+  }
+  .habit-check.broken {
+    background: rgba(224,92,122,0.15);
+    border-color: var(--danger);
+  }
+  .habit-streak.broken { color: var(--danger); }
 
   /* ─── TOAST ───────────────────────────────────────────────── */
   #toast {
@@ -615,40 +1110,30 @@
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ─── FAST LOG TABLE ──────────────────────────────────────── */
-  .log-table {
-    width: 100%; border-collapse: collapse;
-    font-size: 13px;
-  }
-  .log-table th {
-    font-family: var(--font-cond); font-size: 10px; letter-spacing: .1em;
-    text-transform: uppercase; color: var(--text3);
-    padding: 8px 10px; text-align: left;
-    border-bottom: 1px solid var(--border);
-  }
-  .log-table td {
-    padding: 10px; color: var(--text2);
-    border-bottom: 1px solid var(--border);
-  }
-  .log-table td:first-child { color: var(--text); font-weight: 500; }
-  .log-badge {
-    display: inline-block; padding: 2px 8px; border-radius: 10px;
-    font-family: var(--font-cond); font-size: 11px; font-weight: 600;
-    background: var(--surface2); color: var(--accent);
-  }
 
   /* ─── DATE HEADER ─────────────────────────────────────────── */
   .date-header {
     padding: 16px 16px 8px;
-    display: flex; align-items: baseline; justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between;
   }
   .date-big {
     font-family: var(--font-cond); font-weight: 700; font-size: 28px;
     color: var(--text); letter-spacing: -.01em;
   }
+  .date-right {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+  }
   .date-sub {
-    font-family: var(--font-cond); font-size: 13px; color: var(--text3);
+    font-family: var(--font-cond); font-size: 12px; color: var(--text3);
     text-transform: uppercase; letter-spacing: .06em;
+  }
+  #live-clock {
+    font-family: var(--font-cond); font-weight: 700; font-size: 22px;
+    color: var(--text); letter-spacing: .02em; line-height: 1;
+  }
+  #live-ampm {
+    font-family: var(--font-cond); font-size: 11px; font-weight: 600;
+    color: var(--text3); letter-spacing: .1em; margin-left: 3px;
   }
 
   /* ─── WEEK NAV ────────────────────────────────────────────── */
@@ -669,10 +1154,27 @@
   }
 
   /* ─── RESPONSIVE ──────────────────────────────────────────── */
-  @media (min-width: 480px) {
-    .state-grid { grid-template-columns: repeat(3, 1fr); }
-    .state-btn.recovering { grid-column: span 1; }
+  @media (min-width: 768px) {
+    .date-header  { padding: 16px 24px 8px; }
+    .week-nav     { padding: 0 24px 12px; }
+    .week-grid    { padding: 0 24px; }
   }
+  @media (min-width: 1024px) {
+    .date-header  { padding: 20px 32px 8px; }
+    .week-nav     { padding: 0 32px 12px; }
+    .week-grid    { padding: 0 32px; }
+  }
+  @media (min-width: 1280px) {
+    .date-header  { padding: 20px 40px 8px; }
+    .week-nav     { padding: 0 40px 12px; }
+    .week-grid    { padding: 0 40px; }
+  }
+  @media (min-width: 1600px) {
+    .date-header  { padding: 24px 60px 8px; }
+    .week-nav     { padding: 0 60px 12px; }
+    .week-grid    { padding: 0 60px; }
+  }
+
 </style>
 </head>
 <body>
@@ -681,11 +1183,17 @@
 <div id="topbar">
   <div class="brand">MINDFUL <span>RHYTHM</span></div>
   <div class="topbar-right">
-    <button id="theme-btn" title="Toggle theme">☀</button>
+    <button id="fs-btn" title="Fullscreen" onclick="toggleFullscreen()">
+      <svg id="fs-icon-enter" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+      <svg id="fs-icon-exit" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg>
+    </button>
+    <button id="theme-btn" title="Toggle theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg></button>
+
     <div id="auth-area">
       <button id="login-btn" onclick="signInGoogle()">Sign In</button>
     </div>
   </div>
+
 </div>
 
 <!-- MAIN -->
@@ -697,105 +1205,104 @@
     <!-- Date header -->
     <div class="date-header">
       <div class="date-big" id="today-date">Today</div>
-      <div class="date-sub" id="today-dow">—</div>
+      <div class="date-right">
+        <div id="today-dow" class="date-sub">—</div>
+        <div><span id="live-clock">—</span><span id="live-ampm"></span></div>
+      </div>
     </div>
+
+    <!-- HERO DUO — side by side on tablet/desktop -->
+    <div class="hero-duo">
 
     <!-- FASTING HERO -->
     <div class="card" id="fasting-hero">
-      <div class="ring-wrap">
-        <svg id="ring-svg" viewBox="0 0 180 180">
-          <circle class="ring-track" cx="90" cy="90" r="80"/>
-          <circle class="ring-progress" id="ring-prog" cx="90" cy="90" r="80"/>
-        </svg>
-        <div class="ring-center">
-          <div id="fast-hhmm">00:00</div>
-          <div id="fast-seconds">00</div>
-          <div id="fast-stage-ring">Fed</div>
+      <!-- Ring + Day Tracker side by side -->
+      <div class="hero-row">
+        <div class="ring-wrap" id="ring-wrap">
+          <svg id="ring-svg-glow" viewBox="0 0 170 170">
+            <circle class="ring-track-bg" cx="85" cy="85" r="74"/>
+            <circle class="ring-live" id="ring-live-circle"
+              cx="85" cy="85" r="74"
+              stroke="rgba(124,58,237,0.85)"
+              transform="rotate(-90 85 85)"/>
+          </svg>
+          <div class="ring-center">
+            <div id="fast-stage-emoji">🍴</div>
+            <div id="fast-stage-ring">Feeding</div>
+            <div id="fast-hhmm">00:00</div>
+            <div id="fast-seconds">00</div>
+          </div>
         </div>
+
+        <!-- Day State List -->
+        <div class="day-tracker" id="day-state-list"></div>
       </div>
 
-      <!-- Stage badges -->
-      <div class="stage-strip" id="stage-strip"></div>
-
-      <!-- Meta -->
-      <div class="fasting-meta" style="margin-top:14px;">
-        <div class="meta-cell">
-          <div class="meta-label">Target</div>
-          <div class="meta-val" id="meta-target">16:00</div>
+      <!-- Stage description scroller -->
+      <div class="stage-desc-block">
+        <div class="stage-nav">
+          <button class="stage-nav-btn" id="stage-nav-prev" onclick="stageNavStep(-1)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="stage-nav-content">
+            <div class="stage-nav-text active" id="stage-nav-text"></div>
+          </div>
+          <button class="stage-nav-btn" id="stage-nav-next" onclick="stageNavStep(1)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
-        <div class="meta-cell">
-          <div class="meta-label">Remaining</div>
-          <div class="meta-val" id="meta-remaining">—</div>
-        </div>
-        <div class="meta-cell">
-          <div class="meta-label">Goal</div>
-          <div class="meta-val" id="meta-pct">0%</div>
+        <div class="stage-nav-dots" id="stage-nav-dots"></div>
+        <div class="stage-next-line">
+          <span id="stage-next-label">Next: Fed (start fast)</span>
+          <span id="stage-next-eta" class="stage-next-eta"></span>
         </div>
       </div>
 
       <!-- CTA -->
       <div class="fast-btns">
         <button class="btn-start" id="fast-btn" onclick="handleFastBtn()">Start Fast</button>
-        <button class="btn-ghost" onclick="showFastLog()">Log</button>
       </div>
     </div>
 
-    <!-- Stage info -->
-    <div class="card" id="stage-info-card">
-      <div class="stage-icon" id="si-icon">🍽️</div>
-      <div class="stage-info-text">
-        <div class="stage-name" id="si-name">Fed State</div>
-        <div class="stage-desc" id="si-desc">Your body is digesting and absorbing nutrients. Insulin is elevated, storing energy from your recent meal.</div>
-        <div class="next-stage-row">
-          <span class="next-label">Next:</span>
-          <span class="next-name" id="si-next">Early Fasting in 0h</span>
+    <!-- MOMENT HERO -->
+    <div class="card" id="moment-hero">
+
+      <!-- Live the moment header -->
+      <div class="ltm-header">
+        <span class="ltm-live">LIVE THE </span><span class="ltm-moment">MOMENT</span>
+      </div>
+      <div class="quote-scroller">
+        <div class="quote-text active" id="quote-display"></div>
+      </div>
+
+      <!-- States left · Ring right -->
+      <div class="moment-row">
+
+        <!-- State list -->
+        <div class="moment-state-list" id="moment-state-list"></div>
+
+        <!-- Ring timer -->
+        <div id="moment-ring-wrap">
+          <svg id="moment-ring-svg" viewBox="0 0 170 170">
+            <circle class="moment-ring-track" cx="85" cy="85" r="74"/>
+            <circle class="moment-ring-live" id="moment-ring-circle"
+              cx="85" cy="85" r="74"
+              stroke="rgba(224,92,122,0.85)"
+              transform="rotate(-90 85 85)"/>
+          </svg>
+          <div id="moment-ring-center">
+            <div id="moment-state-emoji">📱</div>
+            <div id="moment-state-label">Wasteful</div>
+            <div id="moment-hhmm">00:00</div>
+            <div id="moment-ss">00</div>
+          </div>
         </div>
+
       </div>
+
     </div>
 
-    <!-- MOMENT STATES -->
-    <div class="section-pad">
-      <div class="section-title">Moment State</div>
-    </div>
-    <div class="state-grid" id="state-grid">
-      <button class="state-btn purposeful" data-state="purposeful" onclick="toggleState(this)">
-        <div class="pulse-ring"></div>
-        <div class="state-icon">🎯</div>
-        <div class="state-name">Purposeful</div>
-        <div class="state-timer" id="timer-purposeful">0:00:00</div>
-      </button>
-      <button class="state-btn wasteful" data-state="wasteful" onclick="toggleState(this)">
-        <div class="pulse-ring"></div>
-        <div class="state-icon">📱</div>
-        <div class="state-name">Wasteful</div>
-        <div class="state-timer" id="timer-wasteful">0:00:00</div>
-      </button>
-      <button class="state-btn nourishing" data-state="nourishing" onclick="toggleState(this)">
-        <div class="pulse-ring"></div>
-        <div class="state-icon">🥗</div>
-        <div class="state-name">Nourishing</div>
-        <div class="state-timer" id="timer-nourishing">0:00:00</div>
-      </button>
-      <button class="state-btn training" data-state="training" onclick="toggleState(this)">
-        <div class="pulse-ring"></div>
-        <div class="state-icon">💪</div>
-        <div class="state-name">Training</div>
-        <div class="state-timer" id="timer-training">0:00:00</div>
-      </button>
-      <button class="state-btn recovering" data-state="recovering" onclick="toggleState(this)">
-        <div class="pulse-ring"></div>
-        <div class="state-icon">🛌</div>
-        <div class="state-name">Recovering</div>
-        <div class="state-timer" id="timer-recovering">0:00:00</div>
-      </button>
-    </div>
-
-    <!-- Donut chart -->
-    <div class="card" id="donut-wrap">
-      <div class="section-title" style="margin-bottom:0">Time Distribution</div>
-      <canvas id="donut-chart"></canvas>
-      <div class="donut-legend" id="donut-legend"></div>
-    </div>
+    </div><!-- /hero-duo -->
 
     <!-- HABITS -->
     <div class="section-pad" style="margin-top:4px;">
@@ -820,37 +1327,61 @@
       <button class="week-nav-btn" onclick="shiftWeek(1)">›</button>
     </div>
     <div class="week-grid" id="week-grid"></div>
-    <div class="spacer"></div>
-    <div class="stat-row">
-      <div class="stat-card">
-        <div class="stat-lbl">Longest Fast</div>
-        <div class="stat-num" id="wk-long-fast">—</div>
-        <div class="stat-sub">this week</div>
+
+    <!-- STATS TRIO — side by side on tablet/desktop, stacked on mobile -->
+    <div class="stats-trio">
+
+      <!-- FASTING STATS -->
+      <div class="stats-section stats-col">
+        <div class="stats-section-title">Fasting</div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-lbl">Deepest Stage</div>
+            <div class="kpi-val" id="wk-deepest">—</div>
+            <div class="kpi-sub" id="wk-deepest-time">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-lbl">Longest Fast</div>
+            <div class="kpi-val" id="wk-long-fast">—</div>
+            <div class="kpi-sub" id="wk-long-fast-date">—</div>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-lbl">Avg Daily Feeding</div>
+            <div class="kpi-val" id="wk-avg-feeding">—</div>
+            <div class="kpi-sub">per day this week</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-lbl">Avg Daily Fasting</div>
+            <div class="kpi-val" id="wk-avg-fast">—</div>
+            <div class="kpi-sub">fed → immune regen</div>
+          </div>
+        </div>
+        <div class="state-bar-list" id="wk-fast-bars"></div>
       </div>
-      <div class="stat-card">
-        <div class="stat-lbl">Fasts Done</div>
-        <div class="stat-num" id="wk-fasts">0</div>
-        <div class="stat-sub">completed</div>
+
+      <!-- MOMENT STATS — stacked bar chart -->
+      <div class="stats-section stats-col">
+        <div class="stats-section-title">Moments</div>
+        <div class="wk-chart-wrap">
+          <canvas id="wk-moment-chart"></canvas>
+        </div>
+        <div class="wk-chart-legend" id="wk-chart-legend"></div>
       </div>
-      <div class="stat-card">
-        <div class="stat-lbl">Purposeful</div>
-        <div class="stat-num" id="wk-purpose">0h</div>
-        <div class="stat-sub">focused time</div>
+
+      <!-- HABITS -->
+      <div class="stats-section stats-col">
+        <div class="stats-section-title">Habits</div>
+        <div class="state-bar-list" id="wk-habit-cat-bars"></div>
+        <div class="wk-break-section">
+          <div class="wk-break-title">Break Reasons</div>
+          <div class="state-bar-list" id="wk-break-reason-bars"></div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-lbl">Habit Score</div>
-        <div class="stat-num" id="wk-habit">—%</div>
-        <div class="stat-sub">completion</div>
-      </div>
-    </div>
-    <div class="spacer"></div>
-    <div class="section-pad"><div class="section-title">Fast Log</div></div>
-    <div style="padding:0 16px; overflow-x:auto;">
-      <table class="log-table">
-        <thead><tr><th>Date</th><th>Duration</th><th>Stage Reached</th></tr></thead>
-        <tbody id="fast-log-body"></tbody>
-      </table>
-    </div>
+
+    </div><!-- /stats-trio -->
+
     <div class="spacer"></div>
   </div>
 
@@ -865,39 +1396,61 @@
       <div class="week-range" id="month-name-label">—</div>
       <button class="week-nav-btn" onclick="shiftMonth(1)">›</button>
     </div>
-    <div style="padding:0 16px; display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:8px;">
-      <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">S</div>
-      <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">M</div>
-      <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">T</div>
-      <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">W</div>
-      <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">T</div>
-      <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">F</div>
-      <div style="text-align:center;font-family:var(--font-cond);font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.06em;">S</div>
-    </div>
-    <div class="month-grid" id="month-grid"></div>
-    <div class="spacer"></div>
-    <div class="stat-row">
-      <div class="stat-card">
-        <div class="stat-lbl">Total Fasts</div>
-        <div class="stat-num" id="mo-fasts">0</div>
-        <div class="stat-sub">this month</div>
+
+    <!-- STATS TRIO — identical layout to weekly -->
+    <div class="stats-trio">
+
+      <!-- FASTING -->
+      <div class="stats-section stats-col">
+        <div class="stats-section-title">Fasting</div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-lbl">Deepest Stage</div>
+            <div class="kpi-val" id="mo-deepest">—</div>
+            <div class="kpi-sub" id="mo-deepest-time">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-lbl">Longest Fast</div>
+            <div class="kpi-val" id="mo-long-fast">—</div>
+            <div class="kpi-sub" id="mo-long-fast-date">—</div>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-lbl">Avg Daily Feeding</div>
+            <div class="kpi-val" id="mo-avg-feeding">—</div>
+            <div class="kpi-sub">per day this month</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-lbl">Avg Daily Fasting</div>
+            <div class="kpi-val" id="mo-avg-daily-fast">—</div>
+            <div class="kpi-sub">fed → immune regen</div>
+          </div>
+        </div>
+        <div class="state-bar-list" id="mo-fast-bars"></div>
       </div>
-      <div class="stat-card">
-        <div class="stat-lbl">Best Streak</div>
-        <div class="stat-num" id="mo-streak">0</div>
-        <div class="stat-sub">days</div>
+
+      <!-- MOMENTS -->
+      <div class="stats-section stats-col">
+        <div class="stats-section-title">Moments</div>
+        <div class="wk-chart-wrap">
+          <canvas id="mo-moment-chart"></canvas>
+        </div>
+        <div class="wk-chart-legend" id="mo-chart-legend"></div>
       </div>
-      <div class="stat-card">
-        <div class="stat-lbl">Habit Avg</div>
-        <div class="stat-num" id="mo-habit">—%</div>
-        <div class="stat-sub">completion</div>
+
+      <!-- HABITS -->
+      <div class="stats-section stats-col">
+        <div class="stats-section-title">Habits</div>
+        <div class="state-bar-list" id="mo-habit-cat-bars"></div>
+        <div class="wk-break-section">
+          <div class="wk-break-title">Break Reasons</div>
+          <div class="state-bar-list" id="mo-break-reason-bars"></div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-lbl">Focus Hours</div>
-        <div class="stat-num" id="mo-focus">0h</div>
-        <div class="stat-sub">purposeful</div>
-      </div>
-    </div>
+
+    </div><!-- /stats-trio -->
+
     <div class="spacer"></div>
   </div>
 
@@ -919,19 +1472,163 @@
   </button>
 </nav>
 
+
+
 <!-- FRICTION MODAL -->
 <div id="modal-overlay">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-title">End Fast?</div>
     <div class="modal-body" id="modal-body">
-      You've been fasting for <strong id="modal-time">—</strong> and reached the <strong id="modal-stage">—</strong> stage. Ending now will reset your progress.
+      You've been fasting for <strong id="modal-time">—</strong> and reached <strong id="modal-stage">—</strong>. Ending will return you to your feeding window.
     </div>
     <div class="modal-btns">
       <button class="modal-confirm" onclick="confirmEndFast()">Yes, End Fast</button>
       <button class="modal-cancel" onclick="closeModal()">Keep Going 💪</button>
     </div>
   </div>
+</div>
+
+<!-- AUTH GATE -->
+<div id="auth-gate">
+  <!-- Gate utility buttons — top right -->
+  <div style="position:absolute;top:16px;right:16px;display:flex;gap:8px;">
+    <button onclick="toggleFullscreen()" title="Fullscreen" style="
+      width:36px;height:36px;border-radius:50%;
+      background:var(--surface2);border:1px solid var(--border);
+      color:var(--text2);display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:background .2s;" id="gate-fs-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+    </button>
+    <button onclick="toggleTheme()" title="Toggle theme" style="
+      width:36px;height:36px;border-radius:50%;
+      background:var(--surface2);border:1px solid var(--border);
+      color:var(--text2);display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:background .2s;" id="gate-theme-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg>
+    </button>
+  </div>
+  <div class="gate-inner">
+    <div class="gate-logo">MINDFUL <span>RHYTHM</span></div>
+    <div class="gate-tagline">Live the Moment</div>
+    <div class="gate-ring" id="gate-ring-icon">⏳</div>
+    <div class="gate-desc">Track your fasting journey, own your time,<br>build intentional habits.</div>
+    <button class="gate-btn" onclick="signInGoogle()">
+      <img src="https://www.google.com/favicon.ico" width="18" height="18" alt="">
+      Continue with Google
+    </button>
+    <div class="gate-footer">
+      Your data is private and synced across devices.
+      <br>
+      <a href="/privacy.html" target="_blank" style="
+        color:var(--text3);font-size:10px;text-decoration:none;
+        border-bottom:1px solid var(--border);padding-bottom:1px;
+        transition:color .2s;
+      " onmouseover="this.style.color='var(--accent)'"
+         onmouseout="this.style.color='var(--text3)'">Privacy Policy</a>
+      &nbsp;·&nbsp;
+      <a href="/terms.html" target="_blank" style="
+        color:var(--text3);font-size:10px;text-decoration:none;
+        border-bottom:1px solid var(--border);padding-bottom:1px;
+        transition:color .2s;
+      " onmouseover="this.style.color='var(--accent)'"
+         onmouseout="this.style.color='var(--text3)'">Terms of Service</a>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- DEBUG LOG PANEL -->
+<div id="dbg-panel" style="
+  position:fixed; bottom:56px; left:0; right:0; z-index:200;
+  background:#0a0818; border-top:2px solid #7C3AED;
+  font-family:monospace; font-size:11px;
+  display:flex; flex-direction:column;
+  max-height:32px; transition:max-height .3s ease;
+  box-shadow:0 -4px 24px rgba(0,0,0,.6);
+">
+  <div id="dbg-header" style="
+    display:flex; align-items:center; gap:8px;
+    padding:6px 10px; background:#16112A;
+    border-bottom:1px solid #2C2448; flex-shrink:0; cursor:pointer;
+  " onclick="dbgToggle()">
+    <span style="color:#7C3AED;font-weight:700;letter-spacing:.08em;font-size:10px;">⬡ DEBUG LOG</span>
+    <span id="dbg-count" style="
+      background:#7C3AED;color:#fff;border-radius:10px;
+      padding:1px 7px;font-size:9px;font-weight:700;
+    ">0</span>
+    <span style="margin-left:auto;display:flex;gap:6px;">
+      <button onclick="event.stopPropagation();dbgCopy()" style="
+        padding:2px 8px;border-radius:6px;border:1px solid #2C2448;
+        background:#1E1836;color:#9E95B8;font-family:monospace;
+        font-size:9px;cursor:pointer;letter-spacing:.04em;
+      " id="dbg-copy-btn">COPY</button>
+      <button onclick="event.stopPropagation();dbgClear()" style="
+        padding:2px 8px;border-radius:6px;border:1px solid #2C2448;
+        background:#1E1836;color:#9E95B8;font-family:monospace;
+        font-size:9px;cursor:pointer;
+      ">CLR</button>
+      <span id="dbg-chevron" style="color:#4E4668;font-size:14px;">▼</span>
+    </span>
+  </div>
+  <div id="dbg-body" style="
+    overflow-y:auto; padding:6px 8px; flex:1;
+    display:flex; flex-direction:column; gap:1px;
+  "></div>
+</div>
+
+<!-- BREAK HABIT MODAL -->
+<div id="break-modal-overlay" onclick="closeBreakModal(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <div style="font-size:24px">💔</div>
+      <div class="modal-title" style="margin-bottom:0">Break Habit?</div>
+    </div>
+    <div class="modal-body">
+      You're about to break <strong id="break-habit-name">—</strong>.
+      Your streak of <strong id="break-habit-streak">—</strong> days will reset to zero.
+    </div>
+
+    <!-- Reason tags -->
+    <div class="break-reason-label">Why are you breaking it?</div>
+    <div class="break-tags" id="break-tags">
+      <button class="break-tag" onclick="selectBreakTag(this)">😴 Tired</button>
+      <button class="break-tag" onclick="selectBreakTag(this)">👥 Social</button>
+      <button class="break-tag" onclick="selectBreakTag(this)">⏰ No time</button>
+      <button class="break-tag" onclick="selectBreakTag(this)">😣 Stressed</button>
+      <button class="break-tag" onclick="selectBreakTag(this)">🤒 Unwell</button>
+      <button class="break-tag" onclick="selectBreakTag(this)">🌀 Distracted</button>
+    </div>
+    <input id="break-reason-input" class="break-reason-input" placeholder="Or type your reason..." maxlength="120">
+
+    <div class="modal-btns" style="margin-top:20px">
+      <button class="modal-confirm" style="background:var(--danger)" onclick="confirmBreakHabit()">
+        Break Habit — Reset Streak
+      </button>
+      <button class="modal-cancel" onclick="closeBreakModal()">Keep the Streak 🔥</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE DROPDOWN -->
+<div id="profile-dropdown">
+  <div class="profile-user-row">
+    <div class="profile-avatar-sm" id="profile-avatar-sm"></div>
+    <div>
+      <div class="profile-name"  id="profile-name">—</div>
+      <div class="profile-email" id="profile-email">—</div>
+    </div>
+  </div>
+  <button class="profile-menu-btn" onclick="toggleThemeFromMenu()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg>
+    <span id="profile-theme-label">Switch to Light</span>
+  </button>
+  <button class="profile-menu-btn danger" onclick="signOutUser()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    Sign Out
+  </button>
 </div>
 
 <!-- TOAST -->
@@ -949,40 +1646,157 @@ const sb = createClient(
 
 let currentUser = null;
 
-async function initAuth() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session?.user) setUser(session.user);
-  sb.auth.onAuthStateChange((_, session) => {
-    if (session?.user) setUser(session.user);
-    else clearUser();
-  });
-}
-
-function setUser(user) {
-  currentUser = user;
-  const area = document.getElementById('auth-area');
-  const meta = user.user_metadata || {};
-  const name = meta.full_name || meta.name || user.email || 'U';
-  const av = meta.avatar_url;
-  area.innerHTML = `<div class="user-avatar" title="${name}">${av ? `<img src="${av}" referrerpolicy="no-referrer">` : name[0].toUpperCase()}</div>`;
-  loadUserData();
-}
-function clearUser() {
-  currentUser = null;
-  document.getElementById('auth-area').innerHTML = `<button id="login-btn" onclick="signInGoogle()">Sign In</button>`;
-}
-
-async function signInGoogle() {
-  await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.href } });
-}
-
 /* ═══════════════════════════════════════════════════════════════
-   PERSIST LAYER (localStorage for offline, Supabase when signed in)
+   PERSIST LAYER — must come before any state or auth code
 ═══════════════════════════════════════════════════════════════ */
 const LS = {
   get: k => { try { return JSON.parse(localStorage.getItem('mr_'+k)); } catch { return null; } },
   set: (k,v) => localStorage.setItem('mr_'+k, JSON.stringify(v)),
 };
+
+// UUID regex — must be defined at top level before any function references it
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Date helpers — defined early so state initialisers can call them
+function today() {
+  const d = new Date();
+  return d.getFullYear() + '-' +
+    String(d.getMonth()+1).padStart(2,'0') + '-' +
+    String(d.getDate()).padStart(2,'0');
+}
+function secsSinceMidnight() {
+  const now = new Date();
+  const midnight = new Date(now); midnight.setHours(0,0,0,0);
+  return Math.floor((now - midnight) / 1000);
+}
+
+/* ── Helper needed by feedingState init ── */
+/* ── State — declared before everything else ── */
+let fastState    = LS.get('fast') || { running: false, startTs: null, totalSecs: 0, log: [] };
+// If loaded from LS, ensure _savedAt exists so remote-wins comparison works
+if (!fastState._savedAt && (fastState.running || fastState.totalSecs > 0)) {
+  fastState._savedAt = Date.now();
+}
+let feedingState = LS.get('feeding') || (() => {
+  const preload = fastState.running ? 0 : secsSinceMidnight();
+  return { startTs: fastState.running ? null : Date.now(), totalSecs: preload, lastDate: today() };
+})();
+let momentState = LS.get('moment') || (() => {
+  // Pre-seed wasteful with time elapsed since midnight —
+  // same logic as feeding: you've been alive since 00:00, that time was spent somewhere
+  const preload = secsSinceMidnight();
+  return {
+    active:  'wasteful',
+    timers:  { purposeful:0, wasteful: preload, nourishing:0, training:0, recovering:0 },
+    startTs: Date.now(),
+    lastDate: today()
+  };
+})();
+if (!momentState._savedAt && Object.values(momentState.timers || {}).some(function(v){ return v > 0; })) {
+  momentState._savedAt = Date.now();
+}
+let habits = LS.get('habits') || {
+  purposeful: [], nourishing: [], training: [], recovering: [], wasteful: [],
+};
+let activeHabitCat = 'purposeful';
+
+function showApp() {
+  const gate = document.getElementById('auth-gate');
+  if (gate) gate.classList.add('hidden');
+}
+
+function showGate() {
+  const gate = document.getElementById('auth-gate');
+  if (gate) gate.classList.remove('hidden');
+}
+
+function initAuth() {
+  dbg('AUTH', 'initAuth — registering listener');
+  sb.auth.onAuthStateChange((event, session) => {
+    dbg('AUTH', 'onAuthStateChange', { event: event, user: session && session.user ? session.user.email : 'none' });
+    if (session && session.user) setUser(session.user);
+    else if (event === 'SIGNED_OUT') clearUser();
+  });
+
+  sb.auth.getSession().then(function(res) {
+    var session = res && res.data && res.data.session;
+    dbg('AUTH', 'getSession result', { user: session && session.user ? session.user.email : 'none' });
+    if (session && session.user) setUser(session.user);
+  });
+}
+
+let _currentUserId = null;
+
+function setUser(user) {
+  // Dedupe — called by both getSession and onAuthStateChange
+  if (_currentUserId === user.id) { dbg('AUTH', 'setUser deduped (already set)', user.email); return; }
+  dbg('AUTH', 'setUser called', user.email);
+  _currentUserId = user.id;
+  currentUser    = user;
+
+  const area = document.getElementById('auth-area');
+  if (!area) return;
+  const meta = user.user_metadata || {};
+  const name = meta.full_name || meta.name || user.email || 'User';
+  const av   = meta.avatar_url;
+  area.innerHTML = '<div class="user-avatar" title="' + name + '" onclick="toggleProfileDropdown()">' +
+    (av ? '<img src="' + av + '" referrerpolicy="no-referrer">' : name[0].toUpperCase()) +
+    '</div>';
+
+  const sm = document.getElementById('profile-avatar-sm');
+  if (sm) sm.innerHTML = av ? '<img src="' + av + '" referrerpolicy="no-referrer">' : name[0].toUpperCase();
+  const pn = document.getElementById('profile-name');
+  if (pn) pn.textContent = name;
+  const pe = document.getElementById('profile-email');
+  if (pe) pe.textContent = user.email || '';
+
+  showApp();
+  flushPendingEvents().then(() => loadUserData());
+  subscribeRealtime();
+}
+
+function clearUser() {
+  dbg('AUTH', 'clearUser called — signing out');
+  currentUser    = null;
+  _currentUserId = null;
+  unsubscribeRealtime();
+  const area = document.getElementById('auth-area');
+  if (area) area.innerHTML = '<button id="login-btn" onclick="signInGoogle()">Sign In</button>';
+  showGate();
+}
+
+
+
+async function signInGoogle() {
+  await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: 'https://www.mindful-rhythm.com' }
+  });
+}
+
+// Animate the gate ring icon through fasting stage icons
+(function() {
+  const icons = ['⏳','🍴','🔥','♻️','🧬','🛡️'];
+  let idx = 0;
+  function cycleGateIcon() {
+    const el = document.getElementById('gate-ring-icon');
+    if (!el) return;
+    el.style.opacity = '0';
+    el.style.transform = 'scale(0.8)';
+    el.style.transition = 'opacity 0.3s, transform 0.3s';
+    setTimeout(function() {
+      idx = (idx + 1) % icons.length;
+      el.textContent = icons[idx];
+      el.style.opacity = '1';
+      el.style.transform = 'scale(1)';
+    }, 300);
+  }
+  setInterval(cycleGateIcon, 2500);
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   PERSIST LAYER (localStorage for offline, Supabase when signed in)
+═══════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════
    THEME
@@ -990,12 +1804,25 @@ const LS = {
 let darkMode = LS.get('dark') !== false;
 function applyTheme() {
   document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
-  document.getElementById('theme-btn').textContent = darkMode ? '☀' : '🌙';
+  document.getElementById('theme-btn').innerHTML = darkMode ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></svg>` : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
 }
 document.getElementById('theme-btn').addEventListener('click', () => {
   darkMode = !darkMode; LS.set('dark', darkMode); applyTheme();
 });
 applyTheme();
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+document.addEventListener('fullscreenchange', () => {
+  const isFs = !!document.fullscreenElement;
+  document.getElementById('fs-icon-enter').style.display = isFs ? 'none'  : 'block';
+  document.getElementById('fs-icon-exit').style.display  = isFs ? 'block' : 'none';
+});
 
 /* ═══════════════════════════════════════════════════════════════
    NAV
@@ -1016,10 +1843,6 @@ const DAYS  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Satu
 const DSHRT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-function today() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
 function fmtDur(secs) {
   const h = Math.floor(secs/3600), m = Math.floor((secs%3600)/60), s = secs%60;
   return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
@@ -1028,137 +1851,337 @@ function fmtHHMM(secs) {
   const h = Math.floor(secs/3600), m = Math.floor((secs%3600)/60);
   return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
 }
-function initDateHeader() {
-  const d = new Date();
-  document.getElementById('today-date').textContent = d.toLocaleDateString('en-US',{month:'long',day:'numeric'});
-  document.getElementById('today-dow').textContent = DAYS[d.getDay()];
+let _lastDateStr = null;
+
+function updateClock() {
+  const now  = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { month:'long', day:'numeric' });
+  const dowStr  = DAYS[now.getDay()];
+
+  // Update date + day
+  document.getElementById('today-date').textContent = dateStr;
+  document.getElementById('today-dow').textContent  = dowStr;
+
+  // Live clock — 12h format
+  let h = now.getHours();
+  const m   = String(now.getMinutes()).padStart(2,'0');
+  const s   = String(now.getSeconds()).padStart(2,'0');
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  document.getElementById('live-clock').textContent = `${String(h).padStart(2,'0')}:${m}:${s}`;
+  document.getElementById('live-ampm').textContent  = ampm;
+
+  // Midnight rollover detection
+  const todayStr = today();
+  if (_lastDateStr && _lastDateStr !== todayStr) {
+    onMidnightRollover();
+  }
+  _lastDateStr = todayStr;
 }
-initDateHeader();
+
+function onMidnightRollover() {
+  // Push yesterday's feeding total before reset
+  const prevDate = _lastDateStr;
+  const prevSecs = getFeedingElapsed();
+  if (prevDate && prevSecs > 0) pushFeeding(prevDate, prevSecs);
+  // Reset feeding timer for new day
+  feedingState = { startTs: fastState.running ? null : Date.now(), totalSecs: 0, lastDate: today() };
+  LS.set('feeding', feedingState);
+  pushAppState();
+  buildDayTracker();
+  toast('🌅 New day — daily counters reset');
+}
+
+updateClock();
+setInterval(updateClock, 1000);
 
 /* ═══════════════════════════════════════════════════════════════
    FASTING ENGINE
+   Full biological cycle:
+   FEEDING → [Start Fast] → FED → EARLY FASTING → KETOSIS →
+   AUTOPHAGY → DEEP FASTING → IMMUNE REGEN → [End Fast] → FEEDING
 ═══════════════════════════════════════════════════════════════ */
-const STAGES = [
-  { name:'Fed',              icon:'🍽️', start:0,    end:4,    color:'#94A3B8', desc:'Your body is digesting and absorbing nutrients. Insulin is elevated, storing energy from your recent meal.' },
-  { name:'Early Fasting',    icon:'⏳', start:4,    end:8,    color:'#60A5FA', desc:'Glycogen stores are depleting. Your body begins burning fat for energy. Blood sugar and insulin levels drop.' },
-  { name:'Ketosis',          icon:'🔥', start:8,    end:16,   color:'#F59E0B', desc:'Fat burning accelerates. Your liver produces ketone bodies as an alternative fuel source for the brain.' },
-  { name:'Autophagy',        icon:'♻️', start:16,   end:24,   color:'#22C55E', desc:'Cellular cleanup begins. Damaged proteins and organelles are recycled. This is where the deep healing happens.' },
-  { name:'Deep Fasting',     icon:'🧬', start:24,   end:48,   color:'#A855F7', desc:'Growth hormone surges. Cellular repair intensifies. Metabolic adaptation reaches peak efficiency.' },
-  { name:'Immune Regen.',    icon:'🛡️', start:48,   end:9999, color:'#EF4444', desc:'Immune system regeneration may begin. Old immune cells are recycled and new ones produced.' },
-];
-const FAST_TARGET_HRS = 16;
-const CIRCUMFERENCE = 2 * Math.PI * 80;
 
-let fastState = LS.get('fast') || { running:false, startTs:null, totalSecs:0, log:[] };
+// Index 0 = FEEDING (eating window), index 1+ = fasting stages
+const STAGES = [
+  {
+    name: 'Feeding',
+    icon: '🍴',
+    color: '#E8A838',
+    rgb: '232,168,56',
+    fasting: false,
+    desc: 'You are in your eating window. Enjoy nourishing, intentional meals. Your body is fuelling up for the fast ahead.',
+    next: 'Fed'
+  },
+  {
+    name: 'Fed',
+    icon: '⏸️',
+    color: '#9E95B8',
+    rgb: '158,149,184',
+    fasting: true,
+    start: 0, end: 4,
+    desc: 'Eating has stopped. Your body is digesting and absorbing nutrients. Insulin is elevated, energy is being stored.',
+    next: 'Early Fasting'
+  },
+  {
+    name: 'Early Fasting',
+    icon: '⏳',
+    color: '#5B9CF6',
+    rgb: '91,156,246',
+    fasting: true,
+    start: 4, end: 8,
+    desc: 'Glycogen stores are depleting. Your body begins shifting to fat for energy. Blood sugar and insulin levels drop steadily.',
+    next: 'Ketosis'
+  },
+  {
+    name: 'Ketosis',
+    icon: '🔥',
+    color: '#F97316',
+    rgb: '249,115,22',
+    fasting: true,
+    start: 8, end: 16,
+    desc: 'Fat burning accelerates. Your liver produces ketone bodies as an alternative fuel source — your brain loves this.',
+    next: 'Autophagy'
+  },
+  {
+    name: 'Autophagy',
+    icon: '♻️',
+    color: '#34C98A',
+    rgb: '52,201,138',
+    fasting: true,
+    start: 16, end: 24,
+    desc: 'Cellular cleanup begins. Damaged proteins and organelles are recycled. This is where deep healing happens.',
+    next: 'Deep Fasting'
+  },
+  {
+    name: 'Deep Fasting',
+    icon: '🧬',
+    color: '#7C3AED',
+    rgb: '124,58,237',
+    fasting: true,
+    start: 24, end: 48,
+    desc: 'Growth hormone surges. Cellular repair intensifies. Metabolic adaptation reaches peak efficiency.',
+    next: 'Immune Regen'
+  },
+  {
+    name: 'Immune Regen',
+    icon: '🛡️',
+    color: '#E05C7A',
+    rgb: '224,92,122',
+    fasting: true,
+    start: 48, end: 9999,
+    desc: 'Immune system regeneration begins. Old immune cells are recycled, new ones produced. Peak fasting state.',
+    next: null
+  },
+];
+
+// Fasting-only stages (index into STAGES where fasting:true)
+function getFastingStageIdx(fastHrs) {
+  const fastingStages = STAGES.filter(s => s.fasting);
+  for (let i = fastingStages.length - 1; i >= 0; i--) {
+    if (fastHrs >= fastingStages[i].start) {
+      return STAGES.indexOf(fastingStages[i]);
+    }
+  }
+  return 1; // default to Fed (first fasting stage)
+}
+
+// Overall current stage index including Feeding (idx 0)
+function getCurrentStageIdx() {
+  if (!fastState.running) return 0; // Feeding
+  const hrs = getFastElapsed() / 3600;
+  return getFastingStageIdx(hrs);
+}
+
+/* ── State storage ───────────────────────────────────────────── */
+// Returns seconds elapsed since today's midnight — used to pre-seed
+// feeding time so the app reflects reality even on first open/reset
+function secsSinceMidnight() {
+  const now = Date.now();
+  const d   = new Date();
+  d.setHours(0, 0, 0, 0);
+  return Math.floor((now - d.getTime()) / 1000);
+}
+
+// feedingState: tracks active eating window timer
+// On first load with no saved state, pre-seed with seconds since midnight
+// so feeding time reflects reality (midnight → now = feeding window)
+
+function getFeedingElapsed() {
+  const td = today();
+  // Reset daily if new day
+  if (feedingState.lastDate !== td) {
+    // New day detected mid-session — reset to 0 (midnight just passed)
+    feedingState = { startTs: fastState.running ? null : Date.now(), totalSecs: 0, lastDate: td };
+    LS.set('feeding', feedingState);
+  }
+  if (fastState.running) return feedingState.totalSecs || 0;
+  if (!feedingState.startTs) return feedingState.totalSecs || 0;
+  return feedingState.totalSecs + Math.floor((Date.now() - feedingState.startTs) / 1000);
+}
+
+function startFeedingTimer() {
+  dbg('FEED', 'startFeedingTimer', { totalSecs: feedingState.totalSecs, lastDate: feedingState.lastDate });
+  const td = today();
+  feedingState.startTs  = Date.now();
+  feedingState.lastDate = td;
+  LS.set('feeding', feedingState);
+}
+
+function pauseFeedingTimer() {
+  feedingState.totalSecs = getFeedingElapsed();
+  feedingState.startTs   = null;
+  LS.set('feeding', feedingState);
+}
+
 
 function getFastElapsed() {
   if (!fastState.running || !fastState.startTs) return fastState.totalSecs || 0;
-  return fastState.totalSecs + Math.floor((Date.now() - fastState.startTs)/1000);
+  return fastState.totalSecs + Math.floor((Date.now() - fastState.startTs) / 1000);
 }
 
-function getCurrentStage(hrs) {
-  for (let i = STAGES.length-1; i >= 0; i--) {
-    if (hrs >= STAGES[i].start) return i;
-  }
-  return 0;
-}
-
+/* ── UI update ───────────────────────────────────────────────── */
 function updateFastUI() {
-  const secs  = getFastElapsed();
-  const hrs   = secs / 3600;
-  const stIdx = getCurrentStage(hrs);
+  const stIdx = getCurrentStageIdx();
   const st    = STAGES[stIdx];
-  const tgt   = FAST_TARGET_HRS * 3600;
-  const pct   = Math.min(secs / tgt, 1);
+  const isFasting = fastState.running;
 
-  // Ring
-  const offset = CIRCUMFERENCE * (1 - pct);
-  const ring = document.getElementById('ring-prog');
-  ring.style.strokeDashoffset = offset;
-  ring.style.strokeDasharray  = CIRCUMFERENCE;
-  ring.style.stroke = st.color;
+  // Timer shows feeding window elapsed OR fast elapsed
+  const displaySecs = isFasting ? getFastElapsed() : getFeedingElapsed();
 
-  // Time display
-  document.getElementById('fast-hhmm').textContent = fmtHHMM(secs);
-  document.getElementById('fast-seconds').textContent = String(secs % 60).padStart(2,'0');
-  document.getElementById('fast-stage-ring').textContent = st.name;
-  document.getElementById('fast-stage-ring').style.color = st.color;
+  // Ring glow color
+  const ringCircle = document.getElementById('ring-live-circle');
+  if (ringCircle) {
+    ringCircle.setAttribute('stroke', `rgba(${st.rgb},0.85)`);
+    const svg = document.getElementById('ring-svg-glow');
+    if (svg) svg.style.setProperty('--rc', `rgba(${st.rgb},0.7)`);
+  }
 
-  // Meta
-  const rem = Math.max(tgt - secs, 0);
-  document.getElementById('meta-remaining').textContent = rem > 0 ? fmtHHMM(rem) : 'Done!';
-  document.getElementById('meta-pct').textContent = Math.round(pct*100)+'%';
+  // Timer text
+  document.getElementById('fast-hhmm').textContent    = fmtHHMM(displaySecs);
+  document.getElementById('fast-seconds').textContent = String(displaySecs % 60).padStart(2,'0');
 
-  // Btn
+  // Stage name + color
+  const stageLabel = document.getElementById('fast-stage-ring');
+  stageLabel.textContent  = st.name.toUpperCase();
+  stageLabel.style.color  = st.color;
+
+  // Stage emoji
+  const emojiEl = document.getElementById('fast-stage-emoji');
+  if (emojiEl) emojiEl.textContent = st.icon;
+
+  // Trigger stage description scroller for current stage
+  initStageScroller(stIdx);
+
+  // Next stage + ETA
+  const nextLbl = document.getElementById('stage-next-label');
+  const nextEta = document.getElementById('stage-next-eta');
+
+  if (!isFasting) {
+    // In feeding — next is Fed when fast starts
+    if (nextLbl) nextLbl.textContent = 'Next: Fed (start fast)';
+    if (nextEta) nextEta.textContent = '';
+  } else {
+    const nxtStage = st.next ? STAGES.find(s => s.name === st.next) : null;
+    if (!nxtStage) {
+      if (nextLbl) nextLbl.textContent = 'Peak stage reached';
+      if (nextEta) nextEta.textContent = '🏆';
+    } else {
+      if (nextLbl) nextLbl.textContent = `Next: ${nxtStage.name}`;
+      const fastSecs = getFastElapsed();
+      const remSecs  = Math.max((nxtStage.start * 3600) - fastSecs, 0);
+      const h = Math.floor(remSecs / 3600);
+      const m = Math.floor((remSecs % 3600) / 60);
+      const s = remSecs % 60;
+      if (nextEta) nextEta.textContent = h > 0
+        ? `in ${h}h ${String(m).padStart(2,'0')}m`
+        : `in ${m}m ${String(s).padStart(2,'0')}s`;
+    }
+  }
+
+  // Button
   const btn = document.getElementById('fast-btn');
-  if (fastState.running) {
+  if (isFasting) {
     btn.textContent = 'End Fast';
     btn.classList.add('danger');
   } else {
-    btn.textContent = secs > 0 ? 'Resume Fast' : 'Start Fast';
+    btn.textContent = 'Start Fast';
     btn.classList.remove('danger');
   }
-
-  // Stage badges
-  renderStageBadges(stIdx);
-
-  // Stage info
-  document.getElementById('si-icon').textContent = st.icon;
-  document.getElementById('si-name').textContent = st.name;
-  document.getElementById('si-desc').textContent = st.desc;
-  const nxt = STAGES[stIdx+1];
-  if (nxt) {
-    const hrsToNext = Math.max(nxt.start - hrs, 0);
-    document.getElementById('si-next').textContent = `${nxt.name} in ${hrsToNext.toFixed(1)}h`;
-  } else {
-    document.getElementById('si-next').textContent = 'Max stage reached 🏆';
-  }
 }
 
-function renderStageBadges(activeIdx) {
-  const strip = document.getElementById('stage-strip');
-  strip.innerHTML = '';
-  STAGES.forEach((s, i) => {
-    const b = document.createElement('div');
-    b.className = 'stage-badge' + (i === activeIdx ? ' active' : (i < activeIdx ? ' passed' : ''));
-    b.textContent = `${s.icon} ${s.name}`;
-    if (i === activeIdx) b.style.background = s.color;
-    strip.appendChild(b);
-  });
-}
-
+/* ── Button handlers ─────────────────────────────────────────── */
 function handleFastBtn() {
+  dbg('FAST', 'handleFastBtn', { running: fastState.running, totalSecs: fastState.totalSecs });
   if (fastState.running) {
     // Show friction modal
     const secs = getFastElapsed();
-    const st = STAGES[getCurrentStage(secs/3600)];
-    document.getElementById('modal-time').textContent = fmtHHMM(secs);
+    const stIdx = getFastingStageIdx(secs / 3600);
+    const st    = STAGES[stIdx];
+    document.getElementById('modal-time').textContent  = fmtHHMM(secs);
     document.getElementById('modal-stage').textContent = st.name;
     document.getElementById('modal-overlay').classList.add('open');
   } else {
-    // Start
-    fastState.running = true;
-    fastState.startTs = Date.now();
+    // Feeding → Fast: pause feeding timer, start fast
+    pauseFeedingTimer();
+    const nowTs = Date.now();
+    fastState.running         = true;
+    fastState.startTs         = nowTs;
+    fastState.originalStartTs = nowTs;
+    fastState.totalSecs       = 0;
+    fastState._savedAt        = nowTs;
     LS.set('fast', fastState);
-    toast('Fast started 🚀');
+    writeEvent('fast_start', nowTs, {});
+    dbg('FAST', 'fast_start event written', new Date(nowTs).toLocaleTimeString());
+    toast('Fast started — entering Fed state 🚀');
   }
 }
 
-function confirmEndFast() {
-  const secs = getFastElapsed();
-  const st   = STAGES[getCurrentStage(secs/3600)];
-  fastState.log = fastState.log || [];
-  fastState.log.unshift({ date: today(), secs, stage: st.name });
-  fastState.running  = false;
-  fastState.startTs  = null;
-  fastState.totalSecs = 0;
-  LS.set('fast', fastState);
-  closeModal();
-  toast('Fast ended. Great work!');
-  saveToSupabase('fasts', { date: today(), secs, stage: st.name });
+/* ─── ADMIN ──────────────────────────────────────────────────*/
+
+
+function toggleTheme() {
+  darkMode = !darkMode;
+  LS.set('dark', darkMode);
+  applyTheme();
 }
 
-function showFastLog() { switchView('weekly', document.querySelector('[data-view="weekly"]')); }
+
+
+
+
+
+
+
+
+
+
+function confirmEndFast() {
+  dbg('FAST', 'confirmEndFast — ending fast', { totalSecs: getFastElapsed() });
+  const secs    = getFastElapsed();
+  const stIdx   = getFastingStageIdx(secs / 3600);
+  const st      = STAGES[stIdx];
+  const endTs   = Date.now();
+  const startTs = fastState.originalStartTs || fastState.startTs;
+  fastState.log = fastState.log || [];
+  fastState.log.unshift({ date: today(), secs, stage: st.name, stageIdx: stIdx, startTs, endTs });
+  fastState.running         = false;
+  fastState.startTs         = null;
+  fastState.originalStartTs = null;
+  fastState.totalSecs       = 0;
+  fastState._savedAt        = endTs;
+  LS.set('fast', fastState);
+  writeEvent('fast_end', endTs, { secs, stage: st.name });
+  pushFast(secs, st.name, stIdx, startTs, endTs);
+  dbg('FAST', 'fast_end event written', { secs, stage: st.name });
+  // Resume feeding window
+  feedingState.totalSecs = 0;
+  startFeedingTimer();
+  closeModal();
+  toast('Fast ended. Welcome back to your feeding window 🍴');
+}
+
+
 
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
@@ -1167,16 +2190,9 @@ function closeModal() {
 /* ═══════════════════════════════════════════════════════════════
    MOMENT STATES ENGINE
 ═══════════════════════════════════════════════════════════════ */
-const STATE_COLORS = {
-  purposeful: '#2563EB',
-  wasteful:   '#EF4444',
-  nourishing: '#22C55E',
-  training:   '#F59E0B',
-  recovering: '#A855F7',
-};
 const STATE_LABELS = { purposeful:'Purposeful', wasteful:'Wasteful', nourishing:'Nourishing', training:'Training', recovering:'Recovering' };
 
-let momentState = LS.get('moment') || { active:null, timers:{ purposeful:0, wasteful:0, nourishing:0, training:0, recovering:0 }, startTs:null };
+// Time is always moving — default active state is wasteful
 let activeAudio = null;
 
 function getStateElapsed(s) {
@@ -1187,41 +2203,126 @@ function getStateElapsed(s) {
   return t;
 }
 
-function toggleState(btn) {
-  const s = btn.dataset.state;
-  if (momentState.active === s) {
-    // Stop
-    momentState.timers[s] = getStateElapsed(s);
-    momentState.active = null;
-    momentState.startTs = null;
-    stopAudio();
-  } else {
-    // Stop previous
-    if (momentState.active) {
-      momentState.timers[momentState.active] = getStateElapsed(momentState.active);
-    }
-    momentState.active = s;
-    momentState.startTs = Date.now();
-    stopAudio();
-    playAudio(s);
+function switchState(s) {
+  dbg('MOMENT', 'switchState', { from: momentState.active, to: s });
+  if (momentState.active === s) return;
+
+  const now = Date.now();
+  const prevState = momentState.active;
+
+  // Snapshot frozen timer for previous state
+  if (prevState) {
+    const prevSecs = getStateElapsed(prevState);
+    momentState.timers[prevState] = prevSecs;
   }
+
+  momentState.active   = s;
+  momentState.startTs  = now;
+  momentState._savedAt = now;
   LS.set('moment', momentState);
-  saveToSupabase('moments', { date: today(), state: s, secs: momentState.timers[s] });
+
+  // Write moment_switch event — replay will reconstruct timers
+  writeEvent('moment_switch', now, { from: prevState, to: s });
+  dbg('MOMENT', 'moment_switch event written', { from: prevState, to: s });
+
+  stopAudio();
+  playAudio(s);
 }
 
+function toggleState(btn) {
+  switchState(btn.dataset.state);
+}
+
+function startWasteful() {
+  // If no active state, start wasteful
+  if (!momentState.active) {
+    momentState.active  = 'wasteful';
+    momentState.startTs = Date.now();
+    LS.set('moment', momentState);
+  }
+  // Daily reset check — if last saved date is not today, reset all timers
+  // and pre-seed wasteful with time since midnight
+  const td = today();
+  if (momentState.lastDate && momentState.lastDate !== td) {
+    const preload = secsSinceMidnight();
+    momentState = {
+      active:   'wasteful',
+      timers:   { purposeful:0, wasteful: preload, nourishing:0, training:0, recovering:0 },
+      startTs:  Date.now(),
+      lastDate: td
+    };
+    LS.set('moment', momentState);
+  }
+}
+
+const STATE_DEFS = [
+  { key:'purposeful', icon:'🎯', label:'Purposeful', color:'#7C3AED', rgb:'124,58,237'  },
+  { key:'wasteful',   icon:'📱', label:'Wasteful',   color:'#E05C7A', rgb:'224,92,122'  },
+  { key:'nourishing', icon:'🥗', label:'Nourishing', color:'#34C98A', rgb:'52,201,138'  },
+  { key:'training',   icon:'💪', label:'Training',   color:'#E8A838', rgb:'232,168,56'  },
+  { key:'recovering', icon:'🛌', label:'Recovering', color:'#5B9CF6', rgb:'91,156,246'  },
+];
+
 function updateStateUI() {
-  const states = ['purposeful','wasteful','nourishing','training','recovering'];
-  states.forEach(s => {
-    const btn   = document.querySelector(`.state-btn.${s}`);
-    const timer = document.getElementById('timer-'+s);
-    const secs  = getStateElapsed(s);
-    timer.textContent = fmtDur(secs);
-    if (momentState.active === s) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
+  const active  = momentState.active;
+  const listEl  = document.getElementById('moment-state-list');
+  if (!listEl) return;
+
+  const DAY_SECS = 86400;
+
+  // Build rows if empty
+  if (!listEl.children.length) {
+    STATE_DEFS.forEach(sd => {
+      const row = document.createElement('div');
+      row.className = 'mst-row';
+      row.dataset.state = sd.key;
+      row.style.setProperty('--mst-color', sd.color);
+      row.innerHTML = `
+        <span class="mst-icon">${sd.icon}</span>
+        <span class="mst-name">${sd.label}</span>
+        <span class="mst-time" id="mst-time-${sd.key}">00:00</span>
+        <span class="mst-pct"  id="mst-pct-${sd.key}" style="color:${sd.color}">0%</span>`;
+      row.onclick = () => switchState(sd.key);
+      listEl.appendChild(row);
+    });
+  }
+
+  // Update each row
+  STATE_DEFS.forEach(sd => {
+    const row    = listEl.querySelector(`[data-state="${sd.key}"]`);
+    const secs   = getStateElapsed(sd.key);
+    const pct    = Math.min(Math.round(secs / DAY_SECS * 100), 100);
+    const timeEl = document.getElementById('mst-time-'+sd.key);
+    const pctEl  = document.getElementById('mst-pct-'+sd.key);
+    if (timeEl) timeEl.textContent = secs > 0 ? fmtDur(secs) : '—';
+    if (pctEl)  pctEl.textContent  = secs > 0 ? pct+'%' : '—';
+    if (row) {
+      row.classList.toggle('active', active === sd.key);
+      row.style.opacity = secs > 0 || active === sd.key ? '1' : '0.35';
     }
   });
+
+  // Update ring
+  const activeDef  = STATE_DEFS.find(s => s.key === active) || STATE_DEFS[1]; // fallback wasteful
+  const secs       = getStateElapsed(activeDef.key);
+  const ringCircle = document.getElementById('moment-ring-circle');
+  const heroEl     = document.getElementById('moment-hero');
+
+  if (ringCircle) {
+    ringCircle.setAttribute('stroke', `rgba(${activeDef.rgb},0.85)`);
+    document.getElementById('moment-ring-svg')?.style.setProperty('--rc', `rgba(${activeDef.rgb},0.7)`);
+  }
+  if (heroEl) heroEl.style.setProperty('--moment-glow', `rgba(${activeDef.rgb},0.14)`);
+
+  const ringEmoji = document.getElementById('moment-state-emoji');
+  const ringLabel = document.getElementById('moment-state-label');
+  const ringHHMM  = document.getElementById('moment-hhmm');
+  const ringSS    = document.getElementById('moment-ss');
+
+  if (ringEmoji) ringEmoji.textContent = activeDef.icon;
+  if (ringLabel) { ringLabel.textContent = activeDef.label.toUpperCase(); ringLabel.style.color = activeDef.color; }
+  if (ringHHMM)  ringHHMM.textContent = fmtHHMM(secs);
+  if (ringSS)    ringSS.textContent   = String(secs % 60).padStart(2,'0');
 }
 
 /* ─── AUDIO ─────────────────────────────────────────────────── */
@@ -1238,70 +2339,152 @@ function stopAudio() {
   if (activeAudio) { try { activeAudio.pause(); activeAudio = null; } catch(e){} }
 }
 
-/* ─── DONUT CHART ─────────────────────────────────────────────*/
-let donutChart = null;
 
-function buildDonut() {
-  const states = ['purposeful','wasteful','nourishing','training','recovering'];
-  const data   = states.map(s => getStateElapsed(s));
-  const total  = data.reduce((a,b)=>a+b,0) || 1;
-  const colors = states.map(s => STATE_COLORS[s]);
+/* ─── DAY STATE LIST ─────────────────────────────────────── */
+/* ─── helpers ────────────────────────────────────────────────
+   getMidnightTs()  → unix-ms of today's midnight (00:00:00)
+   getFastSecsToday() → seconds of the CURRENT live fast that
+     fall within today (i.e. since midnight or fast-start,
+     whichever is later). Capped at DAY_SECS. Used only for
+     the day-view percentage — the raw fasting timer is
+     unaffected and keeps counting across midnight freely.
+─────────────────────────────────────────────────────────────── */
+function getMidnightTs() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+}
 
-  if (donutChart) {
-    donutChart.data.datasets[0].data = data;
-    donutChart.update('none');
-  } else {
-    const ctx = document.getElementById('donut-chart').getContext('2d');
-    donutChart = new Chart(ctx, {
-      type: 'doughnut',
-      data: { labels: states.map(s=>STATE_LABELS[s]), datasets: [{ data, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] },
-      options: {
-        cutout: '70%', responsive: true, maintainAspectRatio: true,
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${fmtDur(ctx.raw)}` } } }
-      }
-    });
+function getFastSecsToday() {
+  if (!fastState.running) return 0;
+  // originalStartTs = real wall-clock time fast began (never mutated by ffwd)
+  // startTs = gets reset each ffwd so real-time counting stays accurate
+  const realStart = fastState.originalStartTs || fastState.startTs;
+  if (!realStart) return 0;
+  const midnightMs = getMidnightTs();
+
+  // How many real wall-clock seconds since the fast started
+  const wallElapsed = Math.floor((Date.now() - realStart) / 1000);
+  // How many total fast seconds (includes ffwd jumps)
+  const totalFast   = getFastElapsed();
+  // The ffwd offset — synthetic seconds added on top of real time
+  const ffwdOffset  = Math.max(totalFast - wallElapsed, 0);
+
+  // Effective real start capped to today
+  const todayWallStart = Math.max(realStart, midnightMs);
+  const todayWallSecs  = Math.floor((Date.now() - todayWallStart) / 1000);
+
+  // Today's fast seconds = real today wall time + ffwd offset, capped at totalFast
+  return Math.min(todayWallSecs + ffwdOffset, totalFast);
+}
+
+function getPastFastSecsToday() {
+  // For completed fasts in the log that ended today, take only
+  // the portion that falls within today's 24h window.
+  const midnightMs = getMidnightTs();
+  let total = 0;
+  (fastState.log || []).forEach(entry => {
+    if (!entry.endTs) return; // no timestamp, skip
+    const endMs   = entry.endTs;
+    const startMs = endMs - (entry.secs * 1000);
+    if (endMs < midnightMs) return; // ended before today
+    const effectiveStart = Math.max(startMs, midnightMs);
+    total += Math.floor((endMs - effectiveStart) / 1000);
+  });
+  return total;
+}
+
+function buildDayTracker() {
+  const el = document.getElementById('day-state-list');
+  if (!el) return;
+
+  const DAY_SECS = 86400;
+  const midnightMs = getMidnightTs();
+
+  // Per-stage seconds — TODAY only
+  const stageSecs = new Array(STAGES.length).fill(0);
+
+  // Feeding: already daily-reset by getFeedingElapsed()
+  stageSecs[0] = getFeedingElapsed();
+
+  // Completed fasts that touched today — distribute across stages,
+  // but only count seconds that fall within today's window
+  (fastState.log || []).forEach(entry => {
+    if (!entry.endTs) return;
+    const endMs      = entry.endTs;
+    const startMs    = endMs - (entry.secs * 1000);
+    if (endMs < midnightMs) return; // entirely before today
+
+    // Seconds of this fast that fall within today
+    const effectiveStartMs = Math.max(startMs, midnightMs);
+    const todaySecs        = Math.floor((endMs - effectiveStartMs) / 1000);
+    if (todaySecs <= 0) return;
+
+    // Distribute todaySecs across fasting stages proportionally
+    const maxIdx = entry.stageIdx || STAGES.findIndex(s => s.name === entry.stage);
+    let rem = Math.min(todaySecs, entry.secs);
+    for (let i = 1; i <= maxIdx && i < STAGES.length; i++) {
+      const nxt   = STAGES[i + 1];
+      const cap   = nxt ? (nxt.start - STAGES[i].start) * 3600 : rem;
+      const spent = Math.min(rem, cap);
+      stageSecs[i] += spent;
+      rem -= spent;
+      if (rem <= 0) break;
+    }
+  });
+
+  // Live fast — only today's portion, distributed across stages
+  if (fastState.running && fastState.startTs) {
+    const todayFastSecs  = getFastSecsToday();
+    const totalFastSecs  = getFastElapsed();
+    const liveIdx        = getCurrentStageIdx();
+
+    // Distribute today's fast seconds stage by stage from the beginning
+    // of the current fast, capped to what falls in today
+    let rem = Math.min(todayFastSecs, totalFastSecs);
+    for (let i = 1; i <= liveIdx && i < STAGES.length; i++) {
+      const nxt   = STAGES[i + 1];
+      const cap   = nxt ? (nxt.start - STAGES[i].start) * 3600 : rem;
+      const spent = Math.min(rem, cap);
+      stageSecs[i] += spent;
+      rem -= spent;
+      if (rem <= 0) break;
+    }
   }
 
-  // Legend
-  const leg = document.getElementById('donut-legend');
-  leg.innerHTML = '';
-  states.forEach((s, i) => {
-    const pct = Math.round(data[i]/total*100);
-    leg.innerHTML += `<div class="legend-row"><div class="legend-dot" style="background:${colors[i]}"></div>${STATE_LABELS[s]}<span class="legend-val">${pct}%</span></div>`;
+  // Guard: total can't exceed 24h
+  const totalTracked = stageSecs.reduce((a,b)=>a+b,0);
+  if (totalTracked > DAY_SECS) {
+    const scale = DAY_SECS / totalTracked;
+    stageSecs.forEach((_, i) => { stageSecs[i] = Math.floor(stageSecs[i] * scale); });
+  }
+
+  el.innerHTML = '';
+  STAGES.forEach((s, i) => {
+    const secs = stageSecs[i];
+    const pct  = Math.min(Math.round(secs / DAY_SECS * 100), 100);
+    const isActive = (i === 0 && !fastState.running) ||
+                     (fastState.running && i === getCurrentStageIdx());
+    const row = document.createElement('div');
+    row.className = 'dst-row';
+    row.style.opacity = secs > 0 ? '1' : '0.32';
+    row.innerHTML = `
+      <span class="dst-icon">${s.icon}</span>
+      <span class="dst-name" style="color:${isActive ? s.color : ''}">${s.name}</span>
+      <span class="dst-time">${secs > 0 ? fmtHHMM(secs) : '—'}</span>
+      <span class="dst-pct" style="color:${secs > 0 ? s.color : 'var(--text3)'}">${secs > 0 ? pct+'%' : '—'}</span>`;
+    el.appendChild(row);
   });
 }
+
 
 /* ═══════════════════════════════════════════════════════════════
    HABITS
 ═══════════════════════════════════════════════════════════════ */
 const HABIT_CATS = ['purposeful','nourishing','training','recovering','wasteful'];
-let habits = LS.get('habits') || {
-  purposeful: [
-    { id:'h1', name:'Deep Work Block', done:false, streak:3 },
-    { id:'h2', name:'Read 20 mins', done:false, streak:7 },
-  ],
-  nourishing: [
-    { id:'h3', name:'Eat clean meals', done:false, streak:2 },
-    { id:'h4', name:'Drink 2L water', done:false, streak:5 },
-  ],
-  training: [
-    { id:'h5', name:'Morning workout', done:false, streak:4 },
-  ],
-  recovering: [
-    { id:'h6', name:'Sleep by 10pm', done:false, streak:1 },
-    { id:'h7', name'10-min meditation', done:false, streak:0 },
-  ],
-  wasteful: [
-    { id:'h8', name:'No doom scroll', done:false, streak:0 },
-  ],
-};
-// Fix potential syntax issue:
-if (!habits.recovering || !habits.recovering[1]) {
-  habits.recovering = habits.recovering || [];
-  if (habits.recovering.length < 2) habits.recovering.push({ id:'h7', name:'10-min meditation', done:false, streak:0 });
-}
-
-let activeHabitCat = 'purposeful';
+// Empty by default — new users start fresh.
+// pullHabits() populates from Supabase after login.
+// Logged-out users start with a truly empty list.
 
 function getCatStatus(cat) {
   const list = habits[cat] || [];
@@ -1327,55 +2510,225 @@ function renderHabitTabs() {
   });
 }
 
+const BREAK_SVG  = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>`;
+const EDIT_SVG   = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+const DEL_SVG    = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
+const SAVE_SVG   = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+const CANCEL_SVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+
 function renderHabitList() {
   const list = document.getElementById('habit-list');
   list.innerHTML = '';
   const items = habits[activeHabitCat] || [];
-  items.forEach((h,i) => {
+  items.forEach((h, i) => {
     const div = document.createElement('div');
-    div.className = 'habit-item' + (h.done ? ' done' : '');
+    const isBroken = h.broken === today();
+    const itemClass = h.done ? ' done' : (isBroken ? ' broken' : '');
+    const checkClass = h.done ? ' done' : (isBroken ? ' broken' : '');
+    const streakIcon = isBroken ? '💔' : '🔥';
+    const streakClass = isBroken ? 'habit-streak broken' : 'habit-streak';
+    div.className = 'habit-item' + itemClass;
+    div.dataset.idx = i;
     div.innerHTML = `
-      <div class="habit-check${h.done?' done':''}" onclick="toggleHabit('${activeHabitCat}',${i})">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+      <div class="habit-check${checkClass}" onclick="toggleHabit('${activeHabitCat}',${i})">
+        ${isBroken
+          ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
+          : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`}
       </div>
-      <input class="habit-name" value="${h.name}" readonly
-        ondblclick="this.removeAttribute('readonly');this.classList.add('editing');this.focus()"
-        onblur="saveHabitName('${activeHabitCat}',${i},this)"
-        onkeydown="if(event.key==='Enter')this.blur()">
-      <div class="habit-streak">🔥 ${h.streak}</div>
-    `;
+      <input class="habit-name" value="${h.name.replace(/"/g,'&quot;')}" readonly
+        onkeydown="if(event.key==='Enter')saveHabitName('${activeHabitCat}',${i},this);if(event.key==='Escape')cancelHabitEdit(this,'${activeHabitCat}',${i})">
+      <div class="${streakClass}">${streakIcon} ${h.streak}</div>
+      <div class="habit-actions">
+        ${!isBroken && !h.done ? `<button class="habit-action-btn" title="Break habit" onclick="openBreakModal('${activeHabitCat}',${i})" style="color:var(--danger);opacity:.7">${BREAK_SVG}</button>` : ''}
+        <button class="habit-action-btn edit" title="Edit" onclick="startHabitEdit('${activeHabitCat}',${i},this)">${EDIT_SVG}</button>
+        <button class="habit-action-btn delete" title="Delete" onclick="deleteHabit('${activeHabitCat}',${i})">${DEL_SVG}</button>
+      </div>`;
     list.appendChild(div);
   });
 }
 
 function toggleHabit(cat, i) {
-  habits[cat][i].done = !habits[cat][i].done;
-  if (habits[cat][i].done) habits[cat][i].streak++;
+  const h = habits[cat][i];
+  // Can't toggle a broken habit — it's a conscious decision
+  if (h.broken === today()) {
+    toast('💔 This habit was intentionally broken today');
+    return;
+  }
+  h.done = !h.done;
+  if (h.done) h.streak = (h.streak || 0) + 1;
+  else if (h.streak > 0) h.streak--;
   LS.set('habits', habits);
   renderHabitTabs();
   renderHabitList();
-  saveToSupabase('habits', { date: today(), cat, name: habits[cat][i].name, done: habits[cat][i].done });
+  if (currentUser) {
+    pushHabit(habits[cat][i], cat).then(row => {
+      if (row && row.id && !UUID_RE.test(habits[cat][i].id)) {
+        habits[cat][i].id = row.id;
+        LS.set('habits', habits);
+      }
+    });
+  }
 }
 
-function saveHabitName(cat, i, input) {
-  habits[cat][i].name = input.value.trim() || habits[cat][i].name;
+function startHabitEdit(cat, i, btn) {
+  const item  = btn.closest('.habit-item');
+  const input = item.querySelector('.habit-name');
+  const acts  = item.querySelector('.habit-actions');
+  input.removeAttribute('readonly');
+  input.classList.add('editing');
+  input.focus(); input.select();
+  item.classList.add('editing-mode');
+  // Swap buttons to Save / Cancel
+  acts.innerHTML = `
+    <button class="habit-action-btn edit" title="Save" onclick="saveHabitName('${cat}',${i},this.closest('.habit-item').querySelector('.habit-name'))" style="color:var(--success)">${SAVE_SVG}</button>
+    <button class="habit-action-btn delete" title="Cancel" onclick="cancelHabitEdit(this.closest('.habit-item').querySelector('.habit-name'),'${cat}',${i})">${CANCEL_SVG}</button>`;
+}
+
+async function saveHabitName(cat, i, input) {
+  const trimmed = input.value.trim();
+  habits[cat][i].name = trimmed || habits[cat][i].name;
+  LS.set('habits', habits);
+  renderHabitList();
+  if (currentUser) {
+    const row = await pushHabit(habits[cat][i], cat);
+    if (row && row.id && !UUID_RE.test(habits[cat][i].id)) {
+      habits[cat][i].id = row.id;
+      LS.set('habits', habits);
+    }
+  }
+}
+
+function cancelHabitEdit(input, cat, i) {
   input.value = habits[cat][i].name;
   input.setAttribute('readonly','');
   input.classList.remove('editing');
-  LS.set('habits', habits);
+  const item = input.closest('.habit-item');
+  if (item) item.classList.remove('editing-mode');
+  renderHabitList();
 }
 
-function addHabit() {
-  const id = 'h'+Date.now();
-  habits[activeHabitCat].push({ id, name:'New Habit', done:false, streak:0 });
+function deleteHabit(cat, i) {
+  const name = habits[cat][i].name;
+  // Confirm via inline swap — replace item with a confirm row
+  const list  = document.getElementById('habit-list');
+  const items = list.querySelectorAll('.habit-item');
+  const item  = items[i];
+  if (!item) return;
+  item.style.borderColor = 'var(--danger)';
+  item.style.background  = 'rgba(224,92,122,0.06)';
+  item.innerHTML = `
+    <span style="flex:1;font-size:13px;color:var(--danger);font-family:var(--font-cond);font-weight:600;letter-spacing:.04em">
+      Delete "${name}"?
+    </span>
+    <div class="habit-actions">
+      <button class="habit-action-btn delete" onclick="confirmDeleteHabit('${cat}',${i})" style="color:var(--danger);background:rgba(224,92,122,0.12)">
+        ${DEL_SVG}
+      </button>
+      <button class="habit-action-btn" onclick="renderHabitList()" style="color:var(--text3)">
+        ${CANCEL_SVG}
+      </button>
+    </div>`;
+}
+
+async function confirmDeleteHabit(cat, i) {
+  const h = habits[cat][i];
+  const isUUID = h && h.id && UUID_RE.test(h.id);
+  habits[cat].splice(i, 1);
+  LS.set('habits', habits);
+  renderHabitTabs();
+  renderHabitList();
+  toast('Habit deleted');
+  if (currentUser && h) {
+    try {
+      if (isUUID) {
+        // Delete by UUID — clean and precise
+        const { error } = await sb.from('habits').delete().eq('id', h.id).eq('user_id', currentUser.id);
+        if (error) dbg('ERR', 'delete habit failed', error.message);
+        else dbg('SYNC', 'habit deleted from DB', h.name);
+      } else {
+        // No UUID — delete by name+cat
+        const { error } = await sb.from('habits').delete()
+          .eq('user_id', currentUser.id).eq('cat', cat).eq('name', h.name);
+        if (error) dbg('ERR', 'delete habit by name failed', error.message);
+      }
+    } catch(e) {
+      dbg('ERR', 'confirmDeleteHabit exception', e.message);
+    }
+  }
+}
+
+async function addHabit() {
+  const newH = { name:'New Habit', done:false, streak:0 };
+  habits[activeHabitCat].push(newH);
   LS.set('habits', habits);
   renderHabitList();
-  // Auto-focus last
+  // Auto-focus last item
   setTimeout(() => {
     const inputs = document.querySelectorAll('#habit-list .habit-name');
     const last = inputs[inputs.length-1];
     if (last) { last.removeAttribute('readonly'); last.classList.add('editing'); last.focus(); last.select(); }
   }, 50);
+  // Push and store Supabase UUID on local object
+  if (currentUser) {
+    const row = await pushHabit(newH, activeHabitCat);
+    if (row && row.id) {
+      newH.id = row.id; // store UUID so future pushes use id conflict key
+      LS.set('habits', habits);
+      dbg('SYNC', 'addHabit UUID stored', row.id.slice(0,8));
+    }
+  }
+}
+
+/* ─── BREAK HABIT MODAL ──────────────────────────────────── */
+let breakTarget = { cat: null, idx: null };
+
+function openBreakModal(cat, i) {
+  const h = habits[cat][i];
+  breakTarget = { cat, idx: i };
+  document.getElementById('break-habit-name').textContent   = h.name;
+  document.getElementById('break-habit-streak').textContent = h.streak;
+  document.getElementById('break-reason-input').value = '';
+  // Clear tag selections
+  document.querySelectorAll('.break-tag').forEach(t => t.classList.remove('selected'));
+  document.getElementById('break-modal-overlay').classList.add('open');
+}
+
+function selectBreakTag(btn) {
+  // Toggle selection — allow one or clear
+  const wasSelected = btn.classList.contains('selected');
+  document.querySelectorAll('.break-tag').forEach(t => t.classList.remove('selected'));
+  if (!wasSelected) btn.classList.add('selected');
+}
+
+function closeBreakModal(e) {
+  if (e && e.target !== document.getElementById('break-modal-overlay')) return;
+  document.getElementById('break-modal-overlay').classList.remove('open');
+}
+
+function confirmBreakHabit() {
+  const { cat, idx } = breakTarget;
+  if (cat === null || idx === null) return;
+
+  const h = habits[cat][idx];
+  const selectedTag = document.querySelector('.break-tag.selected')?.textContent || '';
+  const typedReason = document.getElementById('break-reason-input').value.trim();
+  const reason = typedReason || selectedTag || 'No reason given';
+
+  // Mark broken, reset streak
+  const prevStreak = h.streak;
+  h.broken  = today();
+  h.done    = false;
+  h.streak  = 0;
+  h.breakLog = h.breakLog || [];
+  h.breakLog.unshift({ date: today(), reason, prevStreak });
+
+  LS.set('habits', habits);
+  document.getElementById('break-modal-overlay').classList.remove('open');
+  renderHabitTabs();
+  renderHabitList();
+  toast(`💔 Streak reset. Reason: ${reason}`);
+  pushHabitBreak(h, cat, reason, prevStreak);
+  pushHabit(h, cat);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1392,42 +2745,321 @@ function getWeekDates(offset) {
 
 function shiftWeek(dir) { weekOffset += dir; renderWeekly(); }
 
+/* ─── SHARED STAT HELPERS ─────────────────────────────────── */
+function fmtHrs(secs) {
+  const h = Math.floor(secs/3600), m = Math.floor((secs%3600)/60);
+  return h > 0 ? `${h}h ${String(m).padStart(2,'0')}m` : `${m}m`;
+}
+
+function buildStateBars(containerId, rows) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const max = Math.max(...rows.map(r => r.secs), 1);
+  el.innerHTML = '';
+  rows.forEach(r => {
+    const pct     = Math.round(r.secs / 86400 * 100);
+    const barPct  = Math.round(r.secs / max * 100);
+    const div = document.createElement('div');
+    div.className = 'sbl-row';
+    div.innerHTML = `
+      <span class="sbl-icon">${r.icon}</span>
+      <span class="sbl-name">${r.name}</span>
+      <div class="sbl-bar-wrap">
+        <div class="sbl-bar" style="width:${barPct}%;background:${r.color}"></div>
+      </div>
+      <span class="sbl-time">${r.secs > 0 ? fmtHHMM(r.secs) : '—'}</span>
+      <span class="sbl-pct" style="color:${r.color}">${r.secs > 0 ? pct+'%' : '—'}</span>`;
+    el.appendChild(div);
+  });
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
 function renderWeekly() {
-  const dates = getWeekDates(weekOffset);
-  const grid  = document.getElementById('week-grid');
-  grid.innerHTML = '';
+  const dates    = getWeekDates(weekOffset);
   const todayStr = today();
+  const fasts    = fastState.log || [];
+
+  // ── Week day grid ──────────────────────────────────────────
+  const grid = document.getElementById('week-grid');
+  grid.innerHTML = '';
   dates.forEach(d => {
-    const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const cell = document.createElement('div');
+    const ds    = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const hasFast = fasts.some(f => f.date === ds);
+    const cell  = document.createElement('div');
     cell.className = 'week-day';
     cell.innerHTML = `
       <div class="wday-label">${DSHRT[d.getDay()]}</div>
-      <div class="wday-num${ds===todayStr?' today':''}">${d.getDate()}</div>
-      <div class="wday-bar"><div class="wday-fill" style="width:${Math.random()>0.4?Math.round(Math.random()*100):0}%"></div></div>
-    `;
+      <div class="wday-num${ds===todayStr?' today':''}${hasFast?' has-fast':''}">${d.getDate()}</div>
+      <div class="wday-bar">
+        <div class="wday-fill" style="width:${hasFast?'100':ds===todayStr?'50':'0'}%;background:${hasFast?'var(--accent)':'var(--accent)'}"></div>
+      </div>`;
     grid.appendChild(cell);
   });
 
   const fmt = dt => dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-  document.getElementById('week-range').textContent = `${fmt(dates[0])} – ${fmt(dates[6])}`;
+  setText('week-range', `${fmt(dates[0])} – ${fmt(dates[6])}`);
 
-  // Fast log
-  const tbody = document.getElementById('fast-log-body');
-  const log   = (fastState.log||[]).slice(0,10);
-  tbody.innerHTML = log.length
-    ? log.map(l=>`<tr><td>${l.date}</td><td>${fmtHHMM(l.secs)}</td><td><span class="log-badge">${l.stage}</span></td></tr>`).join('')
-    : '<tr><td colspan="3" style="color:var(--text3);text-align:center;padding:20px">No fasts logged yet</td></tr>';
+  // ── Fasting KPIs ───────────────────────────────────────────
+  const weekStart = dates[0]; weekStart.setHours(0,0,0,0);
+  const weekEnd   = dates[6]; weekEnd.setHours(23,59,59,999);
+  const weekFasts = fasts.filter(f => {
+    if (!f.endTs) return false;
+    return f.endTs >= weekStart.getTime() && f.endTs <= weekEnd.getTime();
+  });
+  // Fallback: match by date string if no endTs
+  const weekFastsFallback = weekFasts.length ? weekFasts : fasts.filter(f => {
+    return dates.some(d => {
+      const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      return f.date === ds;
+    });
+  });
+  const wf = weekFastsFallback;
 
-  // Stats (demo values for now)
-  const fasts = fastState.log||[];
-  document.getElementById('wk-fasts').textContent = fasts.length;
-  const longest = fasts.reduce((a,b)=>b.secs>a?b.secs:a,0);
-  document.getElementById('wk-long-fast').textContent = longest ? fmtHHMM(longest) : '—';
-  document.getElementById('wk-purpose').textContent = Math.round(getStateElapsed('purposeful')/3600)+'h';
-  const allH = Object.values(habits).flat();
-  const pctH = allH.length ? Math.round(allH.filter(h=>h.done).length/allH.length*100) : 0;
-  document.getElementById('wk-habit').textContent = pctH+'%';
+  // ── Fasting KPIs ─────────────────────────────────────────────────────
+  // Only use this week's log entries — no live timers for past weeks
+  const isCurrentWeek = weekOffset === 0;
+
+  // Longest fast this week
+  const longestEntry = wf.reduce((a,b) => b.secs > (a?.secs||0) ? b : a, null);
+  const longest      = longestEntry ? longestEntry.secs : 0;
+
+  // Deepest stage reached this week
+  const deepestEntry = wf.reduce((a,b) => {
+    const ai = a?.stageIdx || STAGES.findIndex(s=>s.name===a?.stage) || 0;
+    const bi = b?.stageIdx || STAGES.findIndex(s=>s.name===b?.stage) || 0;
+    return bi > ai ? b : a;
+  }, null);
+  const deepestIdx = deepestEntry
+    ? (deepestEntry.stageIdx || STAGES.findIndex(s=>s.name===deepestEntry.stage))
+    : (isCurrentWeek ? getCurrentStageIdx() : 0);
+  const deepestStage = STAGES[deepestIdx];
+
+  // Time spent in deepest stage across all week fasts
+  let deepestSecs = 0;
+  wf.forEach(f => {
+    const fi = f.stageIdx || STAGES.findIndex(s=>s.name===f.stage);
+    if (fi === deepestIdx) {
+      const stg = STAGES[deepestIdx], nxt = STAGES[deepestIdx+1];
+      const cap = nxt ? (nxt.start - stg.start)*3600 : f.secs;
+      deepestSecs += Math.min(f.secs, cap);
+    }
+  });
+  if (isCurrentWeek && fastState.running && getCurrentStageIdx() === deepestIdx) {
+    deepestSecs += getFastElapsed();
+  }
+
+  // Total fasting secs this week (all fasting stages, not feeding)
+  const totalFastSecs = wf.reduce((a,b)=>a+b.secs,0)
+    + (isCurrentWeek && fastState.running ? getFastElapsed() : 0);
+
+  // Total feeding secs this week — today only if current week
+  const totalFeedingSecs = isCurrentWeek ? getFeedingElapsed() : 0;
+
+  // Avg daily fasting & feeding (divide by 7 days)
+  const avgDailyFast    = Math.round(totalFastSecs / 7);
+  const avgDailyFeeding = Math.round(totalFeedingSecs / (isCurrentWeek ? 1 : 7));
+
+  setText('wk-deepest',       deepestStage ? deepestStage.icon + ' ' + deepestStage.name : '—');
+  setText('wk-deepest-time',  deepestSecs  ? fmtHrs(deepestSecs) + ' this week' : '—');
+  setText('wk-long-fast',     longest ? fmtHHMM(longest) : '—');
+  setText('wk-long-fast-date',longestEntry ? longestEntry.date : '—');
+  setText('wk-avg-fast',      avgDailyFast    ? fmtHHMM(avgDailyFast)    : '—');
+  setText('wk-avg-feeding',   avgDailyFeeding ? fmtHHMM(avgDailyFeeding) : '—');
+
+  // Stage distribution bars — log-based only, + today if current week
+  const fastStageSecs = new Array(STAGES.length).fill(0);
+  if (isCurrentWeek) {
+    fastStageSecs[0] = getFeedingElapsed();
+    if (fastState.running) {
+      const liveIdx = getCurrentStageIdx();
+      let rem = getFastElapsed();
+      for (let i = 1; i <= liveIdx && i < STAGES.length; i++) {
+        const nxt = STAGES[i+1];
+        const cap = nxt ? (nxt.start - STAGES[i].start)*3600 : rem;
+        const sp  = Math.min(rem, cap);
+        fastStageSecs[i] += sp; rem -= sp;
+        if (rem <= 0) break;
+      }
+    }
+  }
+  wf.forEach(entry => {
+    let rem = entry.secs;
+    const maxIdx = entry.stageIdx || STAGES.findIndex(s=>s.name===entry.stage);
+    for (let i = 1; i <= maxIdx && i < STAGES.length; i++) {
+      const nxt = STAGES[i+1];
+      const cap = nxt ? (nxt.start - STAGES[i].start)*3600 : rem;
+      const sp  = Math.min(rem, cap);
+      fastStageSecs[i] += sp; rem -= sp;
+      if (rem <= 0) break;
+    }
+  });
+  buildStateBars('wk-fast-bars', STAGES.map((s,i) => ({
+    icon: s.icon, name: s.name, color: s.color, secs: fastStageSecs[i]
+  })));
+
+  // ── Moments — stacked bar chart ─────────────────────────────────────
+  // Per-day data: today only from live timers, past days from stored daily totals
+  // For now use today's live data distributed evenly across days (until Supabase sync)
+  const dayLabels = dates.map(d => DSHRT[d.getDay()]);
+  const mSecs     = {};
+  STATE_DEFS.forEach(sd => {
+    // Only show today's data on current day, zeros for other days (until sync)
+    mSecs[sd.key] = new Array(7).fill(0);
+    const todayIdx = dates.findIndex(d => {
+      const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      return ds === todayStr;
+    });
+    if (todayIdx >= 0 && isCurrentWeek) {
+      mSecs[sd.key][todayIdx] = parseFloat((getStateElapsed(sd.key)/3600).toFixed(2));
+    }
+  });
+
+  buildMomentChart(dayLabels, mSecs);
+
+  // ── Habits — completion & break % per category ───────────────────────
+  const catBars = [];
+  const HABIT_CATS_LIST = ['purposeful','nourishing','training','recovering','wasteful'];
+  HABIT_CATS_LIST.forEach(cat => {
+    const sd    = STATE_DEFS.find(s=>s.key===cat);
+    const list  = habits[cat]||[];
+    const done   = list.filter(h=>h.done).length;
+    const broken = list.filter(h=>h.broken===todayStr).length;
+    const pct    = list.length ? Math.round(done/list.length*100) : 0;
+    catBars.push({
+      icon: sd?.icon||'', name: sd?.label||cat, color: sd?.color||'var(--accent)',
+      done, total: list.length, pct,
+      broken: broken || 0,
+      brokenPct: list.length ? Math.round((broken||0)/list.length*100) : 0,
+      empty: !list.length,
+    });
+  });
+
+  // Render category completion bars
+  const catEl = document.getElementById('wk-habit-cat-bars');
+  if (catEl) {
+    catEl.innerHTML = '';
+    catBars.forEach(r => {
+      const div = document.createElement('div');
+      div.className = 'sbl-row';
+      div.innerHTML = `
+        <span class="sbl-icon">${r.icon}</span>
+        <span class="sbl-name">${r.name}</span>
+        <div class="sbl-bar-wrap">
+          <div class="sbl-bar" style="width:${r.pct}%;background:${r.color}"></div>
+        </div>
+        <span class="sbl-time" style="font-size:10px">${r.empty ? '—' : `${r.done||0}/${r.total||0}`}</span>
+        <span class="sbl-pct" style="color:${r.empty ? 'var(--text3)' : r.color}">${r.empty ? '—' : (r.pct||0)+'%'}</span>`;
+      div.style.opacity = r.empty ? '0.35' : '1';
+      catEl.appendChild(div);
+
+      // Break sub-row if any broken
+      if (r.broken > 0) {
+        const bd = document.createElement('div');
+        bd.className = 'sbl-row';
+        bd.style.paddingLeft = '28px';
+        bd.innerHTML = `
+          <span class="sbl-icon" style="font-size:11px">💔</span>
+          <span class="sbl-name" style="font-size:11px;color:var(--text3)">broken</span>
+          <div class="sbl-bar-wrap">
+            <div class="sbl-bar" style="width:${r.brokenPct}%;background:var(--danger)"></div>
+          </div>
+          <span class="sbl-time" style="font-size:10px">${r.broken}/${r.total}</span>
+          <span class="sbl-pct" style="color:var(--danger)">${r.brokenPct}%</span>`;
+        catEl.appendChild(bd);
+      }
+    });
+  }
+
+  // Break reasons
+  const allHabits = Object.values(habits).flat();
+  const reasonCounts = {};
+  allHabits.forEach(h => {
+    (h.breakLog||[]).forEach(b => {
+      if (!b.date || !dates.some(d => {
+        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        return ds === b.date;
+      })) return;
+      const r = b.reason || 'No reason';
+      reasonCounts[r] = (reasonCounts[r]||0) + 1;
+    });
+  });
+  const totalReasons = Object.values(reasonCounts).reduce((a,b)=>a+b,0)||1;
+  const reasonEl = document.getElementById('wk-break-reason-bars');
+  if (reasonEl) {
+    reasonEl.innerHTML = '';
+    const sorted = Object.entries(reasonCounts).sort((a,b)=>b[1]-a[1]);
+    if (!sorted.length) {
+      reasonEl.innerHTML = `<div style="font-family:var(--font-cond);font-size:12px;color:var(--text3)">No breaks this week 🔥</div>`;
+    } else {
+      sorted.forEach(([reason, count]) => {
+        const pct = Math.round(count/totalReasons*100);
+        const div = document.createElement('div');
+        div.className = 'sbl-row';
+        div.innerHTML = `
+          <span class="sbl-icon" style="font-size:11px">—</span>
+          <span class="sbl-name" style="font-size:11px">${reason}</span>
+          <div class="sbl-bar-wrap">
+            <div class="sbl-bar" style="width:${pct}%;background:var(--danger)"></div>
+          </div>
+          <span class="sbl-time" style="font-size:10px">${count}x</span>
+          <span class="sbl-pct" style="color:var(--danger)">${pct}%</span>`;
+        reasonEl.appendChild(div);
+      });
+    }
+  }
+}
+
+/* ─── STACKED BAR CHART FOR MOMENTS ─────────────────────── */
+let wkMomentChart = null;
+
+function buildMomentChart(labels, mSecs) {
+  const canvas = document.getElementById('wk-moment-chart');
+  if (!canvas) return;
+
+  const datasets = STATE_DEFS.map(sd => ({
+    label: sd.label,
+    data: mSecs[sd.key],
+    backgroundColor: sd.color,
+    borderRadius: 3,
+    borderSkipped: false,
+  }));
+
+  if (wkMomentChart) {
+    wkMomentChart.data.labels   = labels;
+    wkMomentChart.data.datasets = datasets;
+    wkMomentChart.update('none');
+  } else {
+    const isDark  = document.documentElement.getAttribute('data-theme') === 'dark';
+    const gridClr = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    const txtClr  = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)';
+    const ctx = canvas.getContext('2d');
+    wkMomentChart = new Chart(ctx, {
+      type: 'bar',
+      data: { labels, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: {
+          callbacks: { label: c => ` ${c.dataset.label}: ${c.raw.toFixed(1)}h` }
+        }},
+        scales: {
+          x: { stacked: true, grid: { color: gridClr }, ticks: { color: txtClr, font: { family: "'Barlow Condensed'" } } },
+          y: { stacked: true, grid: { color: gridClr }, ticks: { color: txtClr, font: { family: "'Barlow Condensed'" }, callback: v => v+'h' } }
+        }
+      }
+    });
+  }
+
+  // Legend
+  const legEl = document.getElementById('wk-chart-legend');
+  if (legEl) {
+    legEl.innerHTML = STATE_DEFS.map(sd =>
+      `<div class="wk-legend-item"><span class="wk-legend-dot" style="background:${sd.color}"></span>${sd.icon} ${sd.label}</div>`
+    ).join('');
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1440,63 +3072,852 @@ function shiftMonth(dir) { monthOffset += dir; renderMonthly(); }
 function renderMonthly() {
   const now = new Date();
   const d   = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
-  const yr  = d.getFullYear(); const mo = d.getMonth();
-  document.getElementById('month-label').textContent = MONTHS[mo];
-  document.getElementById('month-year').textContent  = yr;
-  document.getElementById('month-name-label').textContent = `${MONTHS[mo]} ${yr}`;
+  const yr  = d.getFullYear();
+  const mo  = d.getMonth();
+  const todayStr    = today();
+  const isCurrentMonth = monthOffset === 0;
+  const moStr       = `${yr}-${String(mo+1).padStart(2,'0')}`;
+  const daysInMonth = new Date(yr, mo+1, 0).getDate();
+  const fasts       = fastState.log || [];
 
-  const grid = document.getElementById('month-grid');
-  grid.innerHTML = '';
+  setText('month-label',      MONTHS[mo]);
+  setText('month-year',       yr);
+  setText('month-name-label', `${MONTHS[mo]} ${yr}`);
 
-  const firstDow = new Date(yr, mo, 1).getDay();
-  const daysInMo = new Date(yr, mo+1, 0).getDate();
-  const todayStr = today();
-
-  for (let i=0;i<firstDow;i++) {
-    const emp = document.createElement('div'); emp.className='mday empty'; grid.appendChild(emp);
-  }
-  for (let day=1;day<=daysInMo;day++) {
-    const ds = `${yr}-${String(mo+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-    const div = document.createElement('div');
-    const isToday = ds === todayStr;
-    const hasFast = (fastState.log||[]).some(l=>l.date===ds);
-    div.className = 'mday' + (isToday?' today':'') + (hasFast?' has-data':'');
-    div.textContent = day;
-    grid.appendChild(div);
+  // ── Filter fasts to this month ─────────────────────────────
+  const moFasts = fasts.filter(f => f.date && f.date.startsWith(moStr));
+  const allMoFasts = [...moFasts];
+  if (isCurrentMonth && fastState.running) {
+    allMoFasts.push({ secs: getFastElapsed(), stage: STAGES[getCurrentStageIdx()].name, stageIdx: getCurrentStageIdx(), date: todayStr });
   }
 
-  // Stats
-  const fasts = fastState.log||[];
-  document.getElementById('mo-fasts').textContent = fasts.length;
-  let best=0,cur=0; fasts.forEach(f=>{ cur++; best=Math.max(best,cur); });
-  document.getElementById('mo-streak').textContent = best;
+  // ── Fasting KPIs — mirror of renderWeekly, scoped to month ─
+  const longestEntry = allMoFasts.reduce((a,b)=>b.secs>(a?.secs||0)?b:a, null);
+  const longest      = longestEntry?.secs || 0;
+  const totalFastSecs= allMoFasts.reduce((a,b)=>a+b.secs,0);
+  const avgDailyFast = Math.round(totalFastSecs / daysInMonth);
+  const avgDailyFeed = isCurrentMonth ? getFeedingElapsed() : 0;
+
+  // Deepest stage
+  const deepestEntry = allMoFasts.reduce((a,b)=>{
+    const ai = a?.stageIdx||STAGES.findIndex(s=>s.name===a?.stage)||0;
+    const bi = b?.stageIdx||STAGES.findIndex(s=>s.name===b?.stage)||0;
+    return bi>ai?b:a;
+  }, null);
+  const deepestIdx   = deepestEntry?(deepestEntry.stageIdx||STAGES.findIndex(s=>s.name===deepestEntry.stage)):
+                       (isCurrentMonth?getCurrentStageIdx():0);
+  const deepestStage = STAGES[deepestIdx];
+  let deepestSecs = 0;
+  allMoFasts.forEach(f=>{
+    const fi = f.stageIdx||STAGES.findIndex(s=>s.name===f.stage);
+    if (fi===deepestIdx){
+      const stg=STAGES[deepestIdx],nxt=STAGES[deepestIdx+1];
+      deepestSecs+=Math.min(f.secs, nxt?(nxt.start-stg.start)*3600:f.secs);
+    }
+  });
+
+  setText('mo-deepest',        deepestStage ? deepestStage.icon+' '+deepestStage.name : '—');
+  setText('mo-deepest-time',   deepestSecs  ? fmtHrs(deepestSecs)+' this month' : '—');
+  setText('mo-long-fast',      longest ? fmtHHMM(longest) : '—');
+  setText('mo-long-fast-date', longestEntry?.date || '—');
+  setText('mo-avg-feeding',    avgDailyFeed ? fmtHHMM(avgDailyFeed) : '—');
+  setText('mo-avg-daily-fast', avgDailyFast ? fmtHHMM(avgDailyFast) : '—');
+
+  // Stage bars
+  const fastStageSecs = new Array(STAGES.length).fill(0);
+  if (isCurrentMonth) {
+    fastStageSecs[0] = getFeedingElapsed();
+    if (fastState.running) {
+      const liveIdx = getCurrentStageIdx();
+      let rem = getFastElapsed();
+      for (let i=1;i<=liveIdx&&i<STAGES.length;i++){
+        const nxt=STAGES[i+1]; const cap=nxt?(nxt.start-STAGES[i].start)*3600:rem;
+        const sp=Math.min(rem,cap); fastStageSecs[i]+=sp; rem-=sp; if(rem<=0) break;
+      }
+    }
+  }
+  allMoFasts.filter(f=>f.date!==todayStr||!isCurrentMonth).forEach(entry=>{
+    let rem=entry.secs;
+    const maxIdx=entry.stageIdx||STAGES.findIndex(s=>s.name===entry.stage);
+    for(let i=1;i<=maxIdx&&i<STAGES.length;i++){
+      const nxt=STAGES[i+1]; const cap=nxt?(nxt.start-STAGES[i].start)*3600:rem;
+      const sp=Math.min(rem,cap); fastStageSecs[i]+=sp; rem-=sp; if(rem<=0) break;
+    }
+  });
+  buildStateBars('mo-fast-bars', STAGES.map((s,i)=>({
+    icon:s.icon, name:s.name, color:s.color, secs:fastStageSecs[i]
+  })));
+
+  // ── Moments — same as weekly: stacked chart + bars ──────────
+  const moMomentSecs = {};
+  STATE_DEFS.forEach(sd=>{ moMomentSecs[sd.key] = isCurrentMonth ? getStateElapsed(sd.key) : 0; });
+  buildMonthChart(yr, mo, daysInMonth, moMomentSecs);
+
+  // ── Habits — exact mirror of weekly habits section ───────────
+  const CATS = ['purposeful','nourishing','training','recovering','wasteful'];
+  const moCatEl = document.getElementById('mo-habit-cat-bars');
+  if (moCatEl) {
+    moCatEl.innerHTML = '';
+    CATS.forEach(cat=>{
+      const sd   = STATE_DEFS.find(s=>s.key===cat);
+      const list = habits[cat]||[];
+      const done  = list.filter(h=>h.done).length;
+      const broke = list.filter(h=>h.broken&&h.broken.startsWith(moStr)).length;
+      const pct   = list.length ? Math.round((done||0)/list.length*100) : 0;
+      const bpct  = list.length ? Math.round((broke||0)/list.length*100) : 0;
+      const row = document.createElement('div');
+      row.className = 'sbl-row';
+      row.style.opacity = list.length ? '1' : '0.35';
+      row.innerHTML = `
+        <span class="sbl-icon">${sd?.icon||''}</span>
+        <span class="sbl-name">${sd?.label||cat}</span>
+        <div class="sbl-bar-wrap"><div class="sbl-bar" style="width:${pct}%;background:${sd?.color||'var(--accent)'}"></div></div>
+        <span class="sbl-time" style="font-size:10px">${list.length ? `${done||0}/${list.length}` : '—'}</span>
+        <span class="sbl-pct" style="color:${list.length ? (sd?.color||'var(--accent)') : 'var(--text3)'}">${list.length ? pct+'%' : '—'}</span>`;
+      moCatEl.appendChild(row);
+      if (broke>0){
+        const bd=document.createElement('div');
+        bd.className='sbl-row'; bd.style.paddingLeft='28px';
+        bd.innerHTML=`
+          <span class="sbl-icon" style="font-size:11px">💔</span>
+          <span class="sbl-name" style="font-size:11px;color:var(--text3)">broken</span>
+          <div class="sbl-bar-wrap"><div class="sbl-bar" style="width:${bpct}%;background:var(--danger)"></div></div>
+          <span class="sbl-time" style="font-size:10px">${broke}/${list.length}</span>
+          <span class="sbl-pct" style="color:var(--danger)">${bpct}%</span>`;
+        moCatEl.appendChild(bd);
+      }
+    });
+  }
+
+  // Break reasons this month
   const allH = Object.values(habits).flat();
-  const pctH = allH.length ? Math.round(allH.filter(h=>h.done).length/allH.length*100) : 0;
-  document.getElementById('mo-habit').textContent = pctH+'%';
-  document.getElementById('mo-focus').textContent = Math.round(getStateElapsed('purposeful')/3600)+'h';
+  const moReasonCounts = {};
+  allH.forEach(h=>{
+    (h.breakLog||[]).forEach(b=>{
+      if (b.date && b.date.startsWith(moStr)) {
+        const r=b.reason||'No reason'; moReasonCounts[r]=(moReasonCounts[r]||0)+1;
+      }
+    });
+  });
+  const moReasonEl = document.getElementById('mo-break-reason-bars');
+  if (moReasonEl) {
+    moReasonEl.innerHTML='';
+    const total=Object.values(moReasonCounts).reduce((a,b)=>a+b,0)||1;
+    const sorted=Object.entries(moReasonCounts).sort((a,b)=>b[1]-a[1]);
+    if (!sorted.length) {
+      moReasonEl.innerHTML=`<div style="font-family:var(--font-cond);font-size:12px;color:var(--text3)">No breaks this month 🔥</div>`;
+    } else {
+      sorted.forEach(([reason,count])=>{
+        const pct=Math.round(count/total*100);
+        const div=document.createElement('div'); div.className='sbl-row';
+        div.innerHTML=`
+          <span class="sbl-icon" style="font-size:11px">—</span>
+          <span class="sbl-name" style="font-size:11px">${reason}</span>
+          <div class="sbl-bar-wrap"><div class="sbl-bar" style="width:${pct}%;background:var(--danger)"></div></div>
+          <span class="sbl-time" style="font-size:10px">${count}x</span>
+          <span class="sbl-pct" style="color:var(--danger)">${pct}%</span>`;
+        moReasonEl.appendChild(div);
+      });
+    }
+  }
+}
+
+/* ─── MONTHLY MOMENT CHART — stacked by week ─────────────── */
+let moMomentChart = null;
+
+function buildMonthChart(yr, mo, daysInMonth, moMomentSecs) {
+  const canvas = document.getElementById('mo-moment-chart');
+  if (!canvas) return;
+
+  // Build week labels: W1, W2, W3, W4, W5
+  const weekLabels = [];
+  const weekData   = {};
+  STATE_DEFS.forEach(sd=>{ weekData[sd.key]=[]; });
+
+  let weekNum = 1;
+  let weekStart = 1;
+  while (weekStart <= daysInMonth) {
+    const weekEnd = Math.min(weekStart+6, daysInMonth);
+    weekLabels.push('W'+weekNum);
+    // Distribute today's data into the correct week
+    const todayDay = new Date().getDate();
+    const inThisWeek = todayDay >= weekStart && todayDay <= weekEnd;
+    STATE_DEFS.forEach(sd=>{
+      weekData[sd.key].push(inThisWeek ? parseFloat((moMomentSecs[sd.key]/3600).toFixed(2)) : 0);
+    });
+    weekStart += 7; weekNum++;
+  }
+
+  const datasets = STATE_DEFS.map(sd=>({
+    label: sd.label,
+    data: weekData[sd.key],
+    backgroundColor: sd.color,
+    borderRadius: 3,
+    borderSkipped: false,
+  }));
+
+  const isDark  = document.documentElement.getAttribute('data-theme')==='dark';
+  const gridClr = isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+  const txtClr  = isDark?'rgba(255,255,255,0.35)':'rgba(0,0,0,0.35)';
+
+  if (moMomentChart) {
+    moMomentChart.data.labels=weekLabels;
+    moMomentChart.data.datasets=datasets;
+    moMomentChart.update('none');
+  } else {
+    const ctx=canvas.getContext('2d');
+    moMomentChart=new Chart(ctx,{
+      type:'bar',
+      data:{labels:weekLabels, datasets},
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw.toFixed(1)}h`}}},
+        scales:{
+          x:{stacked:true,grid:{color:gridClr},ticks:{color:txtClr,font:{family:"'Barlow Condensed'"}}},
+          y:{stacked:true,grid:{color:gridClr},ticks:{color:txtClr,font:{family:"'Barlow Condensed'"},callback:v=>v+'h'}}
+        }
+      }
+    });
+  }
+
+  const legEl=document.getElementById('mo-chart-legend');
+  if (legEl){
+    legEl.innerHTML=STATE_DEFS.map(sd=>
+      `<div class="wk-legend-item"><span class="wk-legend-dot" style="background:${sd.color}"></span>${sd.icon} ${sd.label}</div>`
+    ).join('');
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
    SUPABASE PERSISTENCE
 ═══════════════════════════════════════════════════════════════ */
-async function saveToSupabase(table, data) {
-  if (!currentUser) return;
+/* ═══════════════════════════════════════════════════════════════
+   SYNC ENGINE
+   Offline-first: every write goes to localStorage immediately.
+   A queue drains to Supabase when online. On login or reconnect,
+   remote state is fetched and merged. Realtime subscriptions keep
+   app_state live across devices.
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Offline queue ─────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   EVENT-SOURCED SYNC
+   Instead of syncing computed state, we store timestamped events.
+   On any login/device: pull events → replay → reconstruct state.
+   No merge conflicts. No stale overwrites. Always accurate.
+═══════════════════════════════════════════════════════════════ */
+
+// ── Event write: fire and forget individual upsert ────────────
+async function writeEvent(type, ts, meta) {
+  if (!currentUser) {
+    // Queue for later — stored in LS under 'pendingEvents'
+    const pending = LS.get('pendingEvents') || [];
+    pending.push({ type, ts, meta: meta || {} });
+    LS.set('pendingEvents', pending);
+    dbg('SYNC', 'writeEvent queued (no user)', type);
+    return;
+  }
   try {
-    await sb.from(table).upsert({ user_id: currentUser.id, ...data, updated_at: new Date().toISOString() });
-  } catch(e) { console.warn('Supabase save:', e.message); }
+    const { error } = await sb.from('events').upsert({
+      user_id: currentUser.id,
+      type:    type,
+      ts:      ts,
+      meta:    meta || {},
+    }, { onConflict: 'user_id,type,ts' });
+    if (error) {
+      dbg('ERR', 'writeEvent failed', { type, error: error.message });
+      // Queue for retry
+      const pending = LS.get('pendingEvents') || [];
+      pending.push({ type, ts, meta: meta || {} });
+      LS.set('pendingEvents', pending);
+    } else {
+      dbg('SYNC', 'writeEvent ok', type + ' @ ' + new Date(ts).toLocaleTimeString());
+    }
+  } catch(e) {
+    dbg('ERR', 'writeEvent exception', e.message);
+    const pending = LS.get('pendingEvents') || [];
+    pending.push({ type, ts, meta: meta || {} });
+    LS.set('pendingEvents', pending);
+  }
 }
 
-async function loadUserData() {
-  if (!currentUser) return;
-  // Load habits
-  try {
-    const { data } = await sb.from('habits').select('*').eq('user_id', currentUser.id);
-    if (data && data.length) {
-      // Merge remote into local structure
-      // (minimal: just sync done state by name match)
-    }
-  } catch(e) {}
+// ── Flush pending events after login ─────────────────────────
+async function flushPendingEvents() {
+  const pending = LS.get('pendingEvents') || [];
+  if (!pending.length || !currentUser) return;
+  dbg('SYNC', 'flushing pending events', pending.length);
+  LS.set('pendingEvents', []);
+  for (const ev of pending) {
+    await writeEvent(ev.type, ev.ts, ev.meta);
+  }
 }
+
+// ── Event replay: reconstruct state from today's events ───────
+function replayEvents(events) {
+  // Events are sorted ascending by ts
+  const midnight = new Date(); midnight.setHours(0,0,0,0);
+  const midnightTs = midnight.getTime();
+  const nowTs = Date.now();
+  const td = today();
+
+  // ── Fast state ────────────────────────────────────────────
+  let fastRunning = false;
+  let fastStartTs = null;
+  let fastOrigTs  = null;
+  let fastTotal   = 0; // accumulated secs from completed fasts today
+
+  // ── Moment state ──────────────────────────────────────────
+  const momentTimers = { purposeful:0, wasteful:0, nourishing:0, training:0, recovering:0 };
+  let momentActive  = 'wasteful';
+  let momentStartTs = midnightTs; // default: wasteful started at midnight
+
+  // ── Feeding state ─────────────────────────────────────────
+  let feedingStartTs   = midnightTs; // started feeding at midnight by default
+  let feedingTotalSecs = 0;
+  let feedingPaused    = false;
+  let feedingPauseTs   = null;
+
+  dbg('SYNC', 'replaying events', events.length + ' events');
+
+  for (const ev of events) {
+    const ts = ev.ts;
+    const meta = ev.meta || {};
+
+    switch (ev.type) {
+
+      case 'fast_start': {
+        // Snapshot feeding time up to this point
+        if (!feedingPaused && feedingStartTs) {
+          feedingTotalSecs += Math.floor((ts - feedingStartTs) / 1000);
+        }
+        feedingPaused  = true;
+        feedingPauseTs = ts;
+        // Snapshot moment timer up to this point
+        if (momentActive && momentStartTs) {
+          momentTimers[momentActive] = (momentTimers[momentActive] || 0) +
+            Math.floor((ts - momentStartTs) / 1000);
+          momentStartTs = ts;
+        }
+        fastRunning = true;
+        fastStartTs = ts;
+        fastOrigTs  = ts;
+        dbg('SYNC', 'replay: fast_start', new Date(ts).toLocaleTimeString());
+        break;
+      }
+
+      case 'fast_end': {
+        if (fastRunning && fastStartTs) {
+          fastTotal  += Math.floor((ts - fastStartTs) / 1000);
+          fastRunning = false;
+          fastStartTs = null;
+        }
+        // Resume feeding
+        feedingPaused    = false;
+        feedingStartTs   = ts;
+        feedingPauseTs   = null;
+        // Snapshot moment
+        if (momentActive && momentStartTs) {
+          momentTimers[momentActive] = (momentTimers[momentActive] || 0) +
+            Math.floor((ts - momentStartTs) / 1000);
+          momentStartTs = ts;
+        }
+        dbg('SYNC', 'replay: fast_end', new Date(ts).toLocaleTimeString());
+        break;
+      }
+
+      case 'moment_switch': {
+        const toState = meta.to;
+        if (!toState) break;
+        // Close out previous state
+        if (momentActive && momentStartTs) {
+          momentTimers[momentActive] = (momentTimers[momentActive] || 0) +
+            Math.floor((ts - momentStartTs) / 1000);
+        }
+        if (meta.snapshot) {
+          // Snapshot event (from signout) — close session, reset anchor
+          // State stays the same, startTs advances to snapshot time
+          momentStartTs = ts;
+          dbg('SYNC', 'replay: moment snapshot', momentActive + ' @ ' + new Date(ts).toLocaleTimeString());
+        } else {
+          momentActive  = toState;
+          momentStartTs = ts;
+          dbg('SYNC', 'replay: moment_switch', meta.from + ' → ' + toState + ' @ ' + new Date(ts).toLocaleTimeString());
+        }
+        break;
+      }
+
+
+    }
+  }
+
+  // ── Apply live session (event still open) ─────────────────
+  // Fast: if still running, count from startTs to now
+  const liveFastSecs = fastRunning && fastStartTs
+    ? Math.floor((nowTs - fastStartTs) / 1000)
+    : 0;
+
+  // Moment: current active state still running
+  if (momentActive && momentStartTs) {
+    momentTimers[momentActive] = (momentTimers[momentActive] || 0) +
+      Math.floor((nowTs - momentStartTs) / 1000);
+  }
+
+  // Feeding: if not paused, count from feedingStartTs to now
+  let liveFeedingSecs = 0;
+  if (!feedingPaused && feedingStartTs) {
+    liveFeedingSecs = Math.floor((nowTs - feedingStartTs) / 1000);
+  }
+
+  dbg('SYNC', 'replay result', {
+    fastRunning, fastTotal, liveFastSecs,
+    momentActive, momentTimers,
+    feedingTotal: feedingTotalSecs + liveFeedingSecs
+  });
+
+  // ── Write reconstructed state to local vars + LS ──────────
+  fastState = {
+    running:         fastRunning,
+    startTs:         fastRunning ? fastStartTs : null,
+    originalStartTs: fastRunning ? fastOrigTs  : null,
+    totalSecs:       fastTotal, // completed fast secs (live added by getFastElapsed)
+    log:             fastState.log || [],
+    _savedAt:        nowTs,
+  };
+  LS.set('fast', fastState);
+
+  // Moment timers are already accumulated — remove live session
+  // so getStateElapsed can add it back correctly
+  const frozenTimers = Object.assign({}, momentTimers);
+  if (momentActive && momentStartTs) {
+    // Subtract the live portion we added above — getStateElapsed re-adds it
+    frozenTimers[momentActive] = (frozenTimers[momentActive] || 0) -
+      Math.floor((nowTs - momentStartTs) / 1000);
+    if (frozenTimers[momentActive] < 0) frozenTimers[momentActive] = 0;
+  }
+  momentState = {
+    active:   momentActive,
+    startTs:  momentStartTs,
+    timers:   frozenTimers,
+    lastDate: td,
+    _savedAt: nowTs,
+  };
+  LS.set('moment', momentState);
+
+  feedingState = {
+    startTs:   feedingPaused ? null : (feedingStartTs || Date.now()),
+    totalSecs: feedingTotalSecs,
+    lastDate:  td,
+    _savedAt:  nowTs,
+  };
+  LS.set('feeding', feedingState);
+}
+
+// ── Habit push (direct upsert, no queue) ──────────────────────
+async function pushHabit(h, cat) {
+  if (!currentUser) return null;
+  const isUUID = h.id && UUID_RE.test(h.id);
+  const payload = {
+    user_id:     currentUser.id,
+    cat,
+    name:        h.name,
+    streak:      h.streak || 0,
+    done_date:   h.done   ? today() : null,
+    broken_date: h.broken || null,
+    sort_order:  h.sort_order || 0,
+  };
+  // If we have a real Supabase UUID, include it — conflict on id → UPDATE in place
+  // This handles renames correctly: same row updated, name changed
+  if (isUUID) payload.id = h.id;
+
+  const conflictKey = isUUID ? 'id' : 'user_id,cat,name';
+  try {
+    const { data, error } = await sb.from('habits')
+      .upsert(payload, { onConflict: conflictKey })
+      .select('id')
+      .single();
+    if (error) {
+      dbg('ERR', 'pushHabit failed', { name: h.name, error: error.message });
+      return null;
+    }
+    dbg('SYNC', 'pushHabit ok', h.name + ' id:' + (data && data.id ? data.id.slice(0,8) : '?'));
+    return data; // caller stores data.id as h.id
+  } catch(e) {
+    dbg('ERR', 'pushHabit exception', e.message);
+    return null;
+  }
+}
+
+async function pushHabitBreak(h, cat, reason, prevStreak) {
+  if (!currentUser) return;
+  try {
+    await sb.from('habit_breaks').insert({
+      user_id:     currentUser.id,
+      cat,
+      name:        h.name,
+      reason,
+      prev_streak: prevStreak,
+      date:        today(),
+    });
+  } catch(e) {
+    dbg('ERR', 'pushHabitBreak failed', e.message);
+  }
+}
+
+// ── Legacy stubs (called from various places, now no-ops or redirected)
+function enqueue(table, data) {} // no-op — replaced by event model
+async function drainQueue() {}   // no-op — replaced by event model
+function pushAppState() { /* events replace this */ }
+function pushFast(secs, stage, stageIdx, startTs, endTs) {
+  // Still write to fasts table for stats
+  if (!currentUser) return;
+  sb.from('fasts').upsert({
+    user_id:   currentUser.id,
+    date:      today(),
+    secs, stage,
+    stage_idx: stageIdx,
+    start_ts:  startTs,
+    end_ts:    endTs,
+  }, { onConflict: 'user_id,start_ts' }).then(({ error }) => {
+    if (error) dbg('ERR', 'pushFast failed', error.message);
+  });
+}
+function pushFeeding(date, secs) {} // feeding reconstructed from events
+function pushMoment(state, secs, startTs, endTs) {} // moments reconstructed from events
+
+/* ── Pull & merge remote state ─────────────────────────────── */
+async function loadUserData() {
+  if (!currentUser) { dbg('SYNC', 'loadUserData skipped — no user'); return; }
+  dbg('SYNC', 'loadUserData starting pull');
+  try {
+    await Promise.all([pullAndReplayEvents(), pullFasts(), pullHabits()]);
+    dbg('SYNC', 'pull complete', {
+      fast: fastState.running ? 'RUNNING' : 'stopped',
+      fastSecs: getFastElapsed(),
+      momentActive: momentState.active,
+      momentSecs: getStateElapsed(momentState.active),
+      feedSecs: getFeedingElapsed()
+    });
+    renderHabitTabs();
+    renderHabitList();
+    updateFastUI();
+    updateStateUI();
+    buildDayTracker();
+    toast('✅ Synced');
+  } catch(e) {
+    dbg('ERR', 'loadUserData error', e.message);
+    console.warn('loadUserData error:', e.message);
+  }
+}
+
+async function pullAndReplayEvents() {
+  if (!currentUser) return;
+  // Pull today's events from Supabase
+  const midnight = new Date(); midnight.setHours(0,0,0,0);
+  const midnightIso = midnight.toISOString();
+
+  try {
+    const { data, error } = await sb
+      .from('events')
+      .select('type, ts, meta')
+      .eq('user_id', currentUser.id)
+      .gte('ts', midnight.getTime())
+      .order('ts', { ascending: true });
+
+    if (error) {
+      dbg('ERR', 'pullAndReplayEvents failed', error.message);
+      return;
+    }
+
+    const events = data || [];
+    dbg('SYNC', 'pulled events', events.length + ' today');
+
+    if (events.length === 0) {
+      // No events today — local state is source of truth
+      // If we have a running fast locally, write a fast_start event
+      // so other devices can pick it up
+      if (fastState.running && fastState.startTs) {
+        dbg('SYNC', 'no remote events — pushing local fast_start');
+        await writeEvent('fast_start', fastState.startTs, {});
+      }
+      // Write current moment as a switch event if not wasteful
+      if (momentState.active && momentState.active !== 'wasteful' && momentState.startTs) {
+        dbg('SYNC', 'no remote events — pushing local moment state');
+        await writeEvent('moment_switch', momentState.startTs, {
+          from: 'wasteful', to: momentState.active
+        });
+      }
+      return;
+    }
+
+    // Replay events to reconstruct state
+    replayEvents(events);
+
+  } catch(e) {
+    dbg('ERR', 'pullAndReplayEvents exception', e.message);
+  }
+}
+
+async function pullFasts() {
+  // Pull last 90 days of fasts for stats
+  const since = new Date();
+  since.setDate(since.getDate() - 90);
+  const sinceStr = since.toISOString().slice(0,10);
+
+  const { data, error } = await sb
+    .from('fasts')
+    .select('date, secs, stage, stage_idx, start_ts, end_ts')
+    .eq('user_id', currentUser.id)
+    .gte('date', sinceStr)
+    .order('date', { ascending: false });
+
+  if (error || !data) return;
+
+  // Merge into local log (remote is source of truth)
+  fastState.log = data.map(r => ({
+    date:     r.date,
+    secs:     r.secs,
+    stage:    r.stage,
+    stageIdx: r.stage_idx,
+    startTs:  r.start_ts,
+    endTs:    r.end_ts,
+  }));
+  LS.set('fast', fastState);
+}
+
+async function pullHabits() {
+  // Pull habits and break log in parallel
+  const [habitsRes, breaksRes] = await Promise.all([
+    sb.from('habits')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('sort_order'),
+    sb.from('habit_breaks')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false })
+      .limit(200),
+  ]);
+
+  // If there's a real error, bail. But empty data is NOT an error —
+  // it means no habits in Supabase yet, which we handle below.
+  if (habitsRes.error) {
+    dbg('ERR', 'pullHabits error', habitsRes.error.message);
+    return;
+  }
+  dbg('SYNC', 'pullHabits remote rows', (habitsRes.data || []).length);
+  if (!habitsRes.data?.length) {
+    // No remote habits — push local if we have any, then re-pull to get UUIDs
+    const hasLocal = Object.values(habits).some(a => a.length > 0);
+    if (hasLocal) {
+      dbg('SYNC', 'no remote habits — pushing local up');
+      for (const [cat, list] of Object.entries(habits)) {
+        for (const h of list) {
+          const row = await pushHabit(h, cat);
+          if (row && row.id) h.id = row.id; // store UUID
+        }
+      }
+      LS.set('habits', habits);
+      dbg('SYNC', 'local habits pushed, UUIDs stored');
+    }
+    return;
+  }
+
+  const td = today();
+  const breaks = breaksRes.data || [];
+
+  // Build break log per habit name+cat from Supabase
+  const breakLogMap = {};
+  breaks.forEach(b => {
+    const key = `${b.cat}::${b.name}`;
+    if (!breakLogMap[key]) breakLogMap[key] = [];
+    breakLogMap[key].push({
+      date:       b.date,
+      reason:     b.reason,
+      prevStreak: b.prev_streak,
+    });
+  });
+
+  // Rebuild habits object
+  const rebuilt = { purposeful:[], nourishing:[], training:[], recovering:[], wasteful:[] };
+  habitsRes.data.forEach(r => {
+    if (!rebuilt[r.cat]) return;
+    const key = `${r.cat}::${r.name}`;
+    rebuilt[r.cat].push({
+      id:       r.id,
+      name:     r.name,
+      streak:   r.streak || 0,
+      done:     r.done_date   === td,
+      broken:   r.broken_date === td ? td : null,
+      breakLog: breakLogMap[key] || [],
+    });
+  });
+
+  const hasRemote = Object.values(rebuilt).some(a => a.length > 0);
+
+  if (hasRemote) {
+    habits = rebuilt;
+    LS.set('habits', habits);
+    const total = Object.values(habits).reduce((s,a) => s+a.length, 0);
+    dbg('SYNC', 'pullHabits restored from remote', total + ' habits');
+  } else {
+    // No remote habits — push local if we have any
+    const hasLocal = Object.values(habits).some(a => a.length > 0);
+    if (hasLocal) {
+      dbg('SYNC', 'no remote habits (post-rebuild) — pushing local');
+      for (const [cat, list] of Object.entries(habits)) {
+        for (const h of list) {
+          const row = await pushHabit(h, cat);
+          if (row && row.id) h.id = row.id;
+        }
+      }
+      LS.set('habits', habits);
+    }
+  }
+}
+
+/* ── Realtime subscription — app_state ─────────────────────── */
+let realtimeChannel = null;
+
+function subscribeRealtime() {
+  if (!currentUser || realtimeChannel) return;
+  realtimeChannel = sb
+    .channel('app_state_' + currentUser.id)
+    .on('postgres_changes', {
+      event:  '*',
+      schema: 'public',
+      table:  'app_state',
+      filter: `user_id=eq.${currentUser.id}`,
+    }, payload => {
+      // Another device pushed state — pull and merge
+      if (payload.new) applyRemoteAppState(payload.new);
+    })
+    .subscribe();
+}
+
+function unsubscribeRealtime() {
+  if (realtimeChannel) {
+    sb.removeChannel(realtimeChannel);
+    realtimeChannel = null;
+  }
+}
+
+function applyRemoteAppState(data) {
+  // Only apply if remote is newer than what we have
+  const remoteTs = new Date(data.updated_at).getTime();
+  const localTs  = fastState._savedAt || 0;
+  if (remoteTs <= localTs) return;
+
+  const td = today();
+
+  fastState = {
+    running:         data.fast_running,
+    startTs:         data.fast_start_ts,
+    originalStartTs: data.fast_original_ts,
+    totalSecs:       data.fast_total_secs || 0,
+    log:             fastState.log || [],
+    _savedAt:        remoteTs,
+  };
+  LS.set('fast', fastState);
+
+  if (data.feeding_last_date === td) {
+    feedingState = {
+      startTs:   data.feeding_start_ts,
+      totalSecs: data.feeding_total_secs || 0,
+      lastDate:  td,
+      _savedAt:  remoteTs,
+    };
+    LS.set('feeding', feedingState);
+  }
+
+  momentState = {
+    active:   data.moment_active   || 'wasteful',
+    startTs:  data.moment_start_ts || Date.now(),
+    timers:   data.moment_timers   || momentState.timers,
+    _savedAt: remoteTs,
+  };
+  LS.set('moment', momentState);
+
+  toast('🔄 Synced from another device');
+}
+
+/* ── Wire push calls throughout the app ────────────────────── */
+// Called after every meaningful state change — replaces old saveToSupabase()
+function saveToSupabase(table, data) {
+  // Legacy shim — route to proper push functions
+  if (table === 'fasts')        return; // handled by pushFast in confirmEndFast
+  if (table === 'moments')      return; // handled by pushMoment in switchState
+  if (table === 'habits')       return; // handled by pushHabit
+  if (table === 'habit_breaks') return; // handled by pushHabitBreak
+  enqueue(table, data);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DIAGNOSTICS
+═══════════════════════════════════════════════════════════════ */
+
+
+
+
+function toggleProfileDropdown() {
+  const dd = document.getElementById('profile-dropdown');
+  dd.classList.toggle('open');
+  // Update theme label
+  const lbl = document.getElementById('profile-theme-label');
+  if (lbl) lbl.textContent = darkMode ? 'Switch to Light' : 'Switch to Dark';
+}
+
+function toggleThemeFromMenu() {
+  darkMode = !darkMode;
+  LS.set('dark', darkMode);
+  applyTheme();
+  const lbl = document.getElementById('profile-theme-label');
+  if (lbl) lbl.textContent = darkMode ? 'Switch to Light' : 'Switch to Dark';
+}
+
+async function signOutUser() {
+  document.getElementById('profile-dropdown').classList.remove('open');
+
+  // Push current state to Supabase BEFORE clearing localStorage
+  // so the next login can restore exactly where we left off
+  if (currentUser) {
+    // On signout: the event log in Supabase already has everything.
+    // We just need to ensure the CURRENT moment session is captured
+    // by writing a snapshot event so replay on next login is accurate.
+    const now = Date.now();
+    if (momentState.active && momentState.startTs) {
+      // Write a moment_switch to self — forces a snapshot of elapsed time
+      // On replay: closes the session at this timestamp
+      await writeEvent('moment_switch', now, {
+        from: momentState.active,
+        to:   momentState.active,
+        snapshot: true
+      });
+      dbg('SYNC', 'signout snapshot event written', momentState.active);
+    }
+    // Small delay to let the write complete
+    await new Promise(r => setTimeout(r, 400));
+  }
+
+  LS.set('fast',      null);
+  LS.set('feeding',   null);
+  LS.set('moment',    null);
+  LS.set('syncQueue', null);
+  // Habits deliberately NOT wiped — they survive in LS as fallback
+  // pullHabits on next login will refresh from Supabase as source of truth
+  await sb.auth.signOut();
+  clearUser();
+  toast('Signed out. See you soon 👋');
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', e => {
+  const dd  = document.getElementById('profile-dropdown');
+  const av  = document.querySelector('.user-avatar');
+  if (!dd) return;
+  if (dd.classList.contains('open') && !dd.contains(e.target) && e.target !== av && !av?.contains(e.target)) {
+    dd.classList.remove('open');
+  }
+});
 
 /* ═══════════════════════════════════════════════════════════════
    TOAST
@@ -1513,19 +3934,257 @@ function toast(msg) {
 /* ═══════════════════════════════════════════════════════════════
    MAIN LOOP
 ═══════════════════════════════════════════════════════════════ */
+var _tickCount = 0;
 function tick() {
+  _tickCount++;
+  if (_tickCount % 10 === 0) {
+    dbg('TICK', 'tick@'+_tickCount, {
+      fastRunning: fastState.running,
+      fastSecs: getFastElapsed(),
+      feedSecs: getFeedingElapsed ? getFeedingElapsed() : '?',
+      momentActive: momentState.active,
+      momentSecs: momentState.active ? getStateElapsed(momentState.active) : 0
+    });
+  }
   updateFastUI();
   updateStateUI();
-  buildDonut();
+  buildDayTracker();
 }
+
+// Slow tick — reserved for future use
+let distTick = 0;
+function tickSlow() { distTick++; }
+
+/* ─── STAGE DESCRIPTION SCROLLER ────────────────────────── */
+// Builds a rotation: current state desc first, then upcoming states in order
+let stageNavItems = [];
+let stageNavIdx   = 0;
+
+function initStageScroller(activeIdx) {
+  const items = [];
+
+  // Current stage first
+  const cur = STAGES[activeIdx];
+  items.push({
+    label: `You are in ${cur.name}`,
+    color: cur.color,
+    text: cur.desc,
+    eta: null,
+    isCurrent: true,
+  });
+
+  // Upcoming stages with ETA
+  for (let i = activeIdx + 1; i < STAGES.length; i++) {
+    const s = STAGES[i];
+    const fastSecs = getFastElapsed();
+    let etaStr = '';
+    if (s.start) {
+      const rem = Math.max((s.start * 3600) - fastSecs, 0);
+      const h = Math.floor(rem / 3600), m = Math.floor((rem % 3600) / 60);
+      etaStr = h > 0 ? `${h}h ${String(m).padStart(2,'0')}m away` : `${m}m away`;
+    }
+    items.push({
+      label: `Upcoming · ${s.icon} ${s.name}${s.start ? ` · ${s.start}h+` : ''}`,
+      color: s.color,
+      text: s.desc,
+      eta: etaStr,
+      isCurrent: false,
+    });
+  }
+
+  // Only reset if stage changed
+  const newKey = items.map(i => i.label).join('|');
+  if (stageNavItems._key === newKey) return;
+
+  stageNavItems      = items;
+  stageNavItems._key = newKey;
+  stageNavIdx        = 0;
+
+  renderStageNav(0, 'none');
+  buildStageNavDots();
+}
+
+function stageNavStep(dir) {
+  const next = stageNavIdx + dir;
+  if (next < 0 || next >= stageNavItems.length) return;
+  renderStageNav(next, dir > 0 ? 'left' : 'right');
+  stageNavIdx = next;
+  buildStageNavDots();
+}
+
+function renderStageNav(idx, direction) {
+  const el   = document.getElementById('stage-nav-text');
+  const prev = document.getElementById('stage-nav-prev');
+  const nxt  = document.getElementById('stage-nav-next');
+  if (!el) return;
+
+  const item = stageNavItems[idx];
+  if (!item) return;
+
+  // Slide out current
+  if (direction !== 'none') {
+    el.classList.remove('active');
+    el.classList.add(direction === 'left' ? 'slide-left' : 'slide-right');
+  }
+
+  setTimeout(() => {
+    const prefix = item.isCurrent ? 'YOU ARE IN' : 'UPCOMING';
+    const nameColor = item.color;
+    const etaHtml = item.eta ? ` <span style="color:${nameColor};opacity:.8">${item.eta}</span>` : '';
+    el.innerHTML = `<span class="stage-nav-label" style="color:${nameColor}">${item.label}${etaHtml}</span>${item.text}`;
+    el.className = 'stage-nav-text';
+    // Slide in from opposite side
+    if (direction !== 'none') {
+      el.classList.add(direction === 'left' ? 'slide-right' : 'slide-left');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => { el.classList.remove('slide-left','slide-right'); el.classList.add('active'); });
+      });
+    } else {
+      el.classList.add('active');
+    }
+  }, direction !== 'none' ? 200 : 0);
+
+  // Update nav buttons
+  if (prev) prev.disabled = (idx === 0);
+  if (nxt)  nxt.disabled  = (idx === stageNavItems.length - 1);
+}
+
+function buildStageNavDots() {
+  const wrap = document.getElementById('stage-nav-dots');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  stageNavItems.forEach((item, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'stage-nav-dot' + (i === stageNavIdx ? ' active' : '');
+    // Always use stage color — dim when inactive
+    dot.style.background = i === stageNavIdx
+      ? item.color
+      : `color-mix(in srgb, ${item.color} 30%, var(--border))`;
+    if (i === stageNavIdx) dot.style.transform = 'scale(1.3)';
+    dot.onclick = () => { stageNavStep(i - stageNavIdx); };
+    wrap.appendChild(dot);
+  });
+}
+
+/* ─── QUOTE SCROLLER ─────────────────────────────────────── */
+const QUOTES = [
+  "You must be present to win.",
+  "Yesterday is history. Tomorrow is a mystery. Today is a gift.",
+  "How you spend your days is how you spend your life.",
+  "Distraction is the enemy of depth.",
+  "Where your attention goes, your life goes.",
+  "Time is the one thing you can't get back. Spend it like it matters.",
+  "Eat with intention. Fast with purpose. Live with presence.",
+  "The moment you notice distraction is the moment you reclaim focus.",
+];
+
+let quoteIdx = 0;
+
+function renderQuote() {
+  const el = document.getElementById('quote-display');
+  if (!el) return;
+  el.classList.remove('active');
+  setTimeout(() => {
+    el.textContent = `"${QUOTES[quoteIdx]}"`;
+    el.classList.add('active');
+  }, 650);
+  quoteIdx = (quoteIdx + 1) % QUOTES.length;
+}
+
+function initQuotes() {
+  const el = document.getElementById('quote-display');
+  if (!el) return;
+  el.textContent = `"${QUOTES[0]}"`;
+  quoteIdx = 1;
+  setInterval(renderQuote, 8000);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DEBUG LOG — persistent across auth, survives sign in/out
+   Triple-tap header to toggle. COPY button exports full log.
+═══════════════════════════════════════════════════════════ */
+var _dbgLog   = [];
+var _dbgOpen  = false;  // starts collapsed — click header to open
+var _dbgCount = 0;
+
+function dbg(category, msg, data) {
+  var ts   = new Date().toLocaleTimeString('en-US', { hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  var ms   = String(new Date().getMilliseconds()).padStart(3,'0');
+  var cats = { AUTH:'#34C98A', FAST:'#E8A838', FEED:'#5B9CF6', MOMENT:'#7C3AED', HABIT:'#E05C7A', SYNC:'#9E95B8', TICK:'#2C2448', ERR:'#EF4444', INFO:'#4E4668' };
+  var col  = cats[category] || '#4E4668';
+  var line = { ts: ts+'.'+ms, category: category, msg: msg, data: data || null, col: col };
+  _dbgLog.push(line);
+  _dbgCount++;
+
+  var body = document.getElementById('dbg-body');
+  var cnt  = document.getElementById('dbg-count');
+  if (cnt) cnt.textContent = _dbgCount;
+  if (!body) return;
+
+  var row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:6px;padding:1px 0;border-bottom:1px solid #16112A;';
+  var dataStr = data ? ' → ' + (typeof data === 'object' ? JSON.stringify(data) : data) : '';
+  row.innerHTML =
+    '<span style="color:#4E4668;flex-shrink:0">' + ts + '</span>' +
+    '<span style="color:' + col + ';flex-shrink:0;min-width:52px;font-weight:700">[' + category + ']</span>' +
+    '<span style="color:#9E95B8;word-break:break-all">' + msg + '<span style="color:#4E4668">' + dataStr + '</span></span>';
+  body.appendChild(row);
+  if (_dbgOpen) body.scrollTop = body.scrollHeight;
+}
+
+function dbgToggle() {
+  _dbgOpen = !_dbgOpen;
+  var panel   = document.getElementById('dbg-panel');
+  var chevron = document.getElementById('dbg-chevron');
+  // Expand upward — cap at 40vh but stay above nav
+  panel.style.maxHeight = _dbgOpen ? 'calc(40vh - 56px)' : '32px';
+  if (chevron) chevron.textContent = _dbgOpen ? '▲' : '▼';
+}
+
+function dbgClear() {
+  _dbgLog = []; _dbgCount = 0;
+  var body = document.getElementById('dbg-body');
+  var cnt  = document.getElementById('dbg-count');
+  if (body) body.innerHTML = '';
+  if (cnt)  cnt.textContent = '0';
+}
+
+function dbgCopy() {
+  var lines = _dbgLog.map(function(l) {
+    var d = l.data ? ' → ' + (typeof l.data === 'object' ? JSON.stringify(l.data) : l.data) : '';
+    return l.ts + '  [' + l.category + ']  ' + l.msg + d;
+  });
+  var text = '=== MINDFUL RHYTHM DEBUG LOG ===\n' + new Date().toLocaleString() + '\n\n' + lines.join('\n');
+  var btn = document.getElementById('dbg-copy-btn');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() {
+      if (btn) { btn.textContent = 'COPIED'; setTimeout(function(){ btn.textContent = 'COPY'; }, 2000); }
+    });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    if (btn) { btn.textContent = 'COPIED'; setTimeout(function(){ btn.textContent = 'COPY'; }, 2000); }
+  }
+}
+
+// Boot log
+dbg('INFO', 'Page loaded', { url: location.href, hash: location.hash || 'none' });
+dbg('INFO', 'fastState init', { running: fastState.running, totalSecs: fastState.totalSecs, startTs: fastState.startTs });
+dbg('INFO', 'momentState init', { active: momentState.active, startTs: momentState.startTs, timers: momentState.timers });
+dbg('INFO', 'feedingState init', { startTs: feedingState.startTs, totalSecs: feedingState.totalSecs });
 
 function init() {
   initAuth();
-  renderStageBadges(0);
+  if (!fastState.running) startFeedingTimer();
+  startWasteful();
   renderHabitTabs();
   renderHabitList();
+  initStageScroller(0);
+  initQuotes();
   tick();
   setInterval(tick, 1000);
+  setInterval(tickSlow, 1000);
 }
 
 init();
