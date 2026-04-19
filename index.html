@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- MR-BUILD:20260419-110823 -->
+<!-- MR-BUILD:20260419-120425 -->
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
@@ -80,7 +80,7 @@
     position: fixed; inset: 0; z-index: 10000;
     background: var(--bg);
     display: flex; align-items: center; justify-content: center;
-    padding: 32px 24px 180px; /* bottom padding clears debug panel */
+    padding: 32px 24px;
   }
   #auth-gate.hidden { display: none; }
   .gate-inner {
@@ -688,6 +688,127 @@
   ════════════════════════════════════════════════════════════ */
 
   /* ════════════════════════════════════════════════════════════
+     BREAK VIEW
+  ════════════════════════════════════════════════════════════ */
+  .brk-hero {
+    display: flex; flex-direction: column;
+    align-items: center; text-align: center;
+    padding: 40px 24px 32px; gap: 12px;
+  }
+  .brk-flame {
+    font-size: 56px; line-height: 1;
+    margin-bottom: 8px;
+    animation: brk-pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes brk-pulse {
+    0%,100% { transform: scale(1); }
+    50%      { transform: scale(1.08); }
+  }
+  .brk-hero-title {
+    font-family: var(--font-cond); font-weight: 800;
+    font-size: 28px; color: var(--text); letter-spacing: -.01em;
+  }
+  .brk-hero-sub {
+    font-size: 14px; color: var(--text2);
+    line-height: 1.7; max-width: 280px;
+  }
+  .brk-friction-step {
+    font-family: var(--font-cond); font-size: 11px;
+    letter-spacing: .16em; text-transform: uppercase;
+    color: var(--text3);
+  }
+  .brk-cta {
+    margin-top: 8px; width: 100%; max-width: 280px;
+    padding: 16px 24px;
+    background: var(--danger); color: #fff; border: none;
+    border-radius: var(--radius-sm); cursor: pointer;
+    font-family: var(--font-cond); font-weight: 700;
+    font-size: 15px; letter-spacing: .05em;
+    transition: opacity .2s;
+  }
+  .brk-cta:hover { opacity: .88; }
+  .brk-cancel {
+    background: none; border: none;
+    color: var(--text3); cursor: pointer;
+    font-family: var(--font-cond); font-size: 13px;
+    letter-spacing: .06em; padding: 8px;
+    transition: color .2s;
+  }
+  .brk-cancel:hover { color: var(--text2); }
+  .brk-list-header {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 12px;
+  }
+  .brk-add-btn {
+    padding: 8px 16px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); cursor: pointer;
+    font-family: var(--font-cond); font-weight: 700;
+    font-size: 13px; color: var(--accent); letter-spacing: .06em;
+    transition: background .2s;
+  }
+  .brk-add-btn:hover { background: var(--border); }
+  .brk-habit-item {
+    display: flex; align-items: center;
+    padding: 14px 16px; margin-bottom: 8px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); gap: 12px; cursor: pointer;
+    transition: border-color .2s;
+  }
+  .brk-habit-item:hover { border-color: var(--danger); }
+  .brk-habit-name {
+    flex: 1; font-family: var(--font-cond); font-weight: 700;
+    font-size: 15px; color: var(--text); letter-spacing: .03em;
+  }
+  .brk-habit-meta {
+    font-family: var(--font-cond); font-size: 11px;
+    color: var(--text3); letter-spacing: .06em;
+  }
+  .brk-habit-edit {
+    padding: 6px 8px; background: none;
+    border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text3); cursor: pointer; font-size: 12px;
+    transition: all .2s;
+  }
+  .brk-habit-edit:hover { border-color: var(--accent); color: var(--accent); }
+  .brk-empty-state {
+    text-align: center; padding: 40px 20px;
+    font-size: 14px; color: var(--text3);
+    line-height: 1.8;
+  }
+  .brk-cfg-label {
+    font-family: var(--font-cond); font-size: 11px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 8px;
+  }
+  .brk-cfg-friction-row {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 12px 14px;
+    margin-bottom: 8px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .brk-cfg-friction-num {
+    font-family: var(--font-cond); font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
+  }
+  .brk-cfg-row-inputs {
+    display: flex; gap: 8px; align-items: center;
+  }
+  .brk-cfg-emoji-inp {
+    width: 52px; text-align: center; font-size: 20px;
+    padding: 8px; background: var(--surface);
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    outline: none;
+  }
+  .brk-cfg-msg-inp {
+    flex: 1; padding: 10px 12px; background: var(--surface);
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    color: var(--text); font-family: var(--font-body); font-size: 13px;
+    outline: none; resize: none;
+  }
+  .brk-cfg-emoji-inp:focus,
+  .brk-cfg-msg-inp:focus { border-color: var(--accent); }
+
+  /* ════════════════════════════════════════════════════════════
      WEEKLY / MONTHLY VIEWS
   ════════════════════════════════════════════════════════════ */
   .week-grid {
@@ -1152,6 +1273,132 @@
     <div class="spacer"></div>
   </div>
 
+  <!-- ░░░ BREAK VIEW ░░░ -->
+  <div class="view" id="view-break">
+    <div class="date-header">
+      <div class="date-big">Break</div>
+    </div>
+
+    <!-- PHASE: entry (default) -->
+    <div id="brk-phase-entry">
+      <div class="brk-hero">
+        <div class="brk-flame">🔥</div>
+        <div class="brk-hero-title">Break a Habit</div>
+        <div class="brk-hero-sub">This is a deliberate choice. We'll make sure you mean it.</div>
+        <button class="brk-cta" onclick="brkStartJourney()">I want to break a habit</button>
+      </div>
+    </div>
+
+    <!-- PHASE: are-you-sure -->
+    <div id="brk-phase-sure" style="display:none">
+      <div class="brk-hero">
+        <div class="brk-flame">💔</div>
+        <div class="brk-hero-title">Are you sure?</div>
+        <div class="brk-hero-sub">Breaking a habit resets your commitment. Take a breath first.</div>
+        <button class="brk-cta" onclick="brkShowList()">Yes, show me the list</button>
+        <button class="brk-cancel" onclick="brkReset()">Actually, never mind</button>
+      </div>
+    </div>
+
+    <!-- PHASE: habit list -->
+    <div id="brk-phase-list" style="display:none">
+      <div class="section-pad">
+        <div class="brk-list-header">
+          <div class="section-title">Which habit?</div>
+          <button class="brk-add-btn" onclick="brkOpenConfig(null)">＋ Add</button>
+        </div>
+        <div id="brk-habit-list"></div>
+        <div id="brk-empty" style="display:none" class="brk-empty-state">
+          No habits configured yet.<br>Tap ＋ Add to set one up.
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE: friction screens -->
+    <div id="brk-phase-friction" style="display:none">
+      <div class="brk-hero">
+        <div class="brk-flame" id="brk-friction-emoji">🤔</div>
+        <div class="brk-friction-step" id="brk-friction-step"></div>
+        <div class="brk-hero-title" id="brk-friction-msg"></div>
+        <button class="brk-cta" onclick="brkNextFriction()">I still want to break it</button>
+        <button class="brk-cancel" onclick="brkReset()">I changed my mind</button>
+      </div>
+    </div>
+
+    <!-- PHASE: broken confirmation -->
+    <div id="brk-phase-broken" style="display:none">
+      <div class="brk-hero">
+        <div class="brk-flame">💔</div>
+        <div class="brk-hero-title" id="brk-broken-title">Habit broken.</div>
+        <div class="brk-hero-sub">It's okay. Every day is a fresh start.</div>
+        <button class="brk-cta" onclick="brkReset()">Done</button>
+      </div>
+    </div>
+
+    <div class="spacer"></div>
+  </div>
+
+  <!-- ░░░ BREAK CONFIG MODAL ░░░ -->
+  <div id="brk-config-overlay" style="
+    display:none; position:fixed; inset:0; z-index:500;
+    background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);
+    align-items:flex-end; justify-content:center;
+  ">
+    <div style="
+      background:var(--surface); width:100%; max-width:600px;
+      border-radius:var(--radius) var(--radius) 0 0;
+      padding:20px 20px 40px; max-height:90vh; overflow-y:auto;
+      display:flex; flex-direction:column; gap:14px;
+    ">
+      <div class="modal-handle" style="align-self:center;margin-bottom:4px;"></div>
+      <div style="font-family:var(--font-cond);font-size:18px;font-weight:800;color:var(--text);" id="brk-cfg-title">Configure Habit</div>
+
+      <!-- Habit name -->
+      <div>
+        <div class="brk-cfg-label">Habit Name</div>
+        <input id="brk-cfg-name" type="text" placeholder="e.g. No sugar today"
+          style="width:100%;padding:12px 14px;background:var(--surface2);
+          border:1.5px solid var(--border);border-radius:var(--radius-sm);
+          color:var(--text);font-family:var(--font-cond);font-size:15px;
+          outline:none;box-sizing:border-box;"
+          onfocus="this.style.borderColor='var(--accent)'"
+          onblur="this.style.borderColor='var(--border)'">
+      </div>
+
+      <!-- Friction screens -->
+      <div>
+        <div class="brk-cfg-label">Friction Screens <span id="brk-cfg-count" style="color:var(--accent)">1</span></div>
+        <input type="range" min="1" max="5" value="1" id="brk-cfg-slider"
+          oninput="brkUpdateFrictionCount(this.value)"
+          style="width:100%;accent-color:var(--accent);">
+      </div>
+
+      <div id="brk-cfg-frictions"></div>
+
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <button onclick="brkSaveConfig()" style="
+          flex:1;padding:14px;background:var(--accent);color:#fff;border:none;
+          border-radius:var(--radius-sm);cursor:pointer;
+          font-family:var(--font-cond);font-weight:700;font-size:15px;letter-spacing:.06em;">
+          Save
+        </button>
+        <button onclick="brkCloseConfig()" style="
+          flex:1;padding:14px;background:var(--surface2);color:var(--text2);
+          border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;
+          font-family:var(--font-cond);font-weight:700;font-size:15px;letter-spacing:.06em;">
+          Cancel
+        </button>
+      </div>
+      <div id="brk-cfg-delete-wrap" style="display:none;text-align:center;">
+        <button onclick="brkDeleteHabit()" style="
+          background:none;border:none;color:var(--danger);cursor:pointer;
+          font-family:var(--font-cond);font-size:13px;letter-spacing:.04em;">
+          Delete this habit
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ░░░ WEEKLY VIEW ░░░ -->
   <div class="view" id="view-weekly">
     <div class="date-header">
@@ -1278,6 +1525,10 @@
   <button class="nav-item active" data-view="daily" onclick="switchView('daily', this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
     Daily
+  </button>
+  <button class="nav-item" data-view="break" onclick="switchView('break', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 0-5 4-5 9a5 5 0 0 0 10 0c0-3-2-6-2-6s-1 3-3 3c-1.5 0-2-1.5-2-1.5S11 9 12 2z"/><path d="M12 17c0 0-2-1-2-3s2-3 2-3"/></svg>
+    Break
   </button>
   <button class="nav-item" data-view="weekly" onclick="switchView('weekly', this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -1572,8 +1823,9 @@ function switchView(name, btn) {
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
   btn.classList.add('active');
-  if (name === 'weekly') renderWeekly();
+  if (name === 'weekly')  renderWeekly();
   if (name === 'monthly') renderMonthly();
+  if (name === 'break')   brkReset();
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2859,7 +3111,7 @@ function pushMoment(state, secs, startTs, endTs) {} // moments reconstructed fro
 async function loadUserData() {
   if (!currentUser) { return; }
   try {
-    await Promise.all([pullAndReplayEvents(), pullFasts()]);
+    await Promise.all([pullAndReplayEvents(), pullFasts(), pullBreakHabits()]);
 
     updateFastUI();
     updateStateUI();
@@ -3246,6 +3498,242 @@ function initQuotes() {
   el.textContent = `"${QUOTES[0]}"`;
   quoteIdx = 1;
   setInterval(renderQuote, 8000);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BREAK HABITS ENGINE
+   Separate from old habits system — uses break_habits table in Supabase.
+   State: breakHabits[], LS key: mr_breakHabits
+═══════════════════════════════════════════════════════════════ */
+
+let breakHabits = LS.get('breakHabits') || [];
+let brkActiveHabit = null;   // habit being broken right now
+let brkFrictionIdx = 0;      // which friction screen we're on
+let brkEditIdx     = null;    // index being edited in config modal
+
+// ── Phase navigation ─────────────────────────────────────────
+function brkShowPhase(id) {
+  ['brk-phase-entry','brk-phase-sure','brk-phase-list',
+   'brk-phase-friction','brk-phase-broken'].forEach(p => {
+    const el = document.getElementById(p);
+    if (el) el.style.display = 'none';
+  });
+  const target = document.getElementById(id);
+  if (target) target.style.display = '';
+}
+
+function brkReset() {
+  brkActiveHabit = null;
+  brkFrictionIdx = 0;
+  brkShowPhase('brk-phase-entry');
+}
+
+function brkStartJourney() {
+  brkShowPhase('brk-phase-sure');
+}
+
+function brkShowList() {
+  brkRenderList();
+  brkShowPhase('brk-phase-list');
+}
+
+// ── Habit list render ─────────────────────────────────────────
+function brkRenderList() {
+  const list  = document.getElementById('brk-habit-list');
+  const empty = document.getElementById('brk-empty');
+  if (!list) return;
+  list.innerHTML = '';
+  if (!breakHabits.length) {
+    if (empty) empty.style.display = '';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  breakHabits.forEach((h, i) => {
+    const count = (h.frictions || []).length;
+    const div = document.createElement('div');
+    div.className = 'brk-habit-item';
+    div.innerHTML = `
+      <div class="brk-habit-name">${h.name}</div>
+      <div class="brk-habit-meta">${count} friction${count !== 1 ? 's' : ''}</div>
+      <button class="brk-habit-edit" onclick="event.stopPropagation();brkOpenConfig(${i})">Edit</button>`;
+    div.onclick = () => brkSelectHabit(i);
+    list.appendChild(div);
+  });
+}
+
+// ── Select a habit → start friction sequence ──────────────────
+function brkSelectHabit(idx) {
+  brkActiveHabit = breakHabits[idx];
+  brkFrictionIdx = 0;
+  brkShowNextFriction();
+}
+
+function brkShowNextFriction() {
+  const frictions = brkActiveHabit.frictions || [];
+  if (brkFrictionIdx >= frictions.length) {
+    // All frictions passed — mark broken
+    brkMarkBroken();
+    return;
+  }
+  const f = frictions[brkFrictionIdx];
+  const total = frictions.length;
+  document.getElementById('brk-friction-emoji').textContent = f.emoji || '🤔';
+  document.getElementById('brk-friction-msg').textContent   = f.message || '';
+  document.getElementById('brk-friction-step').textContent  =
+    `Screen ${brkFrictionIdx + 1} of ${total}`;
+  brkShowPhase('brk-phase-friction');
+}
+
+function brkNextFriction() {
+  brkFrictionIdx++;
+  brkShowNextFriction();
+}
+
+function brkMarkBroken() {
+  const h = brkActiveHabit;
+  document.getElementById('brk-broken-title').textContent =
+    `"${h.name}" broken.`;
+  brkShowPhase('brk-phase-broken');
+  // Write event for sync
+  writeEvent('break_habit', Date.now(), { name: h.name });
+}
+
+// ── Config modal ──────────────────────────────────────────────
+function brkOpenConfig(idx) {
+  brkEditIdx = idx;
+  const isNew = idx === null;
+  const h = isNew
+    ? { name: '', frictions: [{ emoji: '🤔', message: '' }] }
+    : breakHabits[idx];
+
+  document.getElementById('brk-cfg-title').textContent  = isNew ? 'New Habit' : 'Edit Habit';
+  document.getElementById('brk-cfg-name').value         = h.name || '';
+  document.getElementById('brk-cfg-slider').value       = (h.frictions || []).length || 1;
+  document.getElementById('brk-cfg-count').textContent  = (h.frictions || []).length || 1;
+  document.getElementById('brk-cfg-delete-wrap').style.display = isNew ? 'none' : 'block';
+  brkRenderFrictionInputs(h.frictions || [{ emoji: '🤔', message: '' }]);
+
+  const overlay = document.getElementById('brk-config-overlay');
+  overlay.style.display = 'flex';
+  setTimeout(() => document.getElementById('brk-cfg-name').focus(), 80);
+}
+
+function brkCloseConfig() {
+  document.getElementById('brk-config-overlay').style.display = 'none';
+  brkEditIdx = null;
+}
+
+function brkUpdateFrictionCount(val) {
+  document.getElementById('brk-cfg-count').textContent = val;
+  const current = brkGetCurrentFrictions();
+  const target  = parseInt(val);
+  while (current.length < target) current.push({ emoji: '🤔', message: '' });
+  current.length = target;
+  brkRenderFrictionInputs(current);
+}
+
+function brkGetCurrentFrictions() {
+  const rows = document.querySelectorAll('.brk-cfg-friction-row');
+  return Array.from(rows).map(row => ({
+    emoji:   row.querySelector('.brk-cfg-emoji-inp').value || '🤔',
+    message: row.querySelector('.brk-cfg-msg-inp').value  || '',
+  }));
+}
+
+function brkRenderFrictionInputs(frictions) {
+  const container = document.getElementById('brk-cfg-frictions');
+  container.innerHTML = '';
+  frictions.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'brk-cfg-friction-row';
+    row.innerHTML = `
+      <div class="brk-cfg-friction-num">Screen ${i + 1}</div>
+      <div class="brk-cfg-row-inputs">
+        <input class="brk-cfg-emoji-inp" type="text" maxlength="2"
+          placeholder="🤔" value="${f.emoji || ''}">
+        <textarea class="brk-cfg-msg-inp" rows="2"
+          placeholder="What do you want to ask yourself?">${f.message || ''}</textarea>
+      </div>`;
+    container.appendChild(row);
+  });
+}
+
+async function brkSaveConfig() {
+  const name = document.getElementById('brk-cfg-name').value.trim();
+  if (!name) {
+    document.getElementById('brk-cfg-name').style.borderColor = 'var(--danger)';
+    setTimeout(() => document.getElementById('brk-cfg-name').style.borderColor = '', 1500);
+    return;
+  }
+  const frictions = brkGetCurrentFrictions();
+  const habit = { name, frictions };
+
+  if (brkEditIdx === null) {
+    breakHabits.push(habit);
+  } else {
+    breakHabits[brkEditIdx] = habit;
+  }
+  LS.set('breakHabits', breakHabits);
+  brkCloseConfig();
+  brkRenderList();
+  if (currentUser) await pushBreakHabit(habit);
+}
+
+async function brkDeleteHabit() {
+  if (brkEditIdx === null) return;
+  const h = breakHabits[brkEditIdx];
+  breakHabits.splice(brkEditIdx, 1);
+  LS.set('breakHabits', breakHabits);
+  brkCloseConfig();
+  brkRenderList();
+  if (currentUser && h.id) {
+    try {
+      await sb.from('break_habits').delete()
+        .eq('id', h.id).eq('user_id', currentUser.id);
+    } catch(e) {}
+  }
+}
+
+// ── Supabase sync ─────────────────────────────────────────────
+async function pushBreakHabit(h) {
+  if (!currentUser) return;
+  const payload = {
+    user_id:    currentUser.id,
+    name:       h.name,
+    frictions:  h.frictions || [],
+    sort_order: 0,
+  };
+  if (h.id && /^[0-9a-f-]{36}$/.test(h.id)) payload.id = h.id;
+  try {
+    const { data, error } = await sb.from('break_habits')
+      .upsert(payload, { onConflict: h.id ? 'id' : 'user_id,name' })
+      .select('id').single();
+    if (!error && data) h.id = data.id;
+    LS.set('breakHabits', breakHabits);
+  } catch(e) {}
+}
+
+async function pullBreakHabits() {
+  if (!currentUser) return;
+  try {
+    const { data, error } = await sb.from('break_habits')
+      .select('*').eq('user_id', currentUser.id).order('sort_order');
+    if (error || !data) {
+      // No remote — push local up
+      for (const h of breakHabits) await pushBreakHabit(h);
+      return;
+    }
+    if (data.length > 0) {
+      breakHabits = data.map(r => ({
+        id:        r.id,
+        name:      r.name,
+        frictions: r.frictions || [],
+      }));
+      LS.set('breakHabits', breakHabits);
+    } else if (breakHabits.length > 0) {
+      for (const h of breakHabits) await pushBreakHabit(h);
+    }
+  } catch(e) {}
 }
 
 function init() {
